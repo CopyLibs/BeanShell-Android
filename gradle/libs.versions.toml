@@ -3,6 +3,7 @@ agp = "8.10.1"
 kotlin = "2.0.21"
 
 [libraries]
+dalvik-dx = { module = "com.jakewharton.android.repackaged:dalvik-dx", version = "11.0.0_r3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
