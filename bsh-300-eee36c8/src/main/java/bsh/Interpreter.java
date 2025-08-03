@@ -111,12 +111,12 @@ public class Interpreter
     private boolean EOF;
     public static boolean TRACE;
     public static boolean COMPATIBIILTY;
-    public static final String VERSION;
+    public static final String VERSION = "3.0.0-eee36c8";
 
     static {
-        ResourceBundle b = ResourceBundle.getBundle("version");
-        VERSION = b.getString("release") + "." + b.getString("build");
-        staticInit();
+        // ResourceBundle b = ResourceBundle.getBundle("version");
+        // VERSION = b.getString("release") + "." + b.getString("build");
+        // staticInit();
     }
 
     /** Shared system object visible under bsh.system */
