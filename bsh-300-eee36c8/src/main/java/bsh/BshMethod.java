@@ -29,6 +29,7 @@ package bsh;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
@@ -107,6 +108,11 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
         this.declaringNameSpace = declaringNameSpace;
         this.modifiers = modifiers;
         this.isVarArgs = isVarArgs;
+    }
+
+    public BshMethod(Method method, Object object )
+    {
+        this( Invocable.get(method), object );
     }
 
     /*
