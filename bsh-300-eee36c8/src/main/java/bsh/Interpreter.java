@@ -1032,7 +1032,7 @@ public class Interpreter
         try {
             return parser.Line();
         } catch (ParseException e) {
-            yield();
+            _yield();
             if ( EOF )
                 return true;
             throw e;
@@ -1051,7 +1051,7 @@ public class Interpreter
     /** Yield thread  to wait for closing.
      * If yield delay has a value 0 or more the thread will
      * sleep for so many milliseconds. */
-    private void yield() {
+    private void _yield() {
         if ( 0 > yield_for )
             return;
         try {
