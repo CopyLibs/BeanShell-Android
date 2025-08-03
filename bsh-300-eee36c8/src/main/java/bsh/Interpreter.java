@@ -796,18 +796,26 @@ public class Interpreter
     */
     public Object eval( String statements ) throws EvalError {
         Interpreter.debug("eval(String): ", statements);
-        return eval(statements, globalNameSpace);
+        return eval(statements, globalNameSpace, "Memory");
+    }
+
+    /**
+     Evaluate the string in this interpreter's global namespace.
+     */
+    public Object eval( String statements, String sourceName ) throws EvalError {
+        Interpreter.debug("eval(String,String): ", statements, sourceName);
+        return eval(statements, globalNameSpace, sourceName);
     }
 
     /**
         Evaluate the string in the specified namespace.
     */
-    public Object eval( String statements, NameSpace nameSpace )
+    public Object eval( String statements, NameSpace nameSpace, String sourceName )
         throws EvalError
     {
         return eval(
             new StringReader(terminatedScript(statements)), nameSpace,
-            showEvalString("inline evaluation", statements) );
+                sourceName );
     }
 
     /** Produce source file info from the supplied statements.
