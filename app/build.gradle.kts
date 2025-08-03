@@ -31,4 +31,5 @@ android {
 }
 
 dependencies {
+    implementation(project(":bsh-20b6"))
 }
