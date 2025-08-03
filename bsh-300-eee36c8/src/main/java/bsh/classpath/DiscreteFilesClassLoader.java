@@ -25,10 +25,21 @@
  *****************************************************************************/
 package bsh.classpath;
 
+import com.android.dx.cf.direct.DirectClassFile;
+import com.android.dx.cf.direct.StdAttributeFactory;
+import com.android.dx.command.dexer.DxContext;
+import com.android.dx.dex.DexOptions;
+import com.android.dx.dex.cf.CfOptions;
+import com.android.dx.dex.cf.CfTranslator;
+import com.android.dx.dex.file.DexFile;
+
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 import bsh.BshClassManager;
 import bsh.classpath.BshClassPath.ClassSource;
+import dalvik.system.InMemoryDexClassLoader;
 
 /**
     A classloader which can load one or more classes from specified sources.
@@ -37,6 +48,8 @@ import bsh.classpath.BshClassPath.ClassSource;
 */
 public class DiscreteFilesClassLoader extends BshClassLoader
 {
+    private final HashMap<String, Class<?>> cachedClassMap = new HashMap<>();
+
     /**
         Map of class sources which also implies our coverage space.
     */
@@ -81,6 +94,26 @@ public class DiscreteFilesClassLoader extends BshClassLoader
         if ( source != null )
         {
             byte [] code = source.getCode( name );
+
+            try {
+                try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+                    String classFilePath = String.format("%s.class", name.replace('.', '/'));
+                    DirectClassFile directClassFile = new DirectClassFile(code, classFilePath, true);
+                    directClassFile.setAttributeFactory(StdAttributeFactory.THE_ONE);
+                    DexOptions dexOptions = new DexOptions();
+                    DexFile dexFile = new DexFile(dexOptions);
+                    DxContext dxContext = new DxContext();
+                    dexFile.add(CfTranslator.translate(dxContext, directClassFile, code, new CfOptions(), dexOptions, dexFile));
+                    dexFile.writeTo(byteArrayOutputStream, null, true);
+                    byte[] dexByteArray = byteArrayOutputStream.toByteArray();
+                    ClassLoader classLoader = new InMemoryDexClassLoader(ByteBuffer.wrap(dexByteArray), new FixClassloader(getClass().getClassLoader(), this));
+                    Class<?> clazz = classLoader.loadClass(name);
+                    cachedClassMap.put(name, clazz);
+                    return clazz;
+                }
+            } catch (Exception ignored) {
+			}
+
             return defineClass( name, code, 0,
                     null == code ? 0 : code.length );
         } else
@@ -91,6 +124,21 @@ public class DiscreteFilesClassLoader extends BshClassLoader
 
     public String toString() {
         return super.toString() + "for files: "+map;
+    }
+
+    private static final class FixClassloader extends ClassLoader {
+        private final DiscreteFilesClassLoader classLoader;
+
+        public FixClassloader(ClassLoader parent, DiscreteFilesClassLoader classLoader) {
+            super(parent);
+            this.classLoader = classLoader;
+        }
+
+        @Override
+        public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+            if (classLoader.cachedClassMap.containsKey(name)) return classLoader.cachedClassMap.get(name);
+            return super.loadClass(name, resolve);
+        }
     }
 
 }

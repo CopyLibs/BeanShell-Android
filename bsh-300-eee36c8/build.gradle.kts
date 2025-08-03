@@ -21,4 +21,5 @@ android {
 }
 
 dependencies {
+    implementation(libs.dalvik.dx)
 }
