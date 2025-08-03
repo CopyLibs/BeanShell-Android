@@ -1,0 +1,43 @@
+/**
+    Print the string value of the argument, which may be of any type.
+    If beanshell is running interactively, the output will always go to the
+    command line, otherwise it will go to System.out.
+    <p>
+
+    Most often the printed value of an object will simply be the Java
+    toString() of the object.  However if the argument is an array the contents
+    of the array will be (recursively) listed in a verbose way.
+    <p>
+
+    Note that you are always free to use System.out.println()
+    instead of print().
+*/
+import static bsh.StringUtil.valueString;
+import bsh.StringUtil;
+import bsh.Primitive;
+import bsh.Types;
+
+bsh.help.print = "usage: print( value )";
+
+void print( arg )
+{
+    // Other packages are known to define a String class so best practice here to disambiguate
+    if ( arg instanceof java.lang.String
+            || Character.class.isInstance(arg)
+            || arg instanceof CharSequence )
+        this.interpreter.println( java.lang.String.valueOf(arg) );
+    else
+        this.interpreter.println( valueString(arg) + " :" + typeString(arg) );
+}
+
+String typeValueString(value) {
+    return ;
+}
+
+String typeString(value) {
+    if ( null == value || Primitive.NULL == value )
+        return "null";
+    if ( Types.getType(value).isPrimitive() )
+        return Types.getType(value).getSimpleName();
+    return StringUtil.typeString(value.getClass());
+}

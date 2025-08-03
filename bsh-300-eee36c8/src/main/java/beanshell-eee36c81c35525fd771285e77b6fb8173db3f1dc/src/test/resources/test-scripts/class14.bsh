@@ -1,0 +1,64 @@
+source("TestHarness.bsh");
+
+list = new List {};
+
+class TestInner22
+{
+    static int s = 5;
+    int i = 4;
+    Object t22This = this;
+    new MyThread().start();
+    assert( TestInner22.this == t22This );
+
+    void go()
+    {
+        assert( TestInner22.this == this );
+        assert( TestInner22.this == t22This );
+
+        r=new Runnable() {
+            public void run() {
+                assert( this instanceof Runnable );
+                assert( TestInner22.this == t22This );
+                assert(i==4);
+                list.add(null);
+            }
+        };
+        new Thread(r).start();
+
+        new Thread() {
+            public void run() {
+                assert( this instanceof Thread );
+                assert( TestInner22.this == t22This );
+                assert(i==4);
+                list.add(null);
+            }
+        }.start();
+
+        new MyThread().start();
+        new MyStaticThread().start();
+    }
+
+    class MyThread extends Thread {
+        public void run() {
+            assert( this instanceof Thread );
+            assert( TestInner22.this == t22This );
+            assert( i == 4 );
+            list.add(null);
+        }
+    }
+
+    static class MyStaticThread extends Thread {
+        public void run()
+        {
+            assert( this instanceof Thread );
+            assert( isEvalError("TestInner22.this") );
+            assert( isEvalError("i") );
+            list.add(null);
+        }
+    }
+}
+
+new TestInner22().go();
+while (list.size() < 5)
+    Thread.sleep(20);
+complete();

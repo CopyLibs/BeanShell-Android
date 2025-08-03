@@ -1,0 +1,69 @@
+#!/bin/java bsh.Interpreter
+
+import bsh.Reflect;
+
+source("TestHarness.bsh");
+
+private int bar() { }
+private bar() { }
+private int bar() { }
+private synchronized int bar() { }
+private synchronized bar() { }
+private synchronized final bar() { }
+assert( Reflect.getMethod(global.namespace, 'bar', new Class[0]).getModifiers().hasModifier('final'));
+assert( Reflect.getMethod(global.namespace, 'bar', new Class[0]).getModifiers().hasModifier('synchronized'));
+assert( Reflect.getMethod(global.namespace, 'bar', new Class[0]).getModifiers().hasModifier('private'));
+private private int bar() { } // duplicates are rolled in
+assert( Reflect.getMethod(global.namespace, 'bar', new Class[0]).getModifiers().hasModifier('private'));
+assert( isEvalError("public/private/protected cannot be used in combination.", "private protected bar() { }") );
+assert( isEvalError("public/private/protected cannot be used in combination.", "private public int bar() { }") );
+public public bar() { } // duplicates are rolled in
+assert( Reflect.getMethod(global.namespace, 'bar', new Class[0]).getModifiers().hasModifier('public'));
+assert( isEvalError("public/private/protected cannot be used in combination.", "public private bar() { }") );
+assert( isEvalError("public/private/protected cannot be used in combination.", "public protected bar() { }") );
+protected protected bar() { } // duplicates are rolled in
+assert( Reflect.getMethod(global.namespace, 'bar', new Class[0]).getModifiers().hasModifier('protected'));
+assert( isEvalError("public/private/protected cannot be used in combination.", "protected public bar() { }") );
+assert( isEvalError("public/private/protected cannot be used in combination.", "protected private bar() { }") );
+assert( isEvalError("Method cannot be declared 'volatile'", "volatile int bar() { }") );
+
+int foo;
+int foo2=5;
+private final int foo3;
+private int foo4=5;
+private int foo5;
+private volatile int foo6;
+private volatile int foo7 = 2;
+assert( Reflect.getVariable(global.namespace, 'foo6').getModifiers().hasModifier('volatile'));
+assert( Reflect.getVariable(global.namespace, 'foo7').getModifiers().hasModifier('private'));
+assert( Reflect.getVariable(global.namespace, 'foo3').getModifiers().hasModifier('final'));
+assert( isEvalError("Field cannot be declared 'synchronized'", "synchronized int bar20") );
+assert( isEvalError("public/private/protected cannot be used in combination.", "public private int bar21") );
+
+foo(final int bar) {
+    assert( Reflect.getVariable(this.namespace, 'bar').getModifiers().hasModifier('final'));
+    assert( isEvalError("Cannot re-assign final variable bar", "bar = 2;"));
+}
+foo(1);
+assert( Reflect.getMethod(this.namespace, 'foo', {Integer.TYPE}).getParameterModifiers()[0].hasModifier('final'));
+
+assert( isEvalError("Constructor cannot be declared 'static'", "class A { public static A() {} }"));
+assert( isEvalError("Constructor cannot be declared 'synchronized'", "class B { synchronized B() {} }"));
+
+final int fin = 1;
+assert( isEvalError("fin=2") );
+
+// static not allowed outside of class?
+// perhaps we'll just ignore it
+//assert( isEvalError("static int a") );
+//assert( isEvalError("static int method() { }") );
+static int a;
+static int method() { };
+
+// untyped can't have modifiers right now
+//final qbert=2;
+//private qbert;
+//private final qbert2=5;
+
+complete();
+

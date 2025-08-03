@@ -1,0 +1,27 @@
+#!/bin/java bsh.Interpreter
+/*
+ * DAL: This test checks for typeless function and class method overrides.
+ *
+ */
+
+source("TestHarness.bsh");
+source("Assert.bsh");
+
+
+override(a) { return 1 ; }
+override(a) { return 2 ; }
+
+assertEquals( 2, override(1) ) ;
+
+class override_c {
+    override(a) { return "string1"; }
+} ;
+
+class override_c {
+    override(a) { return "string2"; }
+} ;
+
+assertEquals( "string2", new override_c().override(1) );
+
+
+complete();

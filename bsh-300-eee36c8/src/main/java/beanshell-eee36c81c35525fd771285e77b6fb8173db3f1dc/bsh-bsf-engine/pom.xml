@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   ====================================================================
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+   ====================================================================
+
+  This software consists of voluntary contributions made by many
+  individuals on behalf of the Apache Software Foundation.  For more
+  information on the Apache Software Foundation, please see
+  <http://www.apache.org />.
+-->
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.apache-extras.beanshell</groupId>
+  <artifactId>bsh-bsf-engine</artifactId>
+  <version>2.1.0-SNAPSHOT</version>
+
+  <name>BeanShell</name>
+  <description>BeanShell is a small, free, embeddable Java source interpreter
+    with object scripting language features, written in Java. BeanShell
+    dynamically executes standard Java syntax and extends it with common
+    scripting conveniences such as loose types, commands, and method closures
+    like those in Perl and JavaScript.
+  </description>
+  <url>https://github.com/beanshell/beanshell/</url>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <checkstyle.suppressions.location>src/conf/checkstyle-supressions.xml</checkstyle.suppressions.location>
+    <version.jdk>1.8</version.jdk>
+    <maven.compiler.source>${version.jdk}</maven.compiler.source>
+    <maven.compiler.target>${version.jdk}</maven.compiler.target>
+  </properties>
+
+  <scm>
+    <connection>scm:git:git://github.com/beanshell/beanshell.git</connection>
+    <developerConnection>scm:git:git@github.com:beanshell/beanshell.git</developerConnection>
+    <url>https://github.com/beanshell/beanshell/</url>
+    <tag>HEAD</tag>
+  </scm>
+  <developers>
+    <!-- Current maintainers according to https://github.com/beanshell/ -->
+    <developer>
+      <id>patniemeyer</id>
+      <name>Patrick Niemeyer</name>
+      <email>patniemeyer@gmail.com</email>
+      <organization>Apache Extras</organization>
+      <organizationUrl>http://www.apache-extras.org/</organizationUrl>
+    </developer>
+    <developer>
+      <id>dleuck</id>
+      <name>Daniel Leuck</name>
+      <email>dan@ikayzo.com</email>
+      <organization>Apache Extras</organization>
+      <organizationUrl>http://www.apache-extras.org/</organizationUrl>
+    </developer>
+    <developer>
+      <id>simonetripodi</id>
+      <name>Simone Tripodi</name>
+      <email>simonetripodi@apache.org</email>
+      <organization>Apache Extras</organization>
+      <organizationUrl>http://www.apache-extras.org/</organizationUrl>
+    </developer>
+    <developer>
+      <id>pgiffuni</id>
+      <name>Pedro Giffuni</name>
+      <email>pfg@apache.org</email>
+      <organization>Apache Extras</organization>
+      <organizationUrl>http://www.apache-extras.org/</organizationUrl>
+    </developer>
+    <developer>
+      <name>Peter Jodeleit</name>
+      <email>pejobo70@gmail.com</email>
+      <organization>Apache Extras</organization>
+      <organizationUrl>http://www.apache-extras.org/</organizationUrl>
+    </developer>
+    <developer>
+      <id>stain</id>
+      <name>Stian Soiland-Reyes</name>
+      <email>stain@apache.org</email>
+      <organization>Apache Extras</organization>
+      <organizationUrl>http://www.apache-extras.org/</organizationUrl>
+    </developer>
+    <developer>
+      <id>alaninmcr</id>
+      <name>Alan R Williams</name>
+      <email>alaninmcr@apache.org</email>
+      <organization>Apache Extras</organization>
+      <organizationUrl>http://www.apache-extras.org/</organizationUrl>
+    </developer>
+    <developer>
+      <id>mjwall</id>
+      <name>Michael Wall</name>
+      <email>mjwall@gmail.com</email>
+      <organization>Apache Extras</organization>
+      <organizationUrl>http://www.apache-extras.org/</organizationUrl>
+    </developer>
+  </developers>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/beanshell/beanshell/issues</url>
+  </issueManagement>
+
+  <distributionManagement>
+    <repository>
+      <id>bintray-beanshell-Beanshell-bsh</id>
+      <name>beanshell-Beanshell-bsh</name>
+      <url>https://api.bintray.com/maven/beanshell/Beanshell/bsh</url>
+    </repository>
+  </distributionManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.1.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.17</version>
+        <dependencies>
+          <dependency>
+            <groupId>com.puppycrawl.tools</groupId>
+            <artifactId>checkstyle</artifactId>
+            <version>8.29</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>validate</id>
+            <phase>verify</phase>
+            <configuration>
+              <encoding>UTF-8</encoding>
+              <failsOnViolation>true</failsOnViolation>
+              <includeTestSourceDirectory>true</includeTestSourceDirectory>
+              <sourceDirectories>
+                <sourceDirectory>src/main/java</sourceDirectory>
+              </sourceDirectories>
+            </configuration>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>3.0.1</version>
+        <extensions>true</extensions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.0.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <phase>verify</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.21.0</version>
+        <configuration>
+          <!--parallel>methods</parallel>
+          <useUnlimitedThreads>true</useUnlimitedThreads>
+          <parallelTestsTimeoutInSeconds>15</parallelTestsTimeoutInSeconds>
+          <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine-->
+          <argLinezzz>--illegal-access=deny</argLinezzz>
+          <systemPropertyVariables>
+            <bsh.debugClasses></bsh.debugClasses>
+            <accessibility>false</accessibility>
+            <script></script>
+            <skip_known_issues>true</skip_known_issues>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+      <version>1.3</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>bsf</groupId>
+      <artifactId>bsf</artifactId>
+      <version>2.4.0</version>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache-extras.beanshell</groupId>
+      <artifactId>bsh</artifactId>
+      <version>2.1.0-SNAPSHOT</version>
+    </dependency>
+
+  </dependencies>
+
+</project>

@@ -1,0 +1,31 @@
+#!/bin/java bsh.Interpreter
+
+source("TestHarness.bsh");
+source("Assert.bsh");
+
+assumeTrue("testing package private methods on Primitive and Operators classes needs privilege", haveAccessibility());
+
+package bsh;
+
+BD = BigDecimal.valueOf(1.0f);
+BI = BigInteger.valueOf(1);
+D = Double.valueOf(1.0d);
+L = Long.valueOf(1L);
+B = Boolean.TRUE;
+C = Character.valueOf('a');
+
+assert(isEvalError("Unimplemented binary float operator", "Operators.bigDecimalBinaryOperation(BD, BD, 0);"));
+assert(isEvalError("Unimplemented binary double operator", "Operators.doubleBinaryOperation(D, D, 0);"));
+assert(isEvalError("Unimplemented binary integer operator", "Operators.bigIntegerBinaryOperation(BI, BI, 0);"));
+assert(isEvalError("Unimplemented binary long operator", "Operators.longBinaryOperation(L, L, 0);"));
+assert(isEvalError("unimplemented binary operator", "Operators.booleanBinaryOperation(B, B, 0);"));
+assert(isEvalError("Invalid types in binary operator", "Operators.binaryOperationImpl(C, C, 0);"));
+assert(isEvalError("invalid type in castWrapper: class java.lang.String", "Primitive.castWrapper(String.class, 1);"));
+assert(isEvalError("cannot assign number 0 to type String", "Primitive.castNumber(String.class, (Integer) 0);"));
+assert(isEvalError("null value in castWrapper", "Primitive.castWrapper(Integer.TYPE, null);"));
+assert(isEvalError("bad wrapper cast of boolean", "Primitive.castWrapper(Integer.TYPE, B);"));
+assert(isEvalError("bad type in cast", "Primitive.castWrapper(Integer.TYPE, '');"));
+assert(isEvalError("cannot assign number 1 to type void", "Primitive.castWrapper(Void.TYPE, 1);"));
+assert(isEvalError("Not a wrapper type: class java.lang.String", "new Primitive('');"));
+
+complete();

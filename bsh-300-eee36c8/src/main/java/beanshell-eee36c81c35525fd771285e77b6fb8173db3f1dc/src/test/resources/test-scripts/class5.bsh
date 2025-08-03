@@ -1,0 +1,41 @@
+source("TestHarness.bsh");
+source("Assert.bsh");
+
+class Foo55
+{
+    int x;
+
+    Foo55() {
+        this(0);
+        assertEquals( 42, x );
+        assertEquals( 42, this.x );
+        this.x = 43;
+        assertEquals( 43, x );
+        assertEquals( 43, this.x );
+    }
+
+    Foo55( int a ) {
+        assertEquals( 0, x );
+        assertEquals( 0, this.x );
+        this.x = 42;
+        assertThat( this, instanceOf(Foo55.class) );
+    }
+
+    void go1() {
+        this.x = 5;
+        assertThat( this, instanceOf(Foo55.class) );
+        assertEquals( 5, this.x );
+        go2();
+    }
+    void go2() {
+        this.x = 6;
+        assertThat( this, instanceOf(Foo55.class) );
+        assertEquals( 6, this.x );
+    }
+}
+
+f=new Foo55();
+f.go1();
+assertEquals( 6, f.x );
+
+complete();

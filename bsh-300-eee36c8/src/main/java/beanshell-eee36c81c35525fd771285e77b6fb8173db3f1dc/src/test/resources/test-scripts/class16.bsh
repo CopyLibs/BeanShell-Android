@@ -1,0 +1,65 @@
+source("TestHarness.bsh");
+source("Assert.bsh");
+
+/*
+    This test case looks at binding of classes to their loose environment.
+    visibility of vars in enclosing the scope of the class.
+*/
+
+flag=false;
+
+outerMethod() {
+//    print("outerMethod");
+    return 42; }
+
+class MyClass16 extends Thread
+{
+    static boolean sflag=false;
+    static int sint = 1;
+    public void run()
+{
+        assert( outerMethod() == 42 );
+//        print("enter run flag="+flag);
+        sflag=true; flag=true;
+        assert( sint == 1 );
+        sint=2;
+        assert( sint == 2 );
+        assert( MyClass16.sint == 2 );
+    }
+}
+
+assert( MyClass16.sflag == false );
+assert( flag == false );
+
+thread = new MyClass16();
+thread.start();
+thread.join();
+
+assert( flag == true );
+assert( MyClass16.sint == 2 );
+assert( MyClass16.sflag == true );
+
+class A {
+    go(int i, foo, bar) {
+        if ( i == 0 )
+            return foo;
+        else if ( i == 1 )
+            return bar;
+        else
+            return i;
+    }
+}
+
+acls = new A();
+assertEquals("gogogo", acls.go(0, "gogogo", null));
+assertEquals("gogogo", acls.go(1, null, "gogogo"));
+assertEquals(5, acls.go(5, "gogogo", null));
+assertEquals(6, acls.go(6, null, "gogogo"));
+assertEquals(7, acls.go(7, null, null));
+assertNull(acls.go(1, "gogogo", null));
+assertNull(acls.go(0, null, "gogogo"));
+assertNull(acls.go(0, null, null));
+assertNull(acls.go(1, null, null));
+
+
+complete();

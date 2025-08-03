@@ -1,0 +1,17 @@
+#!/bin/java bsh.Interpreter
+
+source("TestHarness.bsh");
+
+foo( arg ) {
+//    print("namespace = "+this.namespace);
+    if ( arg < 5 ) {
+        next=foo( arg + 1 );
+//        print( next + " " + arg + " " + ( next == arg + 1 ));
+        assert( next == arg + 1 );
+    }
+    return arg;
+}
+
+foo(1);
+
+complete();
