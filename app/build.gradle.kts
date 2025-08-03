@@ -29,6 +29,6 @@ android {
         jvmTarget = "17"
     }
 }
-
 dependencies {
+    implementation(project(":bsh-300-eee36c8"))
 }
