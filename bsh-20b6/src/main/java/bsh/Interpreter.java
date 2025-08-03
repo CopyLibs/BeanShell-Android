@@ -736,20 +736,28 @@ public class Interpreter
 	*/
     public Object eval( String statements ) throws EvalError {
 		if ( Interpreter.DEBUG ) debug("eval(String): "+statements);
-		return eval(statements, globalNameSpace);
+		return eval(statements, globalNameSpace, "Memory");
+	}
+
+	/**
+	 Evaluate the string in this interpreter's global namespace.
+	 */
+	public Object eval( String statements, String sourceName ) throws EvalError {
+		if ( Interpreter.DEBUG ) debug("eval(String,String): "+statements+","+sourceName);
+		return eval(statements, globalNameSpace, sourceName);
 	}
 
 	/**
 		Evaluate the string in the specified namespace.
 	*/
-    public Object eval( String statements, NameSpace nameSpace ) 
+    public Object eval( String statements, NameSpace nameSpace, String sourceName)
 		throws EvalError 
 	{
 
 		String s = ( statements.endsWith(";") ? statements : statements+";" );
         return eval( 
-			new StringReader(s), nameSpace, 
-			"inline evaluation of: ``"+ showEvalString(s)+"''" );
+			new StringReader(s), nameSpace,
+				sourceName );
     }
 
 	private String showEvalString( String s ) {
