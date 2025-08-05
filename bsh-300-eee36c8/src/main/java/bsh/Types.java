@@ -774,25 +774,4 @@ class Types {
             || Entry.class.isAssignableFrom(clas);
     }
 
-    /**
-     * Just a method to return the pretty name of any Class
-     *
-     * <pre>
-     * prettyName(String.class)
-     *  returns "java.lang.String"
-     * prettyName(byte.class)
-     *  returns "byte"
-     * prettyName((new Object[3]).getClass())
-     *  returns "java.lang.Object[];"
-     * prettyName((new int[3][4][5][6][7][8][9]).getClass())
-     *  returns "int[][][][][][][]"
-     * </pre>
-     */
-    public static String prettyName(Class<?> clas) {
-        if (!clas.isArray()) return clas.getName();
-
-        // Return a string like "int[]", "double[]", "double[][]", etc...
-        Class<?> arrayType = clas.getComponentType();
-        return prettyName(arrayType) + "[]";
-    }
 }
