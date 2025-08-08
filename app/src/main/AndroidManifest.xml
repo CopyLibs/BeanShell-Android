@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <application android:label="BeanShell-Android">
+    <application
+        android:label="BeanShell-Android"
+        android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen">
         <activity
             android:name=".MainActivity"
             android:exported="true">

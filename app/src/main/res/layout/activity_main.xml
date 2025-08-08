@@ -40,5 +40,6 @@
         android:inputType="textMultiLine"
         android:padding="8dp"
         android:text="log(&quot;666&quot;);"
+        android:textColor="#111111"
         android:textSize="14sp" />
 </LinearLayout>
