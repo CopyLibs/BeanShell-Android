@@ -35,4 +35,5 @@ android {
 }
 dependencies {
     implementation(project(":bsh-300-eee36c8"))
+    testImplementation(libs.junit)
 }
