@@ -12,17 +12,36 @@ implementation("io.github.copylibs:beanshell-android:$version")
 
 ## 用法
 
+### 基础
+
 ```kotlin
 class PluginMethod {
-    fun log(tag: String, msg: String) {
-        println("[$tag] $msg")
+    fun log(msg: Any) {
+        println("$msg")
     }
 }
 
 Interpreter().apply {
     nameSpace.setVariable("TAG", "BeanShell", false)
-    nameSpace.setMethod(BshMethod(PluginMethod::class.java.getMethod("log", String::class.java, String::class.java), PluginMethod()))
-}.eval("log(TAG, \"Hello World\")")
+    nameSpace.setMethod(BshMethod(PluginMethod::class.java.getMethod("log", Any::class.java), PluginMethod()))
+}.eval("log(TAG)")
+```
+
+### 其他
+
+```kotlin
+Interpreter().apply {
+    val loader = BshLoaderManager.getDexLoader(dexPath, parentLoader)
+    BshLoaderManager.addLoader(loader)
+}.eval(
+    """
+        import test.Bean;
+
+        Bean bean = new Bean(); 
+        bean.setTitle("BeanShell");
+        System.out.println(bean.toString());
+    """.trimIndent()
+)
 ```
 
 ## 致谢
