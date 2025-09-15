@@ -19,15 +19,16 @@ class MainActivity : Activity() {
         initView()
     }
 
-    fun log(str: String) {
-        binding.tvLog.text = "[${System.currentTimeMillis()}] $str"
+    fun log(msg: Any) {
+        binding.tvLog.text = "[${System.currentTimeMillis()}] $msg"
     }
 
     private fun initView() {
         binding.btnRun.setOnClickListener {
             runCatching {
                 Interpreter().apply {
-                    nameSpace.setMethod(BshMethod(MainActivity::class.java.getMethod("log", String::class.java), this@MainActivity))
+                    nameSpace.setVariable("TAG", "BeanShell", false)
+                    nameSpace.setMethod(BshMethod(MainActivity::class.java.getMethod("log", Any::class.java), this@MainActivity))
                 }.eval(binding.edtCode.text.toString())
             }.onFailure { e ->
                 Log.e("BeanShell", "Run Failed", e)
