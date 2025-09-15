@@ -4,7 +4,6 @@ kotlin = "2.0.21"
 
 [libraries]
 dalvik-dx = { module = "com.jakewharton.android.repackaged:dalvik-dx", version = "11.0.0_r3" }
-junit = { module = "junit:junit", version = "4.13.2" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
