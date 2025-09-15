@@ -186,26 +186,13 @@ public final class This implements java.io.Serializable, Runnable
 
                 // This isn't simple because unwrapping this loses all context info.
                 // So rewrap is better than unwrap.  - fschmidt
-                Throwable t = te.getTarget();
-                Class<? extends Throwable> c = t.getClass();
-                String msg = t.getMessage();
-                try {
-                    Throwable t2 = msg==null
-                        ? c.getConstructor().newInstance()
-                        : c.getConstructor(String.class).newInstance(msg)
-                    ;
-                    t2.initCause(te);
-                    throw t2;
-                } catch(NoSuchMethodException e) {
-                    throw t;
-                }
+                System.err.println("TargetError in scripted interface: " + te);
             } catch ( EvalError ee ) {
                 // Ease debugging...
                 // XThis.this refers to the enclosing class instance
-                Interpreter.debug( "EvalError in scripted interface: ",
-                    This.this.toString(), ": ", ee );
-                throw ee;
+                System.err.println("EvalError in scripted interface: " + ee);
             }
+            return null;
         }
 
         public Object invokeImpl( Object proxy, Method method, Object[] args )
