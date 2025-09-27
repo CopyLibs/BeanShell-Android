@@ -326,7 +326,9 @@ public interface ParserConstants {
   /** RegularExpression Id. */
   int COLON = 150;
   /** RegularExpression Id. */
-  int ELLIPSIS = 151;
+  int COLON_COLON = 151;
+  /** RegularExpression Id. */
+  int ELLIPSIS = 152;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -484,6 +486,7 @@ public interface ParserConstants {
     "\"?:\"",
     "\"?\"",
     "\":\"",
+    "\"::\"",
     "\"...\"",
     "\"?.\"",
     "\"default:\"",
