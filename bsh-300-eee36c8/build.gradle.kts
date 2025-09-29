@@ -32,7 +32,7 @@ mavenPublishing {
     configure(AndroidSingleVariantLibrary(publishJavadocJar = false))
     coordinates(
         groupId = "io.github.copylibs",
-        artifactId = "beanshell-android",
+        artifactId = "beanshell-android-lambda",
         version = "3.0.0.beta3"
     )
 
