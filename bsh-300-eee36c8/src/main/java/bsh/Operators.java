@@ -191,7 +191,10 @@ class Operators implements ParserConstants {
         if (lhs instanceof BigDecimal)
             return bigDecimalBinaryOperation( (BigDecimal) lhs, (BigDecimal) rhs, kind );
         if (Types.isFloatingpoint(lhs))
-            return doubleBinaryOperation( (Double) lhs, (Double) rhs, kind );
+            if (lhs instanceof Float)
+                return floatBinaryOperation( (Float) lhs, (Float) rhs, kind );
+            else
+                return doubleBinaryOperation( (Double) lhs, (Double) rhs, kind );
         if (lhs instanceof Number)
             return longBinaryOperation( (Long) lhs, (Long) rhs, kind );
         throw new UtilEvalError("Invalid types in binary operator" );
@@ -399,6 +402,59 @@ class Operators implements ParserConstants {
                 "Unimplemented binary integer operator");
     }
 
+    // returns Object covering both Float and Boolean return types
+    static Object floatBinaryOperation(float lhs, float rhs, int kind)
+            throws UtilEvalError
+    {
+        switch(kind)
+        {
+            // arithmetic
+            case PLUS:
+                if ( lhs > 0d && (Float.MAX_VALUE - lhs) < rhs )
+                    break;
+                return lhs + rhs;
+
+            case MINUS:
+                if ( lhs < 0d && (-Float.MAX_VALUE - lhs) > -rhs )
+                    break;
+                return lhs - rhs;
+
+            case STAR:
+                if ( lhs != 0 && Float.MAX_VALUE / lhs < rhs )
+                    break;
+                return lhs * rhs;
+
+            case SLASH:
+                return lhs / rhs;
+
+            case MOD:
+            case MODX:
+                return lhs % rhs;
+
+            case POWER:
+            case POWERX:
+                double check = Math.pow(lhs, rhs);
+                if ( Double.isInfinite(check) )
+                    break;
+                return check;
+
+            // can't shift floating-point values
+            case LSHIFT:
+            case LSHIFTX:
+            case RSIGNEDSHIFT:
+            case RSIGNEDSHIFTX:
+            case RUNSIGNEDSHIFT:
+            case RUNSIGNEDSHIFTX:
+                throw new UtilEvalError("Can't shift floatingpoint values");
+
+        }
+        if ( OVERFLOW_OPS.contains(kind) )
+            return bigDecimalBinaryOperation(BigDecimal.valueOf(lhs), BigDecimal.valueOf(rhs), kind);
+
+        throw new InterpreterError(
+                "Unimplemented binary double operator");
+    }
+
     // returns Object covering both Double and Boolean return types
     static Object doubleBinaryOperation(double lhs, double rhs, int kind)
         throws UtilEvalError
@@ -521,10 +577,12 @@ class Operators implements ParserConstants {
         } else if ( rhs instanceof BigDecimal ) {
             lhs = Primitive.castNumber(BigDecimal.class, lnum);
         } else if ( Types.isFloatingpoint(lhs) || Types.isFloatingpoint(rhs)) {
-            if ( !(lhs instanceof Double) )
-                lhs = Double.valueOf(lnum.doubleValue());
-            if ( !(rhs instanceof Double) )
-                rhs = Double.valueOf(rnum.doubleValue());
+            if ( !(lhs instanceof Float && rhs instanceof Float) ) {
+                if ( !(lhs instanceof Double) )
+                    lhs = Double.valueOf(lnum.doubleValue());
+                if ( !(rhs instanceof Double) )
+                    rhs = Double.valueOf(rnum.doubleValue());
+            }
         } else if ( lhs instanceof BigInteger ) {
             if ( !(rhs instanceof BigInteger) )
                 rhs = Primitive.castNumber(BigInteger.class, rnum);
