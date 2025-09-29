@@ -1,13 +1,13 @@
-# BeanShell-Android
+# BeanShell-Android-Lambda
 
-![Maven Central Version](https://img.shields.io/maven-central/v/io.github.copylibs/beanshell-android)
+![Maven Central Version](https://img.shields.io/maven-central/v/io.github.copylibs/beanshell-android-lambda)
 
 BeanShell Support For Android
 
 ## 依赖
 
 ```kotlin
-implementation("io.github.copylibs:beanshell-android:$version")
+implementation("io.github.copylibs:beanshell-android-lambda:$version")
 ```
 
 ## 用法
