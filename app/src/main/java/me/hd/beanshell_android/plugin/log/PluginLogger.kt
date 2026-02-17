@@ -15,7 +15,7 @@ object PluginLogger {
 
     fun writeLog(ctx: Context, msg: String) {
         val logFile = getLogFile(ctx)
-        val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault()).format(Date())
+        val timestamp = SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.getDefault()).format(Date())
         val formatMsg = "[$timestamp] $msg"
         logFile.appendText("$formatMsg\n")
     }
