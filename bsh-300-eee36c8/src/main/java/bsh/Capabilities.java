@@ -46,7 +46,7 @@ import java.util.function.Supplier;
 public class Capabilities implements Supplier<Boolean>, Consumer<Boolean>
 {
     static final Capabilities instance = new Capabilities();
-    private volatile boolean accessibility = false;
+    private volatile boolean accessibility = true;
     private static final ThreadLocal<Boolean> ACCESSIBILITY = ThreadLocal.withInitial(Capabilities.instance);
 
     private Capabilities() {}
