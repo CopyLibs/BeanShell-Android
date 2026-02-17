@@ -2,7 +2,7 @@ package me.hd.beanshell_android.plugin
 
 import bsh.BshMethod
 import bsh.Interpreter
-import bsh.classpath.BshLoaderManager
+import bsh.loader.BshLoaderHelper
 
 class Plugin {
     private val interpreter = Interpreter()
@@ -53,7 +53,7 @@ class Plugin {
      * 加载Dex
      */
     fun loadDex(path: String) {
-        val loader = BshLoaderManager.getDexLoader(path, Plugin::class.java.classLoader)
-        BshLoaderManager.addLoader(loader)
+        val clsLoader = BshLoaderHelper.getLoaderByDex(path, Plugin::class.java.classLoader)
+        interpreter.addClassLoader(clsLoader)
     }
 }
