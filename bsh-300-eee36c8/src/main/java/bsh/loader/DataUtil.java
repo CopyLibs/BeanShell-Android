@@ -1,4 +1,4 @@
-package bsh.util;
+package bsh.loader;
 
 import java.io.FileInputStream;
 import java.security.MessageDigest;

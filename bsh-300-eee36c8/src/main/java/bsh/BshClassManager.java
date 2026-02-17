@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import bsh.loader.BshLoaderManager;
 import bsh.util.ReferenceCache;
 
 import static bsh.Reflect.isPublic;
@@ -328,6 +329,8 @@ public class BshClassManager {
     */
     protected ClassLoader externalClassLoader;
 
+    protected BshLoaderManager loaderManager = new BshLoaderManager();
+
     /**
         Global cache for things we know are classes.
         Note: these should probably be re-implemented with Soft references.
@@ -537,6 +540,11 @@ public class BshClassManager {
     */
     public void setClassLoader( ClassLoader externalCL ) {
         externalClassLoader = externalCL;
+        classLoaderChanged();
+    }
+
+    public void addClassLoader( ClassLoader externalCL ) {
+        loaderManager.addClassLoader(externalCL);
         classLoaderChanged();
     }
 

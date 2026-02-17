@@ -37,8 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import bsh.classpath.BshLoaderManager;
-
 /** A namespace in which methods, variables, and imports (class names) live.
  * This is package public because it is used in the implementation of some bsh
  * commands. However for normal use you should be using methods on
@@ -1017,9 +1015,11 @@ public class NameSpace
             return c;
         if (this.parent != null)
             return this.parent.getClass(name);
-        final Class<?> clz = BshLoaderManager.getClass(name);
+
+        final Class<?> clz = classManager.loaderManager.getLoaderClass(name);
         if (clz != null)
             return clz;
+
         return null;
     }
 

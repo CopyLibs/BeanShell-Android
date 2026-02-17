@@ -1137,6 +1137,10 @@ public class Interpreter
         getClassManager().setClassLoader( externalCL );
     }
 
+    public void addClassLoader( ClassLoader externalCL ) {
+        getClassManager().addClassLoader( externalCL );
+    }
+
     /**
         Get the class manager associated with this interpreter
         (the BshClassManager of this interpreter's global namespace).
