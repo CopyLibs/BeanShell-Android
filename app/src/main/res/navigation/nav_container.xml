@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/containerView"
+    app:startDestination="@+id/navFragment">
+    <fragment
+        android:id="@+id/navFragment"
+        android:name="me.hd.beanshell_android.ui.fragment.NavFragment"
+        android:label="navFragment"
+        tools:layout="@layout/fragment_nav" />
+</navigation>

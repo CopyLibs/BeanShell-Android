@@ -1,15 +1,17 @@
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.SourcesJar
 
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    id("com.vanniktech.maven.publish") version "0.34.0"
+    id("com.vanniktech.maven.publish") version "0.36.0"
     id("signing")
 }
 
 android {
     namespace = "me.hd.bsh_300_eee36c8"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 27
@@ -19,9 +21,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+}
+
+kotlin {
+    jvmToolchain(JavaVersion.VERSION_17.toString().toInt())
 }
 
 dependencies {
@@ -29,7 +32,14 @@ dependencies {
 }
 
 mavenPublishing {
-    configure(AndroidSingleVariantLibrary(publishJavadocJar = false))
+    configure(
+        AndroidSingleVariantLibrary(
+            javadocJar = JavadocJar.None(),
+            sourcesJar = SourcesJar.Sources(),
+            variant = "release",
+        )
+    )
+
     coordinates(
         groupId = "io.github.copylibs",
         artifactId = "beanshell-android-lambda",
