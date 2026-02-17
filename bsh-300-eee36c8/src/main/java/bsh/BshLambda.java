@@ -16,7 +16,7 @@ import bsh.org.objectweb.asm.FieldVisitor;
 import bsh.org.objectweb.asm.MethodVisitor;
 import bsh.org.objectweb.asm.Opcodes;
 import bsh.org.objectweb.asm.Type;
-import bsh.util.DexClassLoaderHelper;
+import bsh.loader.BshLoaderManager;
 
 /**
  * It's the instance of lambdas written in code.
@@ -315,7 +315,7 @@ public abstract class BshLambda {
     /** It's a custom implementation of ClassLoader to just load a Class<?> from a byte[] */
     private static class ByteClassLoader extends ClassLoader {
         public Class<?> classFromBytes(String className, byte[] classBytes) {
-            return new DexClassLoaderHelper().loadClassInternal(className, classBytes);
+            return new BshLoaderManager().loadInternalClass(className, classBytes);
         }
     }
 
