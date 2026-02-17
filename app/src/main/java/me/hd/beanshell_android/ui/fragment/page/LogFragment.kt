@@ -1,6 +1,7 @@
 package me.hd.beanshell_android.ui.fragment.page
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import me.hd.beanshell_android.databinding.FragmentLogBinding
 import me.hd.beanshell_android.plugin.log.PluginLogger
@@ -15,6 +16,16 @@ class LogFragment : FragmentBase<FragmentLogBinding>(
     }
 
     private fun initView() {
+        binding.logToolbar.apply {
+            menu.add("清空").apply {
+                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                setOnMenuItemClickListener {
+                    PluginLogger.clearLog(requireContext())
+                    refreshLog()
+                    true
+                }
+            }
+        }
         refreshLog()
     }
 
