@@ -353,7 +353,7 @@ public abstract class BshLambda {
          * </pre>
          */
         protected static <T> Class<T> generateClass(Class<T> functionalInterface) {
-            final String encodedFIName = Base64.getEncoder().encodeToString(functionalInterface.getName().getBytes());
+            final String encodedFIName = Base64.getUrlEncoder().withoutPadding().encodeToString(functionalInterface.getName().getBytes());
             final String className = BshLambda.class.getName() + "Generated" + encodedFIName;
             byte[] bytes = WrapperGenerator.generateClassBytes(className.replace(".", "/"), functionalInterface);
             return (Class<T>) BshLambda.byteClassLoader.classFromBytes(className, bytes);
