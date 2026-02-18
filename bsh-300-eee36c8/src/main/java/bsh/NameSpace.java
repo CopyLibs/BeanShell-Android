@@ -1380,19 +1380,22 @@ public class NameSpace
         /** Note: the resolver looks through these in reverse order, per
          * precedence rules... so for max efficiency put the most common ones
          * later. */
-        this.importClass("bsh.EvalError");
-        this.importClass("bsh.Interpreter");
-        this.importClass("bsh.Capabilities");
-        this.importPackage("java.net");
-        this.importClass("java.util.Map.Entry");
-        this.importPackage("java.util.function");
+        this.importPackage("org.json");
         this.importPackage("java.util.stream");
         this.importPackage("java.util.regex");
+        this.importPackage("java.util.function");
         this.importPackage("java.util");
-        this.importPackage("java.io");
-        this.importPackage("java.lang");
-        this.importClass("bsh.FileReader");
+        this.importPackage("java.net");
         this.importPackage("java.math");
+        this.importPackage("java.lang");
+        this.importPackage("java.io");
+        this.importPackage("android.widget");
+        this.importPackage("android.view");
+        this.importPackage("android.text");
+        this.importPackage("android.os");
+        this.importPackage("android.graphics");
+        this.importPackage("android.content");
+        this.importPackage("android.app");
         this.importCommands("/bsh/commands");
     }
 
