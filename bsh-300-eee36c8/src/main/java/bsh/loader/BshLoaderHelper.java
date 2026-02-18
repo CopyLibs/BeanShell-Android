@@ -7,11 +7,13 @@ public class BshLoaderHelper {
     private static final HashMap<String, ClassLoader> loaderMap = new HashMap<>();
 
     public static Class<?> loadInternalClass(String name, byte[] code) {
-        if (clazzMap.containsKey(name)) return clazzMap.get(name);
+        String key = name + DataUtil.getMd5ByBytes(code);
+        if (clazzMap.containsKey(key)) return clazzMap.get(key);
         try {
-            ClassLoader classLoader = new BshConvertHelper().convertClassToLoader(name, code, BshLoaderHelper.class.getClassLoader());
+            ClassLoader parentLoader = BshLoaderHelper.class.getClassLoader();
+            ClassLoader classLoader = new BshConvertHelper().convertClassToLoader(name, code, parentLoader);
             Class<?> clazz = classLoader.loadClass(name);
-            clazzMap.put(name, clazz);
+            clazzMap.put(key, clazz);
             return clazz;
         } catch (Exception ignored) {
             return null;
@@ -19,11 +21,11 @@ public class BshLoaderHelper {
     }
 
     public static ClassLoader getLoaderByDex(String dexPath, ClassLoader parentLoader) {
-        String dexMd5 = DataUtil.getFileMD5(dexPath);
-        if (loaderMap.containsKey(dexMd5)) return loaderMap.get(dexMd5);
+        String key = DataUtil.getMd5ByFilePath(dexPath);
+        if (loaderMap.containsKey(key)) return loaderMap.get(key);
         try {
             ClassLoader dexLoader = new BshConvertHelper().convertDexToLoader(dexPath, parentLoader);
-            loaderMap.put(dexMd5, dexLoader);
+            loaderMap.put(key, dexLoader);
             return dexLoader;
         } catch (Exception ignored) {
             return null;

@@ -16,7 +16,17 @@ public class DataUtil {
         return hexString.toString().toUpperCase();
     }
 
-    public static String getFileMD5(String filePath) {
+    public static String getMd5ByBytes(byte[] bytes) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            byte[] hashBytes = digest.digest(bytes);
+            return bytesToHex(hashBytes);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static String getMd5ByFilePath(String filePath) {
         try (FileInputStream fis = new FileInputStream(filePath)) {
             MessageDigest digest = MessageDigest.getInstance("MD5");
             byte[] buffer = new byte[8192];
