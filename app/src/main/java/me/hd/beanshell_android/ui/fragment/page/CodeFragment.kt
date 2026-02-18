@@ -7,6 +7,7 @@ import android.view.View
 import io.github.rosemoe.sora.langs.java.JavaLanguage
 import me.hd.beanshell_android.databinding.FragmentCodeBinding
 import me.hd.beanshell_android.plugin.PluginManager
+import me.hd.beanshell_android.plugin.log.PluginLogger
 import me.hd.beanshell_android.ui.base.FragmentBase
 
 class CodeFragment : FragmentBase<FragmentCodeBinding>(
@@ -22,7 +23,12 @@ class CodeFragment : FragmentBase<FragmentCodeBinding>(
             menu.add("运行").apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 setOnMenuItemClickListener {
-                    PluginManager.getPlugin(requireContext()).eval(binding.codeEditor.text.toString())
+                    runCatching {
+                        PluginManager.getPlugin(requireContext()).eval(binding.codeEditor.text.toString())
+                    }.onFailure {
+                        PluginLogger.writeLog(requireContext(), "运行异常: $it")
+                        it.printStackTrace()
+                    }
                     true
                 }
             }
