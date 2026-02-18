@@ -11,12 +11,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.WeakHashMap;
 
+import bsh.loader.BshLoaderHelper;
 import bsh.org.objectweb.asm.ClassWriter;
 import bsh.org.objectweb.asm.FieldVisitor;
 import bsh.org.objectweb.asm.MethodVisitor;
 import bsh.org.objectweb.asm.Opcodes;
 import bsh.org.objectweb.asm.Type;
-import bsh.loader.BshLoaderManager;
 
 /**
  * It's the instance of lambdas written in code.
@@ -315,7 +315,7 @@ public abstract class BshLambda {
     /** It's a custom implementation of ClassLoader to just load a Class<?> from a byte[] */
     private static class ByteClassLoader extends ClassLoader {
         public Class<?> classFromBytes(String className, byte[] classBytes) {
-            return new BshLoaderManager().loadInternalClass(className, classBytes);
+            return BshLoaderHelper.loadInternalClass(className, classBytes);
         }
     }
 
