@@ -22,6 +22,7 @@ public class DataUtil {
             byte[] hashBytes = digest.digest(bytes);
             return bytesToHex(hashBytes);
         } catch (Exception e) {
+            System.err.println("[BeanShell] DataUtil getMd5ByBytes: " + e);
             return null;
         }
     }
@@ -37,6 +38,7 @@ public class DataUtil {
             byte[] hashBytes = digest.digest();
             return bytesToHex(hashBytes);
         } catch (Exception e) {
+            System.err.println("[BeanShell] DataUtil getMd5ByFilePath: " + e);
             return null;
         }
     }

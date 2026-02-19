@@ -15,7 +15,8 @@ public class BshLoaderHelper {
             Class<?> clazz = classLoader.loadClass(name);
             clazzMap.put(key, clazz);
             return clazz;
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            System.err.println("[BeanShell] BshLoaderHelper loadInternalClass: " + e);
             return null;
         }
     }
@@ -27,7 +28,8 @@ public class BshLoaderHelper {
             ClassLoader dexLoader = new BshConvertHelper().convertDexToLoader(dexPath, parentLoader);
             loaderMap.put(key, dexLoader);
             return dexLoader;
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            System.err.println("[BeanShell] BshLoaderHelper getLoaderByDex: " + e);
             return null;
         }
     }
