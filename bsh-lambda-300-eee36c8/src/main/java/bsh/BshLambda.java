@@ -184,7 +184,10 @@ public abstract class BshLambda {
     /** Util method to return the functional interface's method to be implemented */
     protected static Method methodFromFI(Class<?> functionalInterface) {
         for (Method method: functionalInterface.getMethods())
-            if (Modifier.isAbstract(method.getModifiers()))
+            if ( Modifier.isAbstract(method.getModifiers())
+                    && !method.isBridge()
+                    && !method.isSynthetic()
+                    && !Types.isObjectClassMethod(method) )
                 return method;
         throw new IllegalArgumentException("This class isn't a valid Functional Interface: " + functionalInterface.getName());
     }

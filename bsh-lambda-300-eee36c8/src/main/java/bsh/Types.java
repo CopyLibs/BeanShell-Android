@@ -26,6 +26,8 @@
 
 package bsh;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -764,8 +766,28 @@ class Types {
         return prettyName(arrayType) + "[]";
     }
 
+    public static boolean isObjectClassMethod(Method m) {
+        try {
+            Object.class.getMethod(m.getName(), m.getParameterTypes());
+            return true;
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
+    }
+
     /** Returns if a specific class is a functional interface */
     public static boolean isFunctionalInterface(Class<?> clas) {
-        return clas != null && clas.isInterface() && clas.getAnnotation(FunctionalInterface.class) != null;
+        if (clas == null || !clas.isInterface()) return false;
+        if (clas.getAnnotation(FunctionalInterface.class) != null) return true;
+
+        int abstractCount = 0;
+        for (Method m : clas.getMethods()) {
+            if ( Modifier.isAbstract(m.getModifiers())
+                    && !m.isBridge()
+                    && !m.isSynthetic()
+                    && !isObjectClassMethod(m) )
+                if (abstractCount++ > 1) return false;
+        }
+        return abstractCount == 1;
     }
 }
