@@ -23,4 +23,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "BeanShell-Android"
 include(":app")
-include(":bsh-300-eee36c8")
+include(":bsh-lambda-300-eee36c8")

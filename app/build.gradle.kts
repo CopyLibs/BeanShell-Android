@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "me.hd.beanshell_android"
+    namespace = "io.github.copylibs.bsh"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "me.hd.beanshell_android"
+        applicationId = "io.github.copylibs.bsh"
         minSdk = 27
         targetSdk = 36
         versionCode = 1
@@ -51,5 +51,5 @@ dependencies {
     implementation(libs.navigation.ui.ktx)
     implementation(libs.editor)
     implementation(libs.language.java)
-    implementation(project(":bsh-300-eee36c8"))
+    implementation(project(":bsh-lambda-300-eee36c8"))
 }

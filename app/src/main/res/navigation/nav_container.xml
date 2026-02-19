@@ -6,7 +6,7 @@
     app:startDestination="@+id/navFragment">
     <fragment
         android:id="@+id/navFragment"
-        android:name="me.hd.beanshell_android.ui.fragment.NavFragment"
+        android:name="io.github.copylibs.bsh.ui.fragment.NavFragment"
         android:label="navFragment"
         tools:layout="@layout/fragment_nav" />
 </navigation>
