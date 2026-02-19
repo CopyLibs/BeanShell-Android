@@ -186,11 +186,11 @@ public final class This implements java.io.Serializable, Runnable
 
                 // This isn't simple because unwrapping this loses all context info.
                 // So rewrap is better than unwrap.  - fschmidt
-                System.err.println("TargetError in scripted interface: " + te);
+                System.err.println("[BeanShell] TargetError in scripted interface: " + te);
             } catch ( EvalError ee ) {
                 // Ease debugging...
                 // XThis.this refers to the enclosing class instance
-                System.err.println("EvalError in scripted interface: " + ee);
+                System.err.println("[BeanShell] EvalError in scripted interface: " + ee);
             }
             return null;
         }
