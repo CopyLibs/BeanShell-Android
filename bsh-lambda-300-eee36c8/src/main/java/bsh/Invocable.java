@@ -75,9 +75,9 @@ public abstract class Invocable implements Member {
         lastParameterIndex = 0;
         isStatic = Reflect.isStatic(member);
         isSynthetic = member.isSynthetic();
-        if (Capabilities.haveAccessibility()
-                && member.getDeclaringClass() != Class.class)
+        if (Capabilities.haveAccessibility() && member.getDeclaringClass() != Class.class) try {
             member.setAccessible(true);
+        } catch (SecurityException e) { /*do nothing*/ }
     }
 
     /** abstract method declaration contract. */
