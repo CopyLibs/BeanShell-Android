@@ -22,13 +22,21 @@ object PluginManager {
         // 实例方法
         val testClass1 = TestClass1(context)
         val logMethod = TestClass1::class.java.getDeclaredMethod("log", Any::class.java)
-        val method1 = BshMethod(logMethod, testClass1)
-        plugin.setMethod(method1)
+        val logBshMethod = BshMethod(logMethod, testClass1)
+        plugin.setMethod(logBshMethod)
 
         // 静态方法
         val testClass2 = TestClass2
         val printMethod = TestClass2::class.java.getDeclaredMethod("print", Any::class.java)
-        val method2 = BshMethod(printMethod, testClass2)
-        plugin.setMethod(method2)
+        val printBshMethod = BshMethod(printMethod, testClass2)
+        plugin.setMethod(printBshMethod)
+
+        val loadDexMethod = plugin::class.java.getDeclaredMethod("loadDex", String::class.java)
+        val loadDexBshMethod = BshMethod(loadDexMethod, plugin)
+        plugin.setMethod(loadDexBshMethod)
+
+        val loadJarMethod = plugin::class.java.getDeclaredMethod("loadJar", String::class.java)
+        val loadJarBshMethod = BshMethod(loadJarMethod, plugin)
+        plugin.setMethod(loadJarBshMethod)
     }
 }
