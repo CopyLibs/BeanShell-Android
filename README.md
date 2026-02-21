@@ -12,47 +12,58 @@ implementation("io.github.copylibs:beanshell-android-lambda:$version")
 
 ## 用法
 
-### 导入类
+### 导入 Class
 
 ```kotlin
 interpreter.nameSpace.importClass(name)
 ```
 
-### 导入包
+### 导入 Package
 
 ```kotlin
 interpreter.nameSpace.importPackage(name)
 ```
 
-### 设置变量
+### 设置 Variable
 
 ```kotlin
 interpreter.set(name, value)
 ```
 
-### 设置方法
+### 设置 Method
 
 ```kotlin
 interpreter.nameSpace.setMethod(method)
 ```
 
-### 执行代码
+### 执行 Code
 
 ```kotlin
 interpreter.eval(code)
 ```
 
-### 执行文件
+### 执行 Path
 
 ```kotlin
 interpreter.source(path)
 ```
 
-### 加载Dex
+### 添加 ClassLoader
 
 ```kotlin
-val loader = BshLoaderHelper.getLoaderByDex(dexPath, parentLoader)
 interpreter.addClassLoader(clsLoader)
+```
+
+### 获取 Dex ClassLoader
+
+```kotlin
+BshLoaderHelper.getLoaderByDex(dexPath, parentLoader)
+```
+
+### 获取 Jar ClassLoader
+
+```kotlin
+BshLoaderHelper.getLoaderByJar(jarPath, parentLoader)
 ```
 
 ## 致谢
