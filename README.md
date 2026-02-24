@@ -68,5 +68,9 @@ BshLoaderHelper.getLoaderByJar(jarPath, parentLoader)
 
 ## 致谢
 
-- [beanshell](https://github.com/beanshell/beanshell)
-- [BeanShell](https://github.com/Hicores/BeanShell)
+- [BeanShell](https://github.com/beanshell/beanshell) - 原始仓库
+- [Hicores@BeanShell](https://github.com/Hicores/BeanShell) - Android 支持
+- [Net-0@PR #772](https://github.com/beanshell/beanshell/pull/772) - SecurityGuard 支持
+- [opeongo@PR #768](https://github.com/beanshell/beanshell/pull/768) - 浮点数值扩大问题
+- [Net-0@PR #766](https://github.com/beanshell/beanshell/pull/766) - Lambda 支持
+- [opeongo@PR #729](https://github.com/beanshell/beanshell/pull/729) - 数字类型转换异常
