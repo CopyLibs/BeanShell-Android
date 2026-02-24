@@ -73,5 +73,6 @@ BshLoaderHelper.getLoaderByJar(jarPath, parentLoader)
 - [Net-0@PR #772](https://github.com/beanshell/beanshell/pull/772) - SecurityGuard 支持
 - [opeongo@PR #768](https://github.com/beanshell/beanshell/pull/768) - 浮点数值扩大问题
 - [Net-0@PR #766](https://github.com/beanshell/beanshell/pull/766) - Lambda 支持
-- [opeongo@PR #729](https://github.com/beanshell/beanshell/pull/729) - 数字类型转换异常
+- [opeongo@PR #729](https://github.com/beanshell/beanshell/pull/729) - 数字转换异常问题
 - [opeongo@PR #756](https://github.com/beanshell/beanshell/pull/756) - 多行注释处理问题
+- [opeongo@PR #732](https://github.com/beanshell/beanshell/pull/732) - 方法查找回归问题
