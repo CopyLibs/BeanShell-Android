@@ -41,10 +41,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import bsh.loader.BshLoaderManager;
-import bsh.util.ReferenceCache;
+import bsh.util.ValueReferenceMap;
 
 import static bsh.Reflect.isPublic;
-import static bsh.util.ReferenceCache.Type;
 import static bsh.Reflect.isPrivate;
 import static bsh.Reflect.isPackageAccessible;
 import static bsh.Reflect.isPackageScope;
@@ -88,14 +87,10 @@ import static bsh.Capabilities.haveAccessibility;
     <p>
 */
 public class BshClassManager {
-    /** Class member soft key and soft value reference cache */
-    static final ReferenceCache<Class<?>, MemberCache> memberCache
-        = new ReferenceCache<Class<?>, MemberCache>(Type.Soft, Type.Soft, 50) {
-            @Override
-            protected MemberCache create(Class<?> key) {
-                return new MemberCache(key);
-            }
-    };
+    /** Class member soft value reference cache */
+    static final ValueReferenceMap<Class<?>, MemberCache> memberCache
+        = new ValueReferenceMap<>(key -> new MemberCache(key),
+                             ValueReferenceMap.Type.Soft);
 
     /** Class member cached value instance **/
     static final class MemberCache {
@@ -119,22 +114,22 @@ public class BshClassManager {
                 if (isPackageAccessible(type)
                     && ((isPackageScope(type) && !isPrivate(type))
                         || isPublic(type) || haveAccessibility())) {
+                    MemberCache mc = (clazz == type) ? null : memberCache.get(type);
                     for (Field f : type.getDeclaredFields())
                         if (isPublic(f) || haveAccessibility())
                             cacheMember(Invocable.get(f));
                     for (Method m : type.getDeclaredMethods())
                         if (isPublic(m) || haveAccessibility())
                             if (clazz == type) cacheMember(Invocable.get(m));
-                            else cacheMember(memberCache.get(type)
+                            else cacheMember(mc
                             .findMethod(m.getName(), m.getParameterTypes()));
                     for (Constructor<?> c: type.getDeclaredConstructors())
                         if (clazz == type) cacheMember(Invocable.get(c));
-                        else cacheMember(memberCache.get(type)
+                        else cacheMember(mc
                             .findMethod(c.getName(), c.getParameterTypes()));
                 }
                 processInterfaces(type.getInterfaces());
                 type = type.getSuperclass();
-                memberCache.init(type);
             }
         }
 
@@ -144,12 +139,12 @@ public class BshClassManager {
         private void processInterfaces(Class<?>[] interfaces) {
             for (Class<?> intr : interfaces) {
                 if (isPackageAccessible(intr)) {
-                    memberCache.init(intr);
+                    MemberCache mc = memberCache.get(intr);
                     for (Field f : intr.getDeclaredFields())
                             cacheMember(Invocable.get(f));
                     for (Method m: intr.getDeclaredMethods())
                         if (isPublic(m) || haveAccessibility())
-                            cacheMember(memberCache.get(intr)
+                            cacheMember(mc
                             .findMethod(m.getName(), m.getParameterTypes()));
                 }
                 processInterfaces(intr.getInterfaces());
@@ -490,7 +485,7 @@ public class BshClassManager {
         if ( value != null ) {
             absoluteClassCache.put(name, value);
             // eagerly start the member cache
-            memberCache.init(value);
+            memberCache.get(value);
         }
         else
             absoluteNonClasses.add( name );

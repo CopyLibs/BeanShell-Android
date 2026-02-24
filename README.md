@@ -71,8 +71,9 @@ BshLoaderHelper.getLoaderByJar(jarPath, parentLoader)
 - [BeanShell](https://github.com/beanshell/beanshell) - 原始仓库
 - [Hicores@BeanShell](https://github.com/Hicores/BeanShell) - Android 支持
 - [Net-0@PR #772](https://github.com/beanshell/beanshell/pull/772) - SecurityGuard 支持
-- [opeongo@PR #768](https://github.com/beanshell/beanshell/pull/768) - 浮点数值扩大问题
+- [opeongo@PR #768](https://github.com/beanshell/beanshell/pull/768) - 浮点数值扩大 问题
 - [Net-0@PR #766](https://github.com/beanshell/beanshell/pull/766) - Lambda 支持
-- [opeongo@PR #729](https://github.com/beanshell/beanshell/pull/729) - 数字转换异常问题
-- [opeongo@PR #756](https://github.com/beanshell/beanshell/pull/756) - 多行注释处理问题
-- [opeongo@PR #732](https://github.com/beanshell/beanshell/pull/732) - 方法查找回归问题
+- [opeongo@PR #729](https://github.com/beanshell/beanshell/pull/729) - 数字转换异常 问题
+- [opeongo@PR #756](https://github.com/beanshell/beanshell/pull/756) - 多行注释处理 问题
+- [opeongo@PR #732](https://github.com/beanshell/beanshell/pull/732) - 方法查找回归 问题
+- [opeongo@PR #741](https://github.com/beanshell/beanshell/pull/741) - 变量查找混淆 问题
