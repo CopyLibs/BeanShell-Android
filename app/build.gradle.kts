@@ -13,6 +13,8 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildFeatures {
@@ -52,4 +54,8 @@ dependencies {
     implementation(libs.editor)
     implementation(libs.language.java)
     implementation(project(":bsh-lambda-300-eee36c8"))
+
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.runner)
+    androidTestImplementation(project(":bsh-lambda-300-eee36c8"))
 }
