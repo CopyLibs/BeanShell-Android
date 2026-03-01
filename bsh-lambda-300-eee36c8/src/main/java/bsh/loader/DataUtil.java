@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class DataUtil {
     public static String bytesToHex(byte[] bytes) {
@@ -20,13 +19,18 @@ public class DataUtil {
         return hexString.toString().toUpperCase();
     }
 
-    public static String getMd5ByBytes(byte[] bytes) throws NoSuchAlgorithmException {
-        MessageDigest digest = MessageDigest.getInstance("MD5");
-        byte[] hashBytes = digest.digest(bytes);
-        return bytesToHex(hashBytes);
+    public static String getMd5ByBytes(byte[] bytes) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            byte[] hashBytes = digest.digest(bytes);
+            return bytesToHex(hashBytes);
+        } catch (Exception e) {
+            System.err.println("[BeanShell] GetMd5ByBytes: " + e);
+            return null;
+        }
     }
 
-    public static String getMd5ByFilePath(String filePath) throws IOException, NoSuchAlgorithmException {
+    public static String getMd5ByFilePath(String filePath) {
         try (FileInputStream fis = new FileInputStream(filePath)) {
             MessageDigest digest = MessageDigest.getInstance("MD5");
             byte[] buffer = new byte[8192];
@@ -36,6 +40,9 @@ public class DataUtil {
             }
             byte[] hashBytes = digest.digest();
             return bytesToHex(hashBytes);
+        } catch (Exception e) {
+            System.err.println("[BeanShell] GetMd5ByFilePath: " + e);
+            return null;
         }
     }
 

@@ -16,7 +16,7 @@ public class BshLoaderManager {
             } catch (ClassNotFoundException ignored) {
             }
         }
-        System.err.println("[BeanShell] BshLoaderManager getLoaderClass " + name + " is null");
+        System.err.println("[BeanShell] GetLoaderClass: " + name + " is null");
         return null;
     }
 }
