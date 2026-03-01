@@ -71,4 +71,12 @@ class Plugin {
         val clsLoader = BshLoaderHelper.getLoaderByJar(path, Plugin::class.java.classLoader)
         addClassLoader(clsLoader)
     }
+
+    /**
+     * 加载 Aar
+     */
+    fun loadAar(path: String) {
+        val clsLoader = BshLoaderHelper.getLoaderByAar(path, Plugin::class.java.classLoader)
+        addClassLoader(clsLoader)
+    }
 }
