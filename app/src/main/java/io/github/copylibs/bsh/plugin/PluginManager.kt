@@ -38,5 +38,9 @@ object PluginManager {
         val loadJarMethod = plugin::class.java.getDeclaredMethod("loadJar", String::class.java)
         val loadJarBshMethod = BshMethod(loadJarMethod, plugin)
         plugin.setMethod(loadJarBshMethod)
+
+        val loadAarMethod = plugin::class.java.getDeclaredMethod("loadAar", String::class.java)
+        val loadAarBshMethod = BshMethod(loadAarMethod, plugin)
+        plugin.setMethod(loadAarBshMethod)
     }
 }

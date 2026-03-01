@@ -46,4 +46,17 @@ public class BshLoaderHelper {
             throw new RuntimeException("BshLoaderHelper getLoaderByJar", e);
         }
     }
+
+    public static ClassLoader getLoaderByAar(String aarPath, ClassLoader parentLoader) {
+        try {
+            String key = DataUtil.getMd5ByFilePath(aarPath);
+            if (loaderMap.containsKey(key)) return loaderMap.get(key);
+            ClassLoader dexLoader = new BshConvertHelper().convertAarToLoader(aarPath, parentLoader);
+            loaderMap.put(key, dexLoader);
+            return dexLoader;
+        } catch (Exception e) {
+            System.err.println("[BeanShell] BshLoaderHelper getLoaderByAar: " + e);
+            throw new RuntimeException("BshLoaderHelper getLoaderByAar", e);
+        }
+    }
 }

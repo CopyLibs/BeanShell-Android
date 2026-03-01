@@ -66,6 +66,12 @@ BshLoaderHelper.getLoaderByDex(dexPath, parentLoader)
 BshLoaderHelper.getLoaderByJar(jarPath, parentLoader)
 ```
 
+### 获取 Aar ClassLoader
+
+```kotlin
+BshLoaderHelper.getLoaderByAar(aarPath, parentLoader)
+```
+
 ## 致谢
 
 - [BeanShell](https://github.com/beanshell/beanshell) - 原始仓库
