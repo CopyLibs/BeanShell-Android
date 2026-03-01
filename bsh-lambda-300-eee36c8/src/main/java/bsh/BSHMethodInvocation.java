@@ -51,9 +51,10 @@ class BSHMethodInvocation extends SimpleNode
         NameSpace namespace = callstack.top();
         BSHAmbiguousName nameNode = getNameNode();
 
-      // get caller info for assert fail
-      if ("fail".equals(nameNode.text))
-          interpreter.getNameSpace().setNode(this);
+        // get caller info for assert fail
+        if ("fail".equals(nameNode.text)) {
+            interpreter.getNameSpace().setNode(this);
+        }
 
         // Do not evaluate methods this() or super() in class instance space
         // (i.e. inside a constructor)
