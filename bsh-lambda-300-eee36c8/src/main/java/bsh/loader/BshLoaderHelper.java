@@ -1,62 +1,72 @@
 package bsh.loader;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class BshLoaderHelper {
-    private static final HashMap<String, Class<?>> clazzMap = new HashMap<>();
-    private static final HashMap<String, ClassLoader> loaderMap = new HashMap<>();
+    private static final ConcurrentMap<String, Class<?>> clazzMap = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<String, ClassLoader> loaderMap = new ConcurrentHashMap<>();
 
     public static Class<?> loadInternalClass(String name, byte[] code) {
-        try {
-            String key = name + DataUtil.getMd5ByBytes(code);
-            if (clazzMap.containsKey(key)) return clazzMap.get(key);
-            ClassLoader parentLoader = BshLoaderHelper.class.getClassLoader();
-            ClassLoader classLoader = new BshConvertHelper().convertClassToLoader(name, code, parentLoader);
-            Class<?> clazz = classLoader.loadClass(name);
-            clazzMap.put(key, clazz);
-            return clazz;
-        } catch (Exception e) {
-            System.err.println("[BeanShell] BshLoaderHelper loadInternalClass: " + e);
-            return null;
-        }
+        final String md5 = DataUtil.getMd5ByBytes(code);
+        if (md5 == null) return null;
+        final String key = name + "#" + md5;
+        return clazzMap.computeIfAbsent(key, k -> {
+            try {
+                ClassLoader parentLoader = BshLoaderHelper.class.getClassLoader();
+                ClassLoader classLoader = new BshConvertHelper().convertClassToLoader(name, code, parentLoader);
+                return classLoader.loadClass(name);
+            } catch (Exception e) {
+                System.err.println("[BeanShell] LoadInternalClass: " + e);
+                return null;
+            }
+        });
+    }
+
+    private static String buildLoaderKey(String type, String md5, ClassLoader parentLoader) {
+        final int parentId = System.identityHashCode(parentLoader);
+        return type + "#" + md5 + "#" + parentId;
     }
 
     public static ClassLoader getLoaderByDex(String dexPath, ClassLoader parentLoader) {
-        try {
-            String key = DataUtil.getMd5ByFilePath(dexPath);
-            if (loaderMap.containsKey(key)) return loaderMap.get(key);
-            ClassLoader dexLoader = new BshConvertHelper().convertDexToLoader(dexPath, parentLoader);
-            loaderMap.put(key, dexLoader);
-            return dexLoader;
-        } catch (Exception e) {
-            System.err.println("[BeanShell] BshLoaderHelper getLoaderByDex: " + e);
-            throw new RuntimeException("BshLoaderHelper getLoaderByDex", e);
-        }
+        final String md5 = DataUtil.getMd5ByFilePath(dexPath);
+        if (md5 == null) return null;
+        final String key = buildLoaderKey("dex", md5, parentLoader);
+        return loaderMap.computeIfAbsent(key, k -> {
+            try {
+                return new BshConvertHelper().convertDexToLoader(dexPath, parentLoader);
+            } catch (Exception e) {
+                System.err.println("[BeanShell] GetLoaderByDex: " + e);
+                return null;
+            }
+        });
     }
 
     public static ClassLoader getLoaderByJar(String jarPath, ClassLoader parentLoader) {
-        try {
-            String key = DataUtil.getMd5ByFilePath(jarPath);
-            if (loaderMap.containsKey(key)) return loaderMap.get(key);
-            ClassLoader dexLoader = new BshConvertHelper().convertJarToLoader(jarPath, parentLoader);
-            loaderMap.put(key, dexLoader);
-            return dexLoader;
-        } catch (Exception e) {
-            System.err.println("[BeanShell] BshLoaderHelper getLoaderByJar: " + e);
-            throw new RuntimeException("BshLoaderHelper getLoaderByJar", e);
-        }
+        final String md5 = DataUtil.getMd5ByFilePath(jarPath);
+        if (md5 == null) return null;
+        final String key = buildLoaderKey("jar", md5, parentLoader);
+        return loaderMap.computeIfAbsent(key, k -> {
+            try {
+                return new BshConvertHelper().convertJarToLoader(jarPath, parentLoader);
+            } catch (Exception e) {
+                System.err.println("[BeanShell] GetLoaderByJar: " + e);
+                return null;
+            }
+        });
     }
 
     public static ClassLoader getLoaderByAar(String aarPath, ClassLoader parentLoader) {
-        try {
-            String key = DataUtil.getMd5ByFilePath(aarPath);
-            if (loaderMap.containsKey(key)) return loaderMap.get(key);
-            ClassLoader dexLoader = new BshConvertHelper().convertAarToLoader(aarPath, parentLoader);
-            loaderMap.put(key, dexLoader);
-            return dexLoader;
-        } catch (Exception e) {
-            System.err.println("[BeanShell] BshLoaderHelper getLoaderByAar: " + e);
-            throw new RuntimeException("BshLoaderHelper getLoaderByAar", e);
-        }
+        final String md5 = DataUtil.getMd5ByFilePath(aarPath);
+        if (md5 == null) return null;
+        final String key = buildLoaderKey("aar", md5, parentLoader);
+        return loaderMap.computeIfAbsent(key, k -> {
+            try {
+                return new BshConvertHelper().convertAarToLoader(aarPath, parentLoader);
+            } catch (Exception e) {
+                System.err.println("[BeanShell] GetLoaderByAar: " + e);
+                return null;
+            }
+        });
     }
 }
