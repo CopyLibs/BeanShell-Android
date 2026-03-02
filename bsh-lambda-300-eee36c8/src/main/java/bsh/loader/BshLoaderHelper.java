@@ -7,25 +7,28 @@ public class BshLoaderHelper {
     private static final ConcurrentMap<String, Class<?>> clazzMap = new ConcurrentHashMap<>();
     private static final ConcurrentMap<String, ClassLoader> loaderMap = new ConcurrentHashMap<>();
 
-    public static Class<?> loadInternalClass(String name, byte[] code) {
+    private static String buildLoaderKey(String type, String md5, ClassLoader parentLoader) {
+        final int parentId = System.identityHashCode(parentLoader);
+        return type + "#" + md5 + "#" + parentId;
+    }
+
+    public static Class<?> getClassByCode(String name, byte[] code, ClassLoader parentLoader) {
         final String md5 = DataUtil.getMd5ByBytes(code);
         if (md5 == null) return null;
-        final String key = name + "#" + md5;
+        final String key = buildLoaderKey(name, md5, parentLoader);
         return clazzMap.computeIfAbsent(key, k -> {
             try {
-                ClassLoader parentLoader = BshLoaderHelper.class.getClassLoader();
                 ClassLoader classLoader = new BshConvertHelper().convertClassToLoader(name, code, parentLoader);
                 return classLoader.loadClass(name);
             } catch (Exception e) {
-                System.err.println("[BeanShell] LoadInternalClass: " + e);
+                System.err.println("[BeanShell] getClassByCode: " + e);
                 return null;
             }
         });
     }
 
-    private static String buildLoaderKey(String type, String md5, ClassLoader parentLoader) {
-        final int parentId = System.identityHashCode(parentLoader);
-        return type + "#" + md5 + "#" + parentId;
+    public static Class<?> getClassByCode(String name, byte[] code) {
+        return getClassByCode(name, code, BshLoaderHelper.class.getClassLoader());
     }
 
     public static ClassLoader getLoaderByDex(String dexPath, ClassLoader parentLoader) {
