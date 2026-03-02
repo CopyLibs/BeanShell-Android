@@ -318,7 +318,7 @@ public abstract class BshLambda {
     /** It's a custom implementation of ClassLoader to just load a Class<?> from a byte[] */
     private static class ByteClassLoader extends ClassLoader {
         public Class<?> classFromBytes(String className, byte[] classBytes) {
-            return BshLoaderHelper.loadInternalClass(className, classBytes);
+            return BshLoaderHelper.getClassByCode(className, classBytes);
         }
     }
 
