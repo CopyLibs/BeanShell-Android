@@ -12,69 +12,55 @@ implementation("io.github.copylibs:beanshell-android-lambda:$version")
 
 ## 用法
 
-### 导入 Class
+### 基础方法
 
 ```kotlin
+// 导入 类
 interpreter.nameSpace.importClass(name)
-```
-
-### 导入 Package
-
-```kotlin
+// 导入 包
 interpreter.nameSpace.importPackage(name)
-```
-
-### 设置 Variable
-
-```kotlin
+// 设置 变量
 interpreter.set(name, value)
-```
-
-### 设置 Method
-
-```kotlin
+// 设置 方法
 interpreter.nameSpace.setMethod(method)
-```
-
-### 执行 Code
-
-```kotlin
+// 执行 代码
 interpreter.eval(code)
-```
-
-### 执行 Path
-
-```kotlin
+// 执行 文件
 interpreter.source(path)
-```
-
-### 添加 ClassLoader
-
-```kotlin
+// 添加 类加载器
 interpreter.addClassLoader(clsLoader)
 ```
 
-### 获取 Dex ClassLoader
+### 辅助方法
 
 ```kotlin
+// 获取 Dex 类加载器
 BshLoaderHelper.getLoaderByDex(dexPath, parentLoader)
-```
-
-### 获取 Jar ClassLoader
-
-```kotlin
+// 获取 Jar 类加载器
 BshLoaderHelper.getLoaderByJar(jarPath, parentLoader)
+// 获取 Aar 类加载器
+BshLoaderHelper.getLoaderByAar(aarPath, parentLoader)
 ```
 
-### 获取 Aar ClassLoader
+## 示例
 
-```kotlin
-BshLoaderHelper.getLoaderByAar(aarPath, parentLoader)
+### List
+
+```beanshell
+var list = new List { 1, 2, 3, 4 };
+var list = (List) { 1, 2, 3, 4 };
+List list = { 1, 2, 3, 4 };
+```
+
+### Lambda
+
+```beanshell
+new Thread(() -> System.out.println("Hello World")).start();
 ```
 
 ## 致谢
 
-- [BeanShell](https://github.com/beanshell/beanshell) - 原始仓库
+- [beanshell@beanshell](https://github.com/beanshell/beanshell) - 原始仓库
 - [Hicores@BeanShell](https://github.com/Hicores/BeanShell) - Android 支持
 - [Net-0@PR #772](https://github.com/beanshell/beanshell/pull/772) - SecurityGuard 支持
 - [opeongo@PR #768](https://github.com/beanshell/beanshell/pull/768) - 浮点数值扩大 问题
