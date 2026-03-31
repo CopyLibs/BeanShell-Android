@@ -20,7 +20,7 @@ interpreter.nameSpace.importClass(name)
 // 导入 包
 interpreter.nameSpace.importPackage(name)
 // 设置 变量
-interpreter.set(name, value)
+interpreter.nameSpace.setVariable(name, value)
 // 设置 方法
 interpreter.nameSpace.setMethod(method)
 // 执行 代码

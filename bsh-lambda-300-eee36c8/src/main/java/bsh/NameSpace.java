@@ -249,6 +249,11 @@ public class NameSpace
         this.setVariable(name, value, strictJava, true);
     }
 
+    public void setVariable(final String name, final Object value)
+            throws UtilEvalError {
+        this.setVariable(name, value, false);
+    }
+
     /** Set a variable explicitly in the local scope.
      * @param name the name
      * @param value the value

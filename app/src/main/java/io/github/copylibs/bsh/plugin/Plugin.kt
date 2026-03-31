@@ -25,7 +25,7 @@ class Plugin {
      * 设置 Variable
      */
     fun setVariable(name: String, value: Any) {
-        interpreter.set(name, value)
+        interpreter.nameSpace.setVariable(name, value)
     }
 
     /**
