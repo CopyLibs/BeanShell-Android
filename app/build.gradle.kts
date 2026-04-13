@@ -47,7 +47,6 @@ kotlin {
 dependencies {
     implementation(libs.material)
     implementation(libs.appcompat)
-    implementation(libs.core)
     implementation(libs.core.ktx)
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
