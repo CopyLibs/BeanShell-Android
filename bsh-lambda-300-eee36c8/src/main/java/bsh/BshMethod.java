@@ -303,7 +303,7 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
                     throw new Error("HERE!");
 
         if ( methodCallback != null )
-            return methodCallback.invoke( argValues == null ? Reflect.ZERO_ARGS : argValues );
+            return invokeMethodCallback( argValues, callerInfo, callstack );
 
         if ( javaMethod != null )
         {
@@ -354,6 +354,37 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
         } else
             return invokeImpl( argValues, interpreter, callstack, callerInfo,
                 overrideNameSpace );
+    }
+
+    private Object invokeMethodCallback(
+        Object[] argValues, Node callerInfo, CallStack callstack )
+        throws EvalError
+    {
+        if ( argValues == null )
+            argValues = Reflect.ZERO_ARGS;
+
+        Class<?> [] paramTypes = getParameterTypes();
+        if ( null == paramTypes || paramTypes.length == 0 )
+            return methodCallback.invoke( argValues );
+
+        String [] paramNames = getParameterNames();
+        for (int i=0; i < argValues.length; i++) {
+            Class<?> paramType = paramTypes[i];
+            if ( null == paramType )
+                continue;
+            try {
+                argValues[i] = Primitive.unwrap(
+                    Types.castObject(
+                        argValues[i], paramType, Types.ASSIGNMENT ) );
+            } catch ( UtilEvalError e ) {
+                throw new EvalError(
+                    "Invalid argument: "
+                    + "`"+paramNames[i]+"'" + " for method: "
+                    + name + " : " +
+                    e.getMessage(), callerInfo, callstack );
+            }
+        }
+        return methodCallback.invoke( argValues );
     }
 
     private Object invokeImpl(
