@@ -52,6 +52,11 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
 
     private static final long serialVersionUID = 1L;
 
+    @FunctionalInterface
+    public interface MethodCallback {
+        Object invoke(Object[] args);
+    }
+
     /*
         This is the namespace in which the method is set.
         It is a back-reference for the node, which needs to execute under this
@@ -77,6 +82,8 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
     // Java Method, for a BshObject that delegates to a real Java method
     private Invocable javaMethod;
     private Object javaObject;
+    // Callback Method, for a BshObject that delegates to a host callback
+    private transient MethodCallback methodCallback;
     protected boolean isVarArgs;
     boolean isScriptedObject = false;
 
@@ -103,6 +110,8 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
         this.paramModifiers = paramModifiers;
         if ( paramNames != null )
             this.paramCount = paramNames.length;
+        else if ( paramTypes != null )
+            this.paramCount = paramTypes.length;
         this.cparamTypes = paramTypes;
         this.methodBody = methodBody;
         this.declaringNameSpace = declaringNameSpace;
@@ -113,6 +122,19 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
     public BshMethod(Method method, Object object )
     {
         this( Invocable.get(method), object );
+    }
+
+    /*
+        Create a BshMethod that delegates to a callback upon invocation.
+        This is used to represent host callback methods.
+    */
+    public BshMethod( String name, Class<?>[] paramTypes, MethodCallback callback )
+    {
+        this( name, null/*returnType*/, null/*paramNames*/,
+            paramTypes, null/*paramModifiers*/, null/*method.block*/,
+            null/*declaringNameSpace*/, null/*modifiers*/, false/*isVarArgs*/ );
+
+        this.methodCallback = callback;
     }
 
     /*
@@ -279,6 +301,9 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
             for (int i=0; i<argValues.length; i++)
                 if ( argValues[i] == null )
                     throw new Error("HERE!");
+
+        if ( methodCallback != null )
+            return methodCallback.invoke( argValues == null ? Reflect.ZERO_ARGS : argValues );
 
         if ( javaMethod != null )
         {

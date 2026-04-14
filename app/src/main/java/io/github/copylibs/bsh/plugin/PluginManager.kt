@@ -19,28 +19,32 @@ object PluginManager {
     }
 
     private fun registerMethod(plugin: Plugin, context: Context) {
-        // 实例方法
         val testClass1 = TestClass1(context)
-        val logMethod = TestClass1::class.java.getDeclaredMethod("log", Any::class.java)
-        val logBshMethod = BshMethod(logMethod, testClass1)
-        plugin.setMethod(logBshMethod)
-
-        // 静态方法
         val testClass2 = TestClass2
-        val printMethod = TestClass2::class.java.getDeclaredMethod("print", Any::class.java)
-        val printBshMethod = BshMethod(printMethod, testClass2)
-        plugin.setMethod(printBshMethod)
-
-        val loadDexMethod = plugin::class.java.getDeclaredMethod("loadDex", String::class.java)
-        val loadDexBshMethod = BshMethod(loadDexMethod, plugin)
-        plugin.setMethod(loadDexBshMethod)
-
-        val loadJarMethod = plugin::class.java.getDeclaredMethod("loadJar", String::class.java)
-        val loadJarBshMethod = BshMethod(loadJarMethod, plugin)
-        plugin.setMethod(loadJarBshMethod)
-
-        val loadAarMethod = plugin::class.java.getDeclaredMethod("loadAar", String::class.java)
-        val loadAarBshMethod = BshMethod(loadAarMethod, plugin)
-        plugin.setMethod(loadAarBshMethod)
+        plugin.setMethod(
+            BshMethod("log", arrayOf(Any::class.java)) { args ->
+                testClass1.log(args[0])
+            }
+        )
+        plugin.setMethod(
+            BshMethod("print", arrayOf(Any::class.java)) { args ->
+                testClass2.print(args[0])
+            }
+        )
+        plugin.setMethod(
+            BshMethod("loadDex", arrayOf(String::class.java)) { args ->
+                plugin.loadDex(args[0].toString())
+            }
+        )
+        plugin.setMethod(
+            BshMethod("loadJar", arrayOf(String::class.java)) { args ->
+                plugin.loadJar(args[0].toString())
+            }
+        )
+        plugin.setMethod(
+            BshMethod("loadAar", arrayOf(String::class.java)) { args ->
+                plugin.loadAar(args[0].toString())
+            }
+        )
     }
 }

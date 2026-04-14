@@ -16,13 +16,13 @@ implementation("io.github.copylibs:beanshell-android-lambda:$version")
 
 ```kotlin
 // 导入 类
-interpreter.nameSpace.importClass(name)
+interpreter.nameSpace.importClass(clsName)
 // 导入 包
-interpreter.nameSpace.importPackage(name)
+interpreter.nameSpace.importPackage(pkgName)
 // 设置 变量
-interpreter.nameSpace.setVariable(name, value)
+interpreter.nameSpace.setVariable(varName, varValue)
 // 设置 方法
-interpreter.nameSpace.setMethod(method)
+interpreter.nameSpace.setMethod(bshMethod)
 // 执行 代码
 interpreter.eval(code)
 // 执行 文件
