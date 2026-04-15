@@ -1,31 +1,20 @@
-import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+﻿import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.SourcesJar
 
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    id("build-logic.android.library")
+    id("build-logic.bsh.codegen")
     id("com.vanniktech.maven.publish") version "0.36.0"
     id("signing")
 }
 
 android {
     namespace = "bsh.lambda_300_eee36c8"
-    compileSdk = 36
 
     defaultConfig {
-        minSdk = 27
         consumerProguardFiles("consumer-rules.pro")
     }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-}
-
-kotlin {
-    jvmToolchain(JavaVersion.VERSION_17.toString().toInt())
 }
 
 dependencies {
