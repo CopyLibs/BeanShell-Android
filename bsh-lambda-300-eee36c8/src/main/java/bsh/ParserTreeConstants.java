@@ -32,21 +32,20 @@ public interface ParserTreeConstants
   public int JJTALLOCATIONEXPRESSION = 26;
   public int JJTARRAYDIMENSIONS = 27;
   public int JJTLABELEDSTATEMENT = 28;
-  public int JJTFORMALCOMMENT = 29;
-  public int JJTSWITCHSTATEMENT = 30;
-  public int JJTSWITCHLABEL = 31;
-  public int JJTIFSTATEMENT = 32;
-  public int JJTWHILESTATEMENT = 33;
-  public int JJTFORSTATEMENT = 34;
-  public int JJTENHANCEDFORSTATEMENT = 35;
-  public int JJTTYPEDVARIABLEDECLARATION = 36;
-  public int JJTSTATEMENTEXPRESSIONLIST = 37;
-  public int JJTRETURNSTATEMENT = 38;
-  public int JJTTHROWSTATEMENT = 39;
-  public int JJTTRYSTATEMENT = 40;
-  public int JJTMULTICATCH = 41;
-  public int JJTTRYWITHRESOURCES = 42;
-  public int JJTAUTOCLOSEABLE = 43;
+  public int JJTSWITCHSTATEMENT = 29;
+  public int JJTSWITCHLABEL = 30;
+  public int JJTIFSTATEMENT = 31;
+  public int JJTWHILESTATEMENT = 32;
+  public int JJTFORSTATEMENT = 33;
+  public int JJTENHANCEDFORSTATEMENT = 34;
+  public int JJTTYPEDVARIABLEDECLARATION = 35;
+  public int JJTSTATEMENTEXPRESSIONLIST = 36;
+  public int JJTRETURNSTATEMENT = 37;
+  public int JJTTHROWSTATEMENT = 38;
+  public int JJTTRYSTATEMENT = 39;
+  public int JJTMULTICATCH = 40;
+  public int JJTTRYWITHRESOURCES = 41;
+  public int JJTAUTOCLOSEABLE = 42;
 
 
   public String[] jjtNodeName = {
@@ -79,7 +78,6 @@ public interface ParserTreeConstants
     "AllocationExpression",
     "ArrayDimensions",
     "LabeledStatement",
-    "FormalComment",
     "SwitchStatement",
     "SwitchLabel",
     "IfStatement",
@@ -96,4 +94,4 @@ public interface ParserTreeConstants
     "AutoCloseable",
   };
 }
-/* ParserGeneratorCC - OriginalChecksum=e2e2a2ee54f0559e388d8e14d47ae7d3 (do not edit this line) */
+/* ParserGeneratorCC - OriginalChecksum=244f5534eac627d5cd17e4940171e85b (do not edit this line) */
