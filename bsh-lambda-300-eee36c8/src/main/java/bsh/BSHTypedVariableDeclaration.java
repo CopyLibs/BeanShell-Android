@@ -38,6 +38,12 @@ class BSHTypedVariableDeclaration extends SimpleNode {
         return ((BSHType)jjtGetChild(0));
     }
 
+    private boolean isValType( BSHType typeNode ) {
+        Node type = typeNode.getTypeNode();
+        return type instanceof BSHAmbiguousName
+            && "val".equals(((BSHAmbiguousName) type).text);
+    }
+
     Class<?> evalType( CallStack callstack, Interpreter interpreter )
         throws EvalError
     {
@@ -71,6 +77,8 @@ class BSHTypedVariableDeclaration extends SimpleNode {
             NameSpace namespace = callstack.top();
             BSHType typeNode = getTypeNode();
             Class<?> type = typeNode.getType( callstack, interpreter );
+            if ( isValType(typeNode) && !modifiers.hasModifier("final") )
+                modifiers.addModifier("final");
 
             BSHVariableDeclarator [] bvda = getDeclarators();
             for (int i = 0; i < bvda.length; i++)
