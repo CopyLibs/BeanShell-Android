@@ -33,7 +33,7 @@ mavenPublishing {
     coordinates(
         groupId = "io.github.copylibs",
         artifactId = "beanshell-android-lambda",
-        version = "3.0.0.beta8"
+        version = "3.0.0.beta9"
     )
 
     pom {
