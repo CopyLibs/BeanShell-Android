@@ -47,9 +47,31 @@ BshLoaderHelper.getLoaderByAar(aarPath, parentLoader)
 ### List
 
 ```beanshell
-var list = new List { 1, 2, 3, 4 };
-var list = (List) { 1, 2, 3, 4 };
-List list = { 1, 2, 3, 4 };
+// 定义
+List list = {1, 2, 3, 4};
+var list = new List {1, 2, 3, 4};
+var list = (List) {1, 2, 3, 4};
+
+// 相加
+var list = (List) {1, 2} + {3, 4};
+print(list); // [1, 2, 3, 4]
+
+// 重复
+var list = (List) {1, 2} * 2;
+print(list); // [1, 2, 1, 2]
+
+// 索引
+var list = (List) {1, 2, 3, 4};
+print(list[0]); // 1
+print(list[-1]); // 4
+
+// 切片
+var list = (List) {1, 2, 3, 4};
+print(list[1:3]); // [2, 3]
+print(list[-3:-1]); // [2, 3]
+print(list[:3]); // [1, 2, 3]
+print(list[1:]); // [2, 3, 4]
+print(list[::2]); // [1, 3]
 ```
 
 ### Lambda
@@ -57,6 +79,16 @@ List list = { 1, 2, 3, 4 };
 ```beanshell
 new Thread(() -> System.out.println("Hello World")).start();
 ```
+
+### 运算符
+
+| 符号    | 描述                               | 用法           | 等价                               |
+|-------|----------------------------------|--------------|----------------------------------|
+| `??`  | 左侧非 `null` 时返回左侧，否则返回右侧。         | `a ?? b`     | `a != null ? a : b`              |
+| `??=` | 仅当左侧为 `null` 时执行赋值。              | `a ??= b`    | `if (a == null) a = b`           |
+| `?:`  | 左侧为真值时返回左侧，否则返回右侧。               | `a ?: b`     | `a ? a : b`                      |
+| `?.`  | 左侧为 `null` 时直接返回 `null`，避免空指针错误。 | `obj?.field` | `obj == null ? null : obj.field` |
+| `<=>` | 比较结果固定为 `-1 / 0 / 1`。            | `a <=> b`    | `a < b ? -1 : (a > b ? 1 : 0)`   |
 
 ## 致谢
 
