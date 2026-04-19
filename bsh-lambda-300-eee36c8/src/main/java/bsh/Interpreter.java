@@ -27,6 +27,7 @@
 
 package bsh;
 
+import bsh.lambda_300_eee36c8.BuildConfig;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -114,7 +115,7 @@ public class Interpreter
     private boolean EOF;
     public static boolean TRACE;
     public static boolean COMPATIBIILTY;
-    public static final String VERSION = "io.github.copylibs.bsh-lambda-300-eee36c8";
+    public static final String VERSION = BuildConfig.BSH_VERSION;
 
     static {
         // ResourceBundle b = ResourceBundle.getBundle("version");
@@ -374,6 +375,9 @@ public class Interpreter
 
         // bsh.evalOnly
         setu( "bsh.evalOnly", Primitive.FALSE );
+
+        // bsh.version
+        setu( "bsh.version", VERSION );
     }
 
     /** Assign the global namespace for this interpreter.
