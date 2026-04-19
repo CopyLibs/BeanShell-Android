@@ -27,7 +27,6 @@
 
 package bsh;
 
-import bsh.lambda_300_eee36c8.BuildConfig;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -115,7 +114,7 @@ public class Interpreter
     private boolean EOF;
     public static boolean TRACE;
     public static boolean COMPATIBIILTY;
-    public static final String VERSION = BuildConfig.BSH_VERSION;
+    public static final String VERSION = "3.0.0.beta10";
 
     static {
         // ResourceBundle b = ResourceBundle.getBundle("version");
