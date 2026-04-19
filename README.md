@@ -44,6 +44,22 @@ BshLoaderHelper.getLoaderByAar(aarPath, parentLoader)
 
 ## 示例
 
+### 运算符
+
+| 符号    | 描述                               | 用法           | 等价                               |
+|-------|----------------------------------|--------------|----------------------------------|
+| `??`  | 左侧非 `null` 时返回左侧，否则返回右侧。         | `a ?? b`     | `a != null ? a : b`              |
+| `??=` | 仅当左侧为 `null` 时执行赋值。              | `a ??= b`    | `if (a == null) a = b`           |
+| `?:`  | 左侧为真值时返回左侧，否则返回右侧。               | `a ?: b`     | `a ? a : b`                      |
+| `?.`  | 左侧为 `null` 时直接返回 `null`，避免空指针错误。 | `obj?.field` | `obj == null ? null : obj.field` |
+| `<=>` | 比较结果固定为 `-1 / 0 / 1`。            | `a <=> b`    | `a < b ? -1 : (a > b ? 1 : 0)`   |
+
+### Lambda
+
+```beanshell
+new Thread(() -> print("Hello World")).start();
+```
+
 ### List
 
 ```beanshell
@@ -74,21 +90,25 @@ print(list[1:]); // [2, 3, 4]
 print(list[::2]); // [1, 3]
 ```
 
-### Lambda
+### 新特性
 
 ```beanshell
-new Thread(() -> System.out.println("Hello World")).start();
+// 尾分号可选
+var msg = "Hello World"
+print(msg)
+
+// 定义常量(val)
+val name = "BeanShell"
+
+// 字符串模板
+var lang = "BeanShell"
+var str1 = "Hello, $lang"
+print(str1) // "Hello, BeanShell"
+var str2 = "1 + 2 = ${1 + 2}"
+print(str2)  // "1 + 2 = 3"
+var str3 = "price=\$9"
+print(str3) // "price=$9"
 ```
-
-### 运算符
-
-| 符号    | 描述                               | 用法           | 等价                               |
-|-------|----------------------------------|--------------|----------------------------------|
-| `??`  | 左侧非 `null` 时返回左侧，否则返回右侧。         | `a ?? b`     | `a != null ? a : b`              |
-| `??=` | 仅当左侧为 `null` 时执行赋值。              | `a ??= b`    | `if (a == null) a = b`           |
-| `?:`  | 左侧为真值时返回左侧，否则返回右侧。               | `a ?: b`     | `a ? a : b`                      |
-| `?.`  | 左侧为 `null` 时直接返回 `null`，避免空指针错误。 | `obj?.field` | `obj == null ? null : obj.field` |
-| `<=>` | 比较结果固定为 `-1 / 0 / 1`。            | `a <=> b`    | `a < b ? -1 : (a > b ? 1 : 0)`   |
 
 ## 致谢
 
