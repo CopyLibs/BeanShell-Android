@@ -16,13 +16,8 @@ val publishVersion = "3.0.0.beta10"
 android {
     namespace = "bsh.lambda_300_eee36c8"
 
-    buildFeatures {
-        buildConfig = true
-    }
-
     defaultConfig {
         consumerProguardFiles("consumer-rules.pro")
-        buildConfigField("String", "BSH_VERSION", "\"$publishVersion\"")
     }
 }
 
