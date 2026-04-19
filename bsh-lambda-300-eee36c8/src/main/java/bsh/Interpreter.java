@@ -42,6 +42,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import bsh.security.MainSecurityGuard;
+import bsh.preprocess.KtStringTemplate;
 
 /**
     The BeanShell script interpreter.
@@ -815,8 +816,9 @@ public class Interpreter
     public Object eval( String statements, NameSpace nameSpace, String sourceName )
         throws EvalError
     {
+        String rewritten = KtStringTemplate.rewrite(statements);
         return eval(
-            new StringReader(terminatedScript(statements)), nameSpace,
+            new StringReader(terminatedScript(rewritten)), nameSpace,
                 sourceName );
     }
 
