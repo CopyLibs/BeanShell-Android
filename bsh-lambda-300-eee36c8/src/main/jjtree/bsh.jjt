@@ -714,10 +714,10 @@ void ImportDeclaration() #ImportDeclaration :
 {
   LOOKAHEAD( 3 )
   "import" [ "static" { jjtThis.staticImport = true; } ]
-  AmbiguousName() [ "." "*" { jjtThis.importPackage = true; } ] ";"
+  AmbiguousName() [ "." "*" { jjtThis.importPackage = true; } ] StatementTerminator()
 |
    // bsh super import statement
-  "import" "*" ";" { jjtThis.superImport = true; }
+  "import" "*" StatementTerminator() { jjtThis.superImport = true; }
 }
 
 void VariableDeclarator() #VariableDeclarator :
@@ -1026,7 +1026,7 @@ void LambdaExpression() #LambdaExpression :
   ( FormalParameters() | t=<IDENTIFIER> )
   "->"
   ( Block() | Expression() )
-  
+
   { jjtThis.singleParamName = t != null ? t.image : null; }
 }
 
@@ -1264,7 +1264,7 @@ void Statement() : { }
 |
   EmptyStatement()
 |
-  StatementExpression() ";"
+  StatementExpression() StatementTerminator()
 |
   SwitchStatement()
 |
@@ -1334,7 +1334,7 @@ void BlockStatement() :
     MethodDeclaration()
 |
   LOOKAHEAD( Modifiers( Modifiers.FIELD, true ) Type() <IDENTIFIER> )
-  TypedVariableDeclaration() ";"
+  TypedVariableDeclaration() StatementTerminator()
 |
   Statement()
 |
@@ -1349,6 +1349,12 @@ void EmptyStatement() :
 {}
 {
   ";"
+}
+
+void StatementTerminator() :
+{}
+{
+  [ ";" ]
 }
 
 void StatementExpression() :
@@ -1418,7 +1424,7 @@ void WhileStatement() #WhileStatement :
 void DoStatement() #WhileStatement :
 {}
 {
-  "do" Statement() "while" "(" Expression() ")" ";"
+  "do" Statement() "while" "(" Expression() ")" StatementTerminator()
     { jjtThis.isDoStatement=true;  }
 }
 
@@ -1490,19 +1496,31 @@ void ForUpdate() :
 void BreakStatement() #ReturnStatement :
 { Token t = null; }
 {
-  "break" [ t=<IDENTIFIER> { jjtThis.label = t.image; } ] ";" { jjtThis.kind = BREAK; }
+  "break"
+  (
+    LOOKAHEAD(2) t=<IDENTIFIER> ";" { jjtThis.label = t.image; }
+  |
+    StatementTerminator()
+  )
+  { jjtThis.kind = BREAK; }
 }
 
 void ContinueStatement() #ReturnStatement :
 { Token t = null; }
 {
-  "continue" [ t=<IDENTIFIER> { jjtThis.label = t.image; } ] ";" { jjtThis.kind = CONTINUE; }
+  "continue"
+  (
+    LOOKAHEAD(2) t=<IDENTIFIER> ";" { jjtThis.label = t.image; }
+  |
+    StatementTerminator()
+  )
+  { jjtThis.kind = CONTINUE; }
 }
 
 void ReturnStatement() #ReturnStatement :
 {}
 {
-  "return" [ Expression() ] ";" { jjtThis.kind = RETURN; }
+  "return" [ Expression() ] StatementTerminator() { jjtThis.kind = RETURN; }
 }
 
 void SynchronizedStatement() #Block :
@@ -1517,7 +1535,7 @@ void SynchronizedStatement() #Block :
 void ThrowStatement() #ThrowStatement :
 {}
 {
-  "throw" Expression() ";"
+  "throw" Expression() StatementTerminator()
 }
 
 void TryStatement() #TryStatement:
