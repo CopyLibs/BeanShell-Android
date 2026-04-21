@@ -41,6 +41,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import bsh.preprocess.DefaultArgsDesugar;
 import bsh.security.MainSecurityGuard;
 import bsh.preprocess.KtStringTemplate;
 
@@ -691,6 +692,8 @@ public class Interpreter
             /*, CallStack callstack */ )
         throws EvalError
     {
+        String source = readSource(in, sourceFileInfo);
+        String statements = preprocessScript(source);
         Object retVal = null;
         Interpreter.debug("eval: nameSpace = ", nameSpace);
 
@@ -700,7 +703,8 @@ public class Interpreter
             this interpreter.
         */
         Interpreter localInterpreter = new Interpreter(
-            in, getOut(), getErr(), false, nameSpace, this, sourceFileInfo);
+            new StringReader(terminatedScript(statements)),
+            getOut(), getErr(), false, nameSpace, this, sourceFileInfo);
         CallStack callstack = new CallStack(nameSpace);
 
         Node node = null;
@@ -819,10 +823,31 @@ public class Interpreter
     public Object eval( String statements, NameSpace nameSpace, String sourceName )
         throws EvalError
     {
-        String rewritten = KtStringTemplate.rewrite(statements);
         return eval(
-            new StringReader(terminatedScript(rewritten)), nameSpace,
+            new StringReader(terminatedScript(statements)), nameSpace,
                 sourceName );
+    }
+
+    private String readSource(Reader in, String sourceFileInfo) throws EvalError {
+        try {
+            StringBuilder sb = new StringBuilder(1024);
+            char[] buf = new char[4096];
+            for (int n; (n = in.read(buf)) != -1; ) {
+                sb.append(buf, 0, n);
+            }
+            return sb.toString();
+        } catch (IOException e) {
+            throw new EvalError(
+                "Sourced file: "+sourceFileInfo+" read error: "
+                + e.getMessage(), null, null, e);
+        }
+    }
+
+    private String preprocessScript(String source) {
+        String rewritten = source;
+        rewritten = DefaultArgsDesugar.rewrite(rewritten);
+        rewritten = KtStringTemplate.rewrite(rewritten);
+        return rewritten;
     }
 
     /** Produce source file info from the supplied statements.

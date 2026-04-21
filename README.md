@@ -108,6 +108,13 @@ var str2 = "1 + 2 = ${1 + 2}"
 print(str2)  // "1 + 2 = 3"
 var str3 = "price=\$9"
 print(str3) // "price=$9"
+
+// 默认参数
+void hi(String name, int age = 18) {
+    print("name: $name, age: $age")
+}
+hi("user") // name: user, age: 18
+hi("user", 1) // name: user, age: 1
 ```
 
 ## 致谢
