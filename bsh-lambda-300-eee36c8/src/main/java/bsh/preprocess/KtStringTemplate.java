@@ -3,6 +3,18 @@ package bsh.preprocess;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Desugars Kotlin-like string templates in string literals to Java concatenation.
+ *
+ * <p>Example:
+ * <pre>
+ * "hello $name, age=${age + 1}"
+ * </pre>
+ * becomes:
+ * <pre>
+ * "hello " + String.valueOf(name) + ", age=" + String.valueOf(age + 1)
+ * </pre>
+ */
 public final class KtStringTemplate {
     private KtStringTemplate() {
     }
