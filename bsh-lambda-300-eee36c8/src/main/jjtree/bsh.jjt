@@ -253,6 +253,18 @@ public class Parser
     }
 
     /**
+        Allow method declarations to terminate implicitly at a line break,
+        block end, or EOF.
+    */
+    boolean isImplicitMethodTerminator()
+    {
+        Token next = getToken(1);
+        return token.endLine < next.beginLine
+            || next.kind == RBRACE
+            || next.kind == EOF;
+    }
+
+    /**
         Generate a ParseException with the specified message, pointing to the
         current token.
         The auto-generated Parser.generateParseException() method does not
@@ -700,7 +712,7 @@ void MethodDeclaration() #MethodDeclaration :
 )
     FormalParameters()
     [ "throws" count=NameList() { jjtThis.numThrows=count; } ]
-    ( Block() | ";" )
+    ( Block() | MethodDeclTerminator() )
 }
 
 void PackageDeclaration () #PackageDeclaration:
@@ -1349,6 +1361,14 @@ void EmptyStatement() :
 {}
 {
   ";"
+}
+
+void MethodDeclTerminator() :
+{}
+{
+  ";"
+|
+  LOOKAHEAD( { isImplicitMethodTerminator() } ) {}
 }
 
 void StatementTerminator() :
