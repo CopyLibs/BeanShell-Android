@@ -41,9 +41,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import bsh.preprocess.AnnotationIgnorePreprocess;
 import bsh.preprocess.DefaultArgsDesugar;
-import bsh.security.MainSecurityGuard;
 import bsh.preprocess.KtStringTemplate;
+import bsh.security.MainSecurityGuard;
 
 /**
     The BeanShell script interpreter.
@@ -845,6 +846,7 @@ public class Interpreter
 
     private String preprocessScript(String source) {
         String rewritten = source;
+        rewritten = AnnotationIgnorePreprocess.rewrite(rewritten);
         rewritten = DefaultArgsDesugar.rewrite(rewritten);
         rewritten = KtStringTemplate.rewrite(rewritten);
         return rewritten;
