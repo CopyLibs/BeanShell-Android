@@ -4540,79 +4540,87 @@ if (jjtc000) {
     }
 }
 
-  final public void ReturnStatement() throws ParseException {/*@bgen(jjtree) ReturnStatement */
-  BSHReturnStatement jjtn000 = new BSHReturnStatement(JJTRETURNSTATEMENT);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-  jjtreeOpenNodeScope(jjtn000);
+  final public void ReturnStatement() throws ParseException {
+    /*@bgen(jjtree) ReturnStatement */
+    BSHReturnStatement jjtn000 = new BSHReturnStatement(JJTRETURNSTATEMENT);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);
+    jjtreeOpenNodeScope(jjtn000);
     try {
-      jj_consume_token(RETURN);
-      switch (jj_ntk == -1 ? jj_ntk_f() : jj_ntk) {
-      case BOOLEAN:
-      case BYTE:
-      case CHAR:
-      case DOUBLE:
-      case FALSE:
-      case FLOAT:
-      case INT:
-      case LONG:
-      case NEW:
-      case NULL:
-      case SHORT:
-      case TRUE:
-      case VOID:
-      case INTEGER_LITERAL:
-      case FLOATING_POINT_LITERAL:
-      case CHARACTER_LITERAL:
-      case STRING_LITERAL:
-      case LONG_STRING_LITERAL:
-      case IDENTIFIER:
-      case LPAREN:
-      case LBRACE:
-      case LBRACKET:
-      case BANG:
-      case TILDE:
-      case INCR:
-      case DECR:
-      case PLUS:
-      case MINUS:{
-        Expression();
-        break;
+        Token flowTok = jj_consume_token(RETURN);
+        if (jj_ntk == -1) jj_ntk_f();
+        // If a newline character immediately follows a return statement, it is assumed that
+        // there is no return value, and the statement terminates immediately.
+        if (flowTok.endLine == token.next.beginLine) {
+            switch (jj_ntk) {
+                case BOOLEAN:
+                case BYTE:
+                case CHAR:
+                case DOUBLE:
+                case FALSE:
+                case FLOAT:
+                case INT:
+                case LONG:
+                case NEW:
+                case NULL:
+                case SHORT:
+                case TRUE:
+                case VOID:
+                case INTEGER_LITERAL:
+                case FLOATING_POINT_LITERAL:
+                case CHARACTER_LITERAL:
+                case STRING_LITERAL:
+                case LONG_STRING_LITERAL:
+                case IDENTIFIER:
+                case LPAREN:
+                case LBRACE:
+                case LBRACKET:
+                case BANG:
+                case TILDE:
+                case INCR:
+                case DECR:
+                case PLUS:
+                case MINUS: {
+                    Expression();
+                    break;
+                }
+                default:
+                    jj_la1[111] = jj_gen;;
+            }
+        } else {
+            jj_la1[111] = jj_gen;
         }
-      default:
-        jj_la1[111] = jj_gen;
-        ;
-      }
-      StatementTerminator();
-jjtree.closeNodeScope(jjtn000, true);
-                                                    jjtc000 = false;
-                                                    if (jjtree.nodeCreated()) {
-                                                     jjtreeCloseNodeScope(jjtn000);
-                                                    }
-jjtn000.kind = RETURN;
+        StatementTerminator();
+        jjtree.closeNodeScope(jjtn000, true);
+        jjtc000 = false;
+        if (jjtree.nodeCreated()) {
+            jjtreeCloseNodeScope(jjtn000);
+        }
+        jjtn000.kind = RETURN;
     } catch (Throwable jjte000) {
-if (jjtc000) {
-      jjtree.clearNodeScope(jjtn000);
-      jjtc000 = false;
-    } else {
-      jjtree.popNode();
-    }
-    if (jjte000 instanceof ParseException) {
-      throw (ParseException)jjte000;
-    }
-    if (jjte000 instanceof RuntimeException) {
-      throw (RuntimeException)jjte000;
-    }
-    throw (Error)jjte000;
+        if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+        } else {
+            jjtree.popNode();
+        }
+        if (jjte000 instanceof ParseException) {
+            throw (ParseException) jjte000;
+        }
+        if (jjte000 instanceof RuntimeException) {
+            throw (RuntimeException) jjte000;
+        }
+        throw (Error) jjte000;
     } finally {
-if (jjtc000) {
-      jjtree.closeNodeScope(jjtn000, true);
-      if (jjtree.nodeCreated()) {
-       jjtreeCloseNodeScope(jjtn000);
-      }
-    }
+        if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+            if (jjtree.nodeCreated()) {
+                jjtreeCloseNodeScope(jjtn000);
+            }
+        }
     }
 }
+
 
   final public void SynchronizedStatement() throws ParseException {/*@bgen(jjtree) Block */
   BSHBlock jjtn000 = new BSHBlock(JJTBLOCK);

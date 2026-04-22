@@ -120,7 +120,7 @@ class BSHPrimarySuffix extends SimpleNode
                     return doNewInner(obj, toLHS, callstack, interpreter);
 
                 case METHODREF:
-                    return doMethodRef ( obj );
+                    return doMethodRef(obj, interpreter);
 
                 default:
                     throw new InterpreterError( "Unknown suffix type" );
@@ -380,8 +380,8 @@ class BSHPrimarySuffix extends SimpleNode
         }
     }
 
-    private BshLambda doMethodRef(Object obj) {
-        return BshLambda.fromMethodReference(this, obj, field);
+    private BshLambda doMethodRef(Object obj, Interpreter interpreter) {
+        return BshLambda.fromMethodReference(this, obj, field, interpreter);
     }
 
     @Override

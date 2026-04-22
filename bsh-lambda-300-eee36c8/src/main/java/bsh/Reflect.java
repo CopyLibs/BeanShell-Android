@@ -123,10 +123,23 @@ public final class Reflect {
                     + methodName + "() on undefined", callerInfo, callstack, re);
                 // Handle primitive method not found. Autoboxing or magic math method lookup.
                 // Errors gets rolled up, and not found is deferred back to exposed type.
-                if (isPrimitive && !interpreter.getStrictJava()) try { // mitigate recursion
-                    if (!Types.isNumeric(object)) return invokeObjectMethod( // autobox type
-                        object, methodName, args, interpreter, callstack, callerInfo);
-                    return numericMathMethod( // find magic math method on all numeric types
+                if (object instanceof BshLambda)
+                    try {
+                        return ((BshLambda) object).invokeImpl(args != null ? args : new Object[0]);
+                    } catch (UtilEvalError e) {
+                        throw e.toEvalError(callerInfo, callstack);
+                    } catch (EvalError e) {
+                        if (e.getNode() == null) e.setNode(callerInfo);
+                        throw e;
+                    } catch (Exception e) {
+                        throw new EvalError("Lambda execution failed: " + e.getMessage(), callerInfo, callstack, e);
+                    }
+                if (isPrimitive && !interpreter.getStrictJava())
+                    try { // mitigate recursion
+                        if (!Types.isNumeric(object))
+                            return invokeObjectMethod( // autobox type
+                            object, methodName, args, interpreter, callstack, callerInfo);
+                        return numericMathMethod( // find magic math method on all numeric types
                         object, type, methodName, args, interpreter, callstack, callerInfo);
                 } catch (TargetError te) { throw te; // method found but errored throw it up
                 } catch (EvalError ee) { /* not found deffered fall through to exposed type */ }

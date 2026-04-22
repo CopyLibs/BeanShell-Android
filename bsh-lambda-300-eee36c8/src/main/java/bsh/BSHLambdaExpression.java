@@ -34,7 +34,9 @@ class BSHLambdaExpression extends SimpleNode {
     @Override
     public Object eval(CallStack callstack, Interpreter interpreter) throws EvalError {
         this.initValues(callstack, interpreter);
-        return BshLambda.fromLambdaExpression(this, callstack.top(), this.paramsModifiers, this.paramsTypes, this.paramsNames, this.body);
+        return BshLambda.fromLambdaExpression(this, callstack.top(),
+                this.paramsModifiers, this.paramsTypes, this.paramsNames,
+                this.body, interpreter);
     }
 
 }

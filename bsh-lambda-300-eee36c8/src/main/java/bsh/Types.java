@@ -192,8 +192,8 @@ class Types {
             return null;
         if ( arg instanceof Primitive && !boxed )
             return ((Primitive) arg).getType();
-        if ( arg instanceof BshLambda )
-            return ((BshLambda) arg).dummyType;
+        // if ( arg instanceof BshLambda )
+            // return ((BshLambda) arg).dummyType;
         return Primitive.unwrap(arg).getClass();
     }
 
