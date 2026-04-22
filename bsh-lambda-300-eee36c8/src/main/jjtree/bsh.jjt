@@ -265,6 +265,50 @@ public class Parser
     }
 
     /**
+        Only parse a return value when the next token is on the same line and
+        can start an expression.
+    */
+    boolean isSameLineReturnExpression()
+    {
+        Token next = getToken(1);
+        if (token.endLine < next.beginLine)
+            return false;
+        switch (next.kind) {
+            case BOOLEAN:
+            case BYTE:
+            case CHAR:
+            case DOUBLE:
+            case FALSE:
+            case FLOAT:
+            case INT:
+            case LONG:
+            case NEW:
+            case NULL:
+            case SHORT:
+            case TRUE:
+            case VOID:
+            case INTEGER_LITERAL:
+            case FLOATING_POINT_LITERAL:
+            case CHARACTER_LITERAL:
+            case STRING_LITERAL:
+            case LONG_STRING_LITERAL:
+            case IDENTIFIER:
+            case LPAREN:
+            case LBRACE:
+            case LBRACKET:
+            case BANG:
+            case TILDE:
+            case INCR:
+            case DECR:
+            case PLUS:
+            case MINUS:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
         Generate a ParseException with the specified message, pointing to the
         current token.
         The auto-generated Parser.generateParseException() method does not
@@ -1540,7 +1584,8 @@ void ContinueStatement() #ReturnStatement :
 void ReturnStatement() #ReturnStatement :
 {}
 {
-  "return" [ Expression() ] StatementTerminator() { jjtThis.kind = RETURN; }
+  "return" [ LOOKAHEAD( { isSameLineReturnExpression() } ) Expression() ]
+  StatementTerminator() { jjtThis.kind = RETURN; }
 }
 
 void SynchronizedStatement() #Block :
