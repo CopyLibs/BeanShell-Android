@@ -134,9 +134,8 @@ public final class DefaultArgsDesugar {
             return null;
         }
 
-        int bodyStart = skipThrowsClause(source, next);
-        bodyStart = skipWsAndCommentsForward(source, bodyStart);
-        if (bodyStart >= source.length() || source.charAt(bodyStart) != '{') {
+        int bodyStart = findMethodBodyStart(source, closeParen + 1);
+        if (bodyStart < 0) {
             return null;
         }
 
@@ -170,8 +169,10 @@ public final class DefaultArgsDesugar {
         int declStart = shape.declStart;
         int closeParen = findMatching(source, openParen, '(', ')');
         String prefix = source.substring(declStart, openParen);
-        int next = skipWsAndCommentsForward(source, closeParen + 1);
-        int bodyStart = skipWsAndCommentsForward(source, skipThrowsClause(source, next));
+        int bodyStart = findMethodBodyStart(source, closeParen + 1);
+        if (bodyStart < 0) {
+            return null;
+        }
         String betweenParenAndBody = source.substring(closeParen + 1, bodyStart);
         int bodyEnd = findMatching(source, bodyStart, '{', '}');
         String body = source.substring(bodyStart, bodyEnd + 1);
@@ -542,9 +543,48 @@ public final class DefaultArgsDesugar {
             if (ch == ';' || ch == '{' || ch == '}') {
                 break;
             }
+            if (ch == '\n' || ch == '\r') {
+                int lineStart = i;
+                while (lineStart > 0) {
+                    char c = source.charAt(lineStart - 1);
+                    if (c == '\n' || c == '\r') {
+                        break;
+                    }
+                    lineStart--;
+                }
+
+                String line = source.substring(lineStart, i).trim();
+                if (line.isEmpty()) {
+                    break;
+                }
+                if (line.startsWith("@") || isModifierOnlyLine(line)) {
+                    i--;
+                    continue;
+                }
+                break;
+            }
             i--;
         }
         return i;
+    }
+
+    private static boolean isModifierOnlyLine(String line) {
+        if (line.startsWith("//") || line.startsWith("/*") || line.startsWith("*")) {
+            return false;
+        }
+        String[] tokens = line.split("\\s+");
+        if (tokens.length == 0) {
+            return false;
+        }
+        for (String token : tokens) {
+            if (token.isEmpty()) {
+                continue;
+            }
+            if (!METHOD_MODIFIERS.contains(token)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static int skipThrowsClause(String source, int index) {
@@ -555,19 +595,64 @@ public final class DefaultArgsDesugar {
 
         i += "throws".length();
         int len = source.length();
+        boolean needType = true;
         while (i < len) {
-            int skip = skipLiteralOrComment(source, i);
-            if (skip > i) {
-                i = skip;
+            i = skipWsAndCommentsForward(source, i);
+            if (i >= len) {
+                return -1;
+            }
+
+            char ch = source.charAt(i);
+            if (ch == '{') {
+                return needType ? -1 : i;
+            }
+            if (ch == ';') {
+                return -1;
+            }
+
+            if (needType) {
+                if (!Character.isJavaIdentifierStart(ch)) {
+                    return -1;
+                }
+                i++;
+                while (i < len) {
+                    char c = source.charAt(i);
+                    if (Character.isJavaIdentifierPart(c) || c == '.' || c == '$') {
+                        i++;
+                        continue;
+                    }
+                    break;
+                }
+                needType = false;
                 continue;
             }
-            char ch = source.charAt(i);
-            if (ch == '{' || ch == ';') {
-                return i;
+
+            if (ch == ',') {
+                needType = true;
+                i++;
+                continue;
             }
-            i++;
+            return -1;
         }
-        return i;
+        return -1;
+    }
+
+    private static int findMethodBodyStart(String source, int afterCloseParen) {
+        int next = skipWsAndCommentsForward(source, afterCloseParen);
+        if (next >= source.length()) {
+            return -1;
+        }
+        if (startsWithWord(source, next, "throws")) {
+            int afterThrows = skipThrowsClause(source, next);
+            if (afterThrows < 0) {
+                return -1;
+            }
+            next = skipWsAndCommentsForward(source, afterThrows);
+        }
+        if (next < source.length() && source.charAt(next) == '{') {
+            return next;
+        }
+        return -1;
     }
 
     private static boolean startsWithWord(String source, int index, String word) {
