@@ -26,26 +26,28 @@ public interface ParserTreeConstants
   public int JJTPRIMARYEXPRESSION = 20;
   public int JJTMETHODINVOCATION = 21;
   public int JJTLAMBDAEXPRESSION = 22;
-  public int JJTPRIMARYSUFFIX = 23;
-  public int JJTLITERAL = 24;
-  public int JJTARGUMENTS = 25;
-  public int JJTALLOCATIONEXPRESSION = 26;
-  public int JJTARRAYDIMENSIONS = 27;
-  public int JJTLABELEDSTATEMENT = 28;
-  public int JJTSWITCHSTATEMENT = 29;
-  public int JJTSWITCHLABEL = 30;
-  public int JJTIFSTATEMENT = 31;
-  public int JJTWHILESTATEMENT = 32;
-  public int JJTFORSTATEMENT = 33;
-  public int JJTENHANCEDFORSTATEMENT = 34;
-  public int JJTTYPEDVARIABLEDECLARATION = 35;
-  public int JJTSTATEMENTEXPRESSIONLIST = 36;
-  public int JJTRETURNSTATEMENT = 37;
-  public int JJTTHROWSTATEMENT = 38;
-  public int JJTTRYSTATEMENT = 39;
-  public int JJTMULTICATCH = 40;
-  public int JJTTRYWITHRESOURCES = 41;
-  public int JJTAUTOCLOSEABLE = 42;
+  public int JJTWHENEXPRESSION = 23;
+  public int JJTWHENENTRY = 24;
+  public int JJTPRIMARYSUFFIX = 25;
+  public int JJTLITERAL = 26;
+  public int JJTARGUMENTS = 27;
+  public int JJTALLOCATIONEXPRESSION = 28;
+  public int JJTARRAYDIMENSIONS = 29;
+  public int JJTLABELEDSTATEMENT = 30;
+  public int JJTSWITCHSTATEMENT = 31;
+  public int JJTSWITCHLABEL = 32;
+  public int JJTIFSTATEMENT = 33;
+  public int JJTWHILESTATEMENT = 34;
+  public int JJTFORSTATEMENT = 35;
+  public int JJTENHANCEDFORSTATEMENT = 36;
+  public int JJTTYPEDVARIABLEDECLARATION = 37;
+  public int JJTSTATEMENTEXPRESSIONLIST = 38;
+  public int JJTRETURNSTATEMENT = 39;
+  public int JJTTHROWSTATEMENT = 40;
+  public int JJTTRYSTATEMENT = 41;
+  public int JJTMULTICATCH = 42;
+  public int JJTTRYWITHRESOURCES = 43;
+  public int JJTAUTOCLOSEABLE = 44;
 
 
   public String[] jjtNodeName = {
@@ -72,6 +74,8 @@ public interface ParserTreeConstants
     "PrimaryExpression",
     "MethodInvocation",
     "LambdaExpression",
+    "WhenExpression",
+    "WhenEntry",
     "PrimarySuffix",
     "Literal",
     "Arguments",
@@ -94,4 +98,4 @@ public interface ParserTreeConstants
     "AutoCloseable",
   };
 }
-/* ParserGeneratorCC - OriginalChecksum=8f20f6be71fceaf418d56fe7f536b30f (do not edit this line) */
+/* ParserGeneratorCC - OriginalChecksum=ffec6fb3060f8e5edbf35756f68095b0 (do not edit this line) */
