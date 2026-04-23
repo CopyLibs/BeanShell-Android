@@ -104,8 +104,10 @@ val name = "BeanShell"
 var lang = "BeanShell"
 var str1 = "Hello, $lang"
 print(str1) // "Hello, BeanShell"
+// 表达式
 var str2 = "1 + 2 = ${1 + 2}"
-print(str2)  // "1 + 2 = 3"
+print(str2) // "1 + 2 = 3"
+// 转义
 var str3 = "price=\$9"
 print(str3) // "price=$9"
 
@@ -118,11 +120,31 @@ hi("user", 1) // name: user, age: 1
 
 // 类型判断
 print(123 is Number) // true
-// 等价: print(123 instanceof Number) // true
+// 等价
+print(123 instanceof Number) // true
 
 // 类型转换
 print("1" as int) // 1
-// 等价: print((int) "1") // 1
+// 等价
+print((int) "1") // 1
+
+// 条件分支
+var num = 2
+var out1 = when (num) {
+    1 -> "one"
+    2, 3 -> "small"
+    else -> "other"
+}
+print(out1) // "small"
+// 等价
+var out2
+switch (num) {
+    case 1: out2 = "one"; break;
+    case 2:
+    case 3: out2 = "small"; break;
+    default: out2 = "other";
+}
+print(out2) // "small"
 ```
 
 ## 致谢

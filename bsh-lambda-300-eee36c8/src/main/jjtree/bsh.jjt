@@ -469,6 +469,7 @@ TOKEN : /* RESERVED WORDS AND LITERALS */
 | < TRY: "try" >
 | < VOID: "void" >
 | < VOLATILE: "volatile" >
+| < WHEN: "when" >
 | < WHILE: "while" >
 }
 
@@ -1094,11 +1095,30 @@ void LambdaExpression() #LambdaExpression :
   { jjtThis.singleParamName = t != null ? t.image : null; }
 }
 
+void WhenExpression() #WhenExpression :
+{}
+{
+  "when" "(" Expression() ")" "{"
+    ( WhenEntry() )+
+  "}"
+}
+
+void WhenEntry() #WhenEntry :
+{ int count = 0; }
+{
+  "else" { jjtThis.isElse = true; } "->" Expression()
+|
+  Expression() { count = 1; } ( "," Expression() { count++; } )*
+  "->" Expression() { jjtThis.numConditions = count; }
+}
+
 void PrimaryPrefix() : { }
 {
   Literal()
 |
   "(" Expression() ")"
+|
+  WhenExpression()
 |
   AllocationExpression()
 |
