@@ -73,6 +73,7 @@ public final class MainSecurityGuard {
     public void canInvokeMethod(Object thisArg, String methodName, Object[] args) throws SecurityError {
         final Object[] _args = Primitive.unwrap(args);
         this.canInvokeMethodImpl(thisArg, methodName, _args);
+        this.canInvokeMethodImplToReflectionCanSetField(thisArg, methodName, _args);
         this.canInvokeMethodImplToReflectionCanGetField(thisArg, methodName, _args);
         this.canInvokeMethodImplToReflectionCanConstruct(thisArg, methodName, _args);
         this.canInvokeMethodImplToReflectionCanInvokeMethod(thisArg, methodName, _args);
@@ -105,6 +106,31 @@ public final class MainSecurityGuard {
                 this.canGetField(_thisArg, fieldName);
             } catch (SecurityError error) {
                 throw SecurityError.reflectCantGetField(_thisArg, fieldName);
+            }
+        }
+    }
+
+    /** Validate if can set a field when using Reflection API */
+    private final void canInvokeMethodImplToReflectionCanSetField(Object thisArg, String methodName, Object[] args) throws SecurityError {
+        if (!methodName.equals("set") || args.length != 2 || !(thisArg instanceof Field)) return;
+
+        Field field = (Field) thisArg;
+        String fieldName = field.getName();
+        Object value = args[1];
+
+        if (Reflect.isStatic(field)) {
+            Class<?> _class = field.getDeclaringClass();
+            try {
+                this.canSetStaticField(_class, fieldName, value);
+            } catch (SecurityError error) {
+                throw SecurityError.reflectCantSetStaticField(_class, fieldName, value);
+            }
+        } else {
+            Object _thisArg = args[0];
+            try {
+                this.canSetField(_thisArg, fieldName, value);
+            } catch (SecurityError error) {
+                throw SecurityError.reflectCantSetField(_thisArg, fieldName, value);
             }
         }
     }
@@ -170,6 +196,22 @@ public final class MainSecurityGuard {
                 throw SecurityError.cantInvokeLocalMethod(methodName, _args);
     }
 
+    /** Validate if can set a field of a specific object */
+    public void canSetField(Object thisArg, String fieldName, Object value) throws SecurityError {
+        final Object _value = Primitive.unwrap(value);
+        for (SecurityGuard guard: this.securityGuards)
+            if (!guard.canSetField(thisArg, fieldName, _value))
+                throw SecurityError.cantSetField(thisArg, fieldName, _value);
+    }
+
+    /** Validate if can set a static field of a specific class */
+    public void canSetStaticField(Class<?> _class, String fieldName, Object value) throws SecurityError {
+        final Object _value = Primitive.unwrap(value);
+        for (SecurityGuard guard: this.securityGuards)
+            if (!guard.canSetStaticField(_class, fieldName, _value))
+                throw SecurityError.cantSetStaticField(_class, fieldName, _value);
+    }
+
     /** Validate if can get a field of a specific object */
     public void canGetField(Object thisArg, String fieldName) throws SecurityError {
         for (SecurityGuard guard: this.securityGuards)
@@ -209,6 +251,15 @@ public final class MainSecurityGuard {
 
         public boolean canInvokeMethod(Object thisArg, String methodName, Object[] args) {
             return !(thisArg instanceof MainSecurityGuard);
+        }
+
+        public boolean canSetField(Object thisArg, String fieldName, Object value) {
+            return !(thisArg instanceof MainSecurityGuard);
+        }
+
+        public boolean canSetStaticField(Class<?> _class, String fieldName, Object value) {
+            if (_class == Interpreter.class && fieldName.equals("mainSecurityGuard")) return false;
+            return true;
         }
 
         public boolean canGetStaticField(Class<?> _class, String fieldName) {

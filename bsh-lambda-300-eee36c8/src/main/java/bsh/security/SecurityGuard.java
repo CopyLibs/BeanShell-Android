@@ -27,7 +27,15 @@ public interface SecurityGuard {
         return true;
     }
 
-    // TODO: implement a 'canSetField' and 'canSetStaticField'
+    /** Validate and return if can set a field of a specific object */
+    public default boolean canSetField(Object thisArg, String fieldName, Object value) {
+        return true;
+    }
+
+    /** Validate and return if can set a static field of a specific class */
+    public default boolean canSetStaticField(Class<?> _class, String fieldName, Object value) {
+        return true;
+    }
 
     /** Validate and return if can get a field of a specific object */
     public default boolean canGetField(Object thisArg, String fieldName) {

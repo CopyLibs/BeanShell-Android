@@ -275,6 +275,12 @@ class LHS implements ParserConstants, Serializable {
                 nameSpace.setVariableOrProperty( varName, val, strictJava );
             return getValueImpl();
         } else  if ( type == FIELD )  try {
+            // Validate if can set this field
+            if (Reflect.isStatic(field))
+                Interpreter.mainSecurityGuard.canSetStaticField(field.getDeclaringClass(), field.getName(), val);
+            else
+                Interpreter.mainSecurityGuard.canSetField(object, field.getName(), val);
+
             Objects.requireNonNull(field,
                 "assign value, field cannot be null").invoke( object, val);
             return getValueImpl();

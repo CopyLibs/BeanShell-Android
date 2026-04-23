@@ -1,8 +1,5 @@
 package bsh.security;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import bsh.CallStack;
 import bsh.EvalError;
 import bsh.Node;
@@ -75,6 +72,34 @@ public class SecurityError extends UtilEvalError {
     /** Create a error for when can't invoke a local method ( aka commands ) */
     static SecurityError cantInvokeLocalMethod(String methodName, Object[] args) {
         String msg = String.format("Can't invoke this local method: %s(%s)", methodName, argsTypesString(args));
+        return new SecurityError(msg);
+    }
+
+    /** Create a error for when can't set a field */
+    static SecurityError cantSetField(Object thisArg, String fieldName, Object value) {
+        String msg = String.format("Can't set this field: %s.%s (%s)",
+                thisArg.getClass().getTypeName(), fieldName, argsTypesString(new Object[] { value }));
+        return new SecurityError(msg);
+    }
+
+    /** Create a error for when can't set a field using reflection */
+    static SecurityError reflectCantSetField(Object thisArg, String fieldName, Object value) {
+        String msg = String.format("Can't set this field using reflection: %s.%s (%s)",
+                thisArg.getClass().getTypeName(), fieldName, argsTypesString(new Object[] { value }));
+        return new SecurityError(msg);
+    }
+
+    /** Create a error for when can't set a static field */
+    static SecurityError cantSetStaticField(Class<?> _class, String fieldName, Object value) {
+        String msg = String.format("Can't set this static field: %s.%s (%s)",
+                _class.getTypeName(), fieldName, argsTypesString(new Object[] { value }));
+        return new SecurityError(msg);
+    }
+
+    /** Create a error for when can't set a static field using reflection */
+    static SecurityError reflectCantSetStaticField(Class<?> _class, String fieldName, Object value) {
+        String msg = String.format("Can't set this static field using reflection: %s.%s (%s)",
+                _class.getTypeName(), fieldName, argsTypesString(new Object[] { value }));
         return new SecurityError(msg);
     }
 
