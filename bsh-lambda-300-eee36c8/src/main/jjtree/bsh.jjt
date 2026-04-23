@@ -444,6 +444,7 @@ TOKEN : /* RESERVED WORDS AND LITERALS */
 | < IMPLEMENTS: "implements" >
 | < IMPORT: "import" >
 | < INSTANCEOF: "instanceof" >
+| < IS: "is" >
 | < INT: "int" >
 | < INTERFACE: "interface" >
 | < LONG: "long" >
@@ -984,10 +985,11 @@ void EqualityExpression() :
 }
 
 void InstanceOfExpression() :
-{ Token t = null; }
+{}
 {
   RelationalExpression()
-  [t = <INSTANCEOF> Type() { jjtThis.kind = t.kind; } #BinaryExpression(2) ]
+  [(<INSTANCEOF> | <IS>) Type()
+    { jjtThis.kind = INSTANCEOF; } #BinaryExpression(2) ]
 }
 
 void RelationalExpression() :

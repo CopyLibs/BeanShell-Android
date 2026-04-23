@@ -115,6 +115,11 @@ void hi(String name, int age = 18) {
 }
 hi("user") // name: user, age: 18
 hi("user", 1) // name: user, age: 1
+
+// 类型判断
+print("abc" is String) // true
+print(123 is Number) // true
+print(null is Object) // false
 ```
 
 ## 致谢
