@@ -45,7 +45,7 @@ class BSHBinaryExpression extends SimpleNode implements ParserConstants {
         /*
             Doing instanceof?  Next node is a type.
         */
-        if (kind == INSTANCEOF)
+        if ( (kind == INSTANCEOF || kind == IS) )
         {
             // null object ref is not instance of any type
             if ( lhs == Primitive.NULL )
@@ -70,6 +70,18 @@ class BSHBinaryExpression extends SimpleNode implements ParserConstants {
             // General case - perform the instanceof based on assignable
             return Types.isJavaBaseAssignable( rhs, lhs.getClass() )
                     ? Primitive.TRUE : Primitive.FALSE;
+        }
+
+        if (kind == AS)
+        {
+            Class<?> rhs = ((BSHType)jjtGetChild(1)).getType(
+                callstack, interpreter );
+
+            try {
+                return Types.castObject( lhs, rhs, Types.CAST );
+            } catch ( UtilEvalError e ) {
+                throw e.toEvalError( this, callstack );
+            }
         }
 
         /*

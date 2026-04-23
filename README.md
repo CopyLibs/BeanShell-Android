@@ -117,9 +117,12 @@ hi("user") // name: user, age: 18
 hi("user", 1) // name: user, age: 1
 
 // 类型判断
-print("abc" is String) // true
 print(123 is Number) // true
-print(null is Object) // false
+// 等价: print(123 instanceof Number) // true
+
+// 类型转换
+print("1" as int) // 1
+// 等价: print((int) "1") // 1
 ```
 
 ## 致谢
