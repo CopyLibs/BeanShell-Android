@@ -342,10 +342,8 @@ public class ClassGeneratorUtil implements Opcodes {
      * @return parameter type signature
      */
     private static String getTypeParameterSignature(String[] paramTypes) {
-        StringBuilder sb = new StringBuilder("<");
-        for (final String pt : paramTypes)
-            sb.append(pt).append(":");
-        return sb.toString();
+        // TODO: Generate a real generic Signature when generic metadata is preserved.
+        return null;
     }
 
     /** Generate support code needed for Enum types.
