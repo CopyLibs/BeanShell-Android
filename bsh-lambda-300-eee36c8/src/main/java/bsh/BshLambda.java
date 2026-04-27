@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Base64;
@@ -122,10 +123,24 @@ public abstract class BshLambda {
     protected <T> T convertTo(Class<T> functionalInterface) throws UtilEvalError {
         if (!BshLambda.isAssignable(this.dummyType, functionalInterface, Types.BSH_ASSIGNABLE))
             throw new UtilEvalError("This BshLambda can't be converted to " + functionalInterface.getName());
-        Class<T> _class = getClassForFI(functionalInterface);
-
         try {
-            return (T) _class.getConstructors()[0].newInstance(this);
+            return (T) Proxy.newProxyInstance(
+                    functionalInterface.getClassLoader(),
+                    new Class<?>[] { functionalInterface },
+                    (proxy, method, args) -> {
+                        if (method.getDeclaringClass() == Object.class) {
+                            switch (method.getName()) {
+                                case "toString":
+                                    return "BshLambdaProxy[" + this + "]";
+                                case "equals":
+                                    return args != null && args.length == 1 && proxy == args[0];
+                                case "hashCode":
+                                    return System.identityHashCode(proxy);
+                            }
+                        }
+                        return this.invoke(args != null ? args : Reflect.ZERO_ARGS,
+                                method.getExceptionTypes(), method.getReturnType());
+                    });
         } catch (Throwable e) {
             throw new UtilEvalError("Can't create a instance for the generate class for the BshLambda: " + e.getMessage(), e);
         }
