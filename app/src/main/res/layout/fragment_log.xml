@@ -22,26 +22,38 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <LinearLayout
+    <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingHorizontal="12dp"
+        android:scrollbars="horizontal"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/logTvContent"
-            style="@style/TextAppearance.AppCompat.Small"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:fontFamily="monospace"
-            android:hyphenationFrequency="fullFast"
-            android:textColor="?attr/colorOnSurface"
-            android:textIsSelectable="true"
-            android:textSize="12sp"
-            tools:text="Log" />
+            android:fillViewport="true"
+            android:scrollbars="vertical">
 
-    </LinearLayout>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/logTvContent"
+                style="@style/TextAppearance.AppCompat.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:fontFamily="monospace"
+                android:hyphenationFrequency="none"
+                android:scrollHorizontally="true"
+                android:textColor="?attr/colorOnSurface"
+                android:textIsSelectable="true"
+                android:textSize="12sp"
+                tools:text="Log" />
+
+        </ScrollView>
+
+    </HorizontalScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
