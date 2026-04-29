@@ -17,6 +17,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
@@ -332,19 +333,22 @@ abstract class ExecutingInvocable extends Invocable {
         boolean isFixedArity = false;
         if (isVarArgs()) {
             if (getLastParameterIndex() < params.length) {
-                Object[] varargs;
+                Object lastParam = params[getLastParameterIndex()];
                 if (getParameterCount() == params.length
-                    && params[getLastParameterIndex()].getClass().isArray()
-                    && getVarArgsComponentType().isAssignableFrom(params[getLastParameterIndex()].getClass().getComponentType())) {
+                    && lastParam != null
+                    && lastParam.getClass().isArray()
+                    && getVarArgsComponentType().isAssignableFrom(lastParam.getClass().getComponentType())) {
                     isFixedArity = true;
-                    parameters.add(params[getLastParameterIndex()]);
+                    parameters.add(lastParam);
                 } else {
-                    varargs = Arrays.copyOfRange(
-                            params, getLastParameterIndex(), params.length);
-                    for (int i = 0; i < varargs.length; i++)
-                        parameters.add(super.coerceToType(
-                            varargs[i], getVarArgsComponentType()));
+                    int length = params.length - getLastParameterIndex();
+                    Object varargs = Array.newInstance(getVarArgsComponentType(), length);
+                    for (int i = 0; i < length; i++)
+                        Array.set(varargs, i, super.coerceToType(params[getLastParameterIndex() + i], getVarArgsComponentType()));
+                    parameters.add(varargs);
                 }
+            } else {
+                parameters.add(Array.newInstance(getVarArgsComponentType(), 0));
             }
         } else if (null != params && getLastParameterIndex() < params.length)
             parameters.add(super.coerceToType(params[getLastParameterIndex()],
