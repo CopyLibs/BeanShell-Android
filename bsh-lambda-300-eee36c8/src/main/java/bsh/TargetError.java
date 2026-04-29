@@ -70,9 +70,8 @@ public final class TargetError extends EvalError
 
     public synchronized String getMessage()
     {
-        return super.getMessage()
-            + "Caused by: " +
-            printTargetError( getCause() );
+        return super.getMessage() + "\n"
+            + "Caused by: " + printTargetError( getCause() );
     }
 
     public void printStackTrace( boolean debug, PrintStream out ) {

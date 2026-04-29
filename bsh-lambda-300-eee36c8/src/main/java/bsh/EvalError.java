@@ -66,15 +66,14 @@ public class EvalError extends Exception
     {
         String trace;
         if ( node != null )
-            trace = " : at Line: "+ node.getLineNumber()
-                + " : in file: "+ node.getSourceFile()
-                + " : "+node.getText();
+            trace = "\n\t" + "at " + node.getText() + " "
+                + "(" + node.getSourceFile() + ":" + node.getLineNumber() + ")";
         else
             // Users should not normally see this.
             trace = ": <at unknown location>";
 
         if ( callstack != null )
-            trace = trace +"\n" + getScriptStackTrace();
+            trace = trace + getScriptStackTrace();
 
         return getRawMessage() + trace;
     }
@@ -136,9 +135,8 @@ public class EvalError extends Exception
             {
                 trace = trace + "\nCalled from method: " + ns.getName();
                 if ( node != null )
-                    trace += " : at Line: "+ node.getLineNumber()
-                        + " : in file: "+ node.getSourceFile()
-                        + " : "+node.getText();
+                    trace += "\n\t" + "at " + node.getText() + " "
+                        + "(" + node.getSourceFile() + ":" + node.getLineNumber() + ")";
             }
         }
 

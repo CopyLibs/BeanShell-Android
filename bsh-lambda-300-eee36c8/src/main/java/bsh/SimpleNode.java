@@ -229,12 +229,16 @@ class SimpleNode implements Node, Serializable {
         Token t = firstToken;
         while ( t!=null ) {
             text.append(t.image);
-            if ( !t.image.equals(".") )
-                text.append(" ");
             if ( t==lastToken ||
                 t.image.equals("{") || t.image.equals(";") )
                 break;
-            t=t.next;
+            Token next=t.next;
+            if ( next==null )
+                break;
+            if ( next.beginLine > t.endLine ||
+                next.beginColumn > t.endColumn + 1 )
+                text.append(" ");
+            t=next;
         }
 
         return text.toString();
