@@ -444,8 +444,6 @@ TOKEN : /* RESERVED WORDS AND LITERALS */
 | < IMPLEMENTS: "implements" >
 | < IMPORT: "import" >
 | < INSTANCEOF: "instanceof" >
-| < IS: "is" >
-| < AS: "as" >
 | < INT: "int" >
 | < INTERFACE: "interface" >
 | < LONG: "long" >
@@ -990,13 +988,7 @@ void InstanceOfExpression() :
 { Token t = null; }
 {
   RelationalExpression()
-  [
-    (t = <INSTANCEOF> | t = <IS>) Type()
-      { jjtThis.kind = t.kind; } #BinaryExpression(2)
-  |
-    t = <AS> Type()
-      { jjtThis.kind = t.kind; } #BinaryExpression(2)
-  ]
+  [t = <INSTANCEOF> Type() { jjtThis.kind = t.kind; } #BinaryExpression(2) ]
 }
 
 void RelationalExpression() :
