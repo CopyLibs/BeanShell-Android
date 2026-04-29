@@ -116,7 +116,7 @@ public class Interpreter
     private boolean EOF;
     public static boolean TRACE;
     public static boolean COMPATIBIILTY;
-    public static final String VERSION = "3.0.0.beta10";
+    public static final String VERSION = Version.VERSION;
 
     static {
         // ResourceBundle b = ResourceBundle.getBundle("version");
