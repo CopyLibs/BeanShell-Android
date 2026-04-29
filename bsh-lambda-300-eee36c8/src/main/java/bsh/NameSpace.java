@@ -1386,14 +1386,6 @@ public class NameSpace
          * precedence rules... so for max efficiency put the most common ones
          * later. */
         this.importPackage("org.json");
-        this.importPackage("java.util.stream");
-        this.importPackage("java.util.regex");
-        this.importPackage("java.util.function");
-        this.importPackage("java.util");
-        this.importPackage("java.net");
-        this.importPackage("java.math");
-        this.importPackage("java.lang");
-        this.importPackage("java.io");
         this.importPackage("android.widget");
         this.importPackage("android.view");
         this.importPackage("android.text");
@@ -1401,6 +1393,14 @@ public class NameSpace
         this.importPackage("android.graphics");
         this.importPackage("android.content");
         this.importPackage("android.app");
+        this.importPackage("java.util.stream");
+        this.importPackage("java.util.regex");
+        this.importPackage("java.util.function");
+        this.importPackage("java.util");
+        this.importPackage("java.net");
+        this.importPackage("java.math");
+        this.importPackage("java.io");
+        this.importPackage("java.lang");
         this.importCommands("/bsh/commands");
     }
 
