@@ -27,6 +27,8 @@
 
 package bsh;
 
+import java.lang.reflect.Array;
+
 class BSHMethodDeclaration extends SimpleNode
 {
     public String name;
@@ -48,8 +50,20 @@ class BSHMethodDeclaration extends SimpleNode
     int numThrows = 0;
     boolean isVarArgs;
     private boolean isScriptedObject;
+    
+    private boolean isExtension;
+    private Class<?> receiverType;
+    private String receiverText;
 
     BSHMethodDeclaration(int id) { super(id); }
+    
+    public boolean isExtension() {
+        return this.isExtension;
+    }
+
+    public Class<?> getReceiverType() {
+        return this.receiverType;
+    }
 
     /**
         Set the returnTypeNode, paramsNode, and blockNode based on child
@@ -57,23 +71,45 @@ class BSHMethodDeclaration extends SimpleNode
     */
     synchronized void insureNodesParsed()
     {
-        if ( paramsNode != null ) // there is always a paramsNode
+        if ( paramsNode != null )
             return;
 
-        Object firstNode = jjtGetChild(0);
-        firstThrowsClause = 1;
-        if ( firstNode instanceof BSHReturnType )
-        {
+        int childIndex = 0;
+        Node firstNode = jjtGetChild(childIndex);
+
+        if ( firstNode instanceof BSHReturnType ) {
             returnTypeNode = (BSHReturnType)firstNode;
-            paramsNode = (BSHFormalParameters)jjtGetChild(1);
-            if ( jjtGetNumChildren() > 2+numThrows )
-                blockNode = (BSHBlock)jjtGetChild(2+numThrows); // skip throws
-            ++firstThrowsClause;
+            childIndex++;
+            firstNode = jjtGetChild(childIndex);
         }
-        else
-        {
-            paramsNode = (BSHFormalParameters)jjtGetChild(0);
-            blockNode = (BSHBlock)jjtGetChild(1+numThrows); // skip throws
+
+        if ( firstNode instanceof BSHAmbiguousName ) {
+            String fullName = ((BSHAmbiguousName)firstNode).text;
+            if ( fullName.contains(".") ) {
+                // Split by dot to resolve extension receiver properly
+                String[] parts = fullName.split("\\.");
+                this.name = parts[parts.length - 1].trim(); 
+                
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < parts.length - 1; i++) {
+                    if (i > 0) sb.append(".");
+                    sb.append(parts[i].trim());
+                }
+                this.receiverText = sb.toString();
+                this.isExtension = true;
+            } else {
+                this.name = fullName.trim();
+                this.isExtension = false;
+            }
+            childIndex++;
+        }
+
+        paramsNode = (BSHFormalParameters)jjtGetChild(childIndex);
+        childIndex++;
+
+        firstThrowsClause = childIndex;
+        if ( jjtGetNumChildren() > childIndex + numThrows ) {
+            blockNode = (BSHBlock)jjtGetChild(childIndex + numThrows);
         }
 
         if (null != blockNode && blockNode.jjtGetNumChildren() > 0) {
@@ -101,6 +137,57 @@ class BSHMethodDeclaration extends SimpleNode
         else
             return null;
     }
+    
+    /**
+        Converts the intercepted String receiverText into a real Class
+    */
+    Class<?> evalReceiverType( CallStack callstack, Interpreter interpreter ) throws EvalError
+    {
+        insureNodesParsed();
+        if ( isExtension && receiverText != null ) {
+            try {
+                String baseText = receiverText;
+                int dimensions = 0;
+    
+                // 1. Strip all array brackets "[]" and count dimensions
+                while ( baseText.endsWith("[]") ) {
+                    dimensions++;
+                    baseText = baseText.substring(0, baseText.length() - 2);
+                }
+    
+                Class<?> clas;
+                // 2. Prioritize primitive types
+                switch (baseText) {
+                    case "boolean": clas = boolean.class; break;
+                    case "char":    clas = char.class; break;
+                    case "byte":    clas = byte.class; break;
+                    case "short":   clas = short.class; break;
+                    case "int":     clas = int.class; break;
+                    case "long":    clas = long.class; break;
+                    case "float":   clas = float.class; break;
+                    case "double":  clas = double.class; break;
+                    default:
+                        // 3. Fallback to reference types
+                        clas = callstack.top().getClass( baseText );
+                        if ( clas == null ) {
+                            throw new UtilEvalError(
+                                "Extension receiver base class not found: " + baseText);
+                        }
+                        break;
+                }
+    
+                // 4. Generate the corresponding array Class using reflection if dimensions > 0
+                if ( dimensions > 0 ) {
+                    return Array.newInstance(clas, new int[dimensions]).getClass();
+                }
+    
+                return clas;
+            } catch ( UtilEvalError e ) {
+                throw e.toEvalError( this, callstack );
+            }
+        }
+        return null;
+    }
 
     String getReturnTypeDescriptor(
         CallStack callstack, Interpreter interpreter, String defaultPackage )
@@ -122,12 +209,13 @@ class BSHMethodDeclaration extends SimpleNode
         Evaluate the declaration of the method.  That is, determine the
         structure of the method and install it into the caller's namespace.
     */
-    public Object eval( CallStack callstack, Interpreter interpreter )
-        throws EvalError
+    public Object eval( CallStack callstack, Interpreter interpreter ) throws EvalError
     {
+        insureNodesParsed();
         returnType = evalReturnType( callstack, interpreter );
-        evalNodes( callstack, interpreter );
+        receiverType = evalReceiverType( callstack, interpreter ); 
 
+        evalNodes( callstack, interpreter );
         // Install an *instance* of this method in the namespace.
         // See notes in BshMethod
 
@@ -137,6 +225,7 @@ class BSHMethodDeclaration extends SimpleNode
 // look into this
         NameSpace namespace = callstack.top();
         BshMethod bshMethod = new BshMethod( this, namespace, modifiers, isScriptedObject );
+
         if (!namespace.isMethod && !namespace.isClass)
             interpreter.getClassManager().addListener(bshMethod);
         else if (namespace.isMethod && !paramsNode.isListener()) {
@@ -145,7 +234,6 @@ class BSHMethodDeclaration extends SimpleNode
         }
 
         namespace.setMethod( bshMethod );
-
         return Primitive.VOID;
     }
 

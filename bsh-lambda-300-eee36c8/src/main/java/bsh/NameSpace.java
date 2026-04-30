@@ -812,6 +812,37 @@ public class NameSpace
             return this.parent.getMethod(name, sig);
         return method;
     }
+    
+    /**
+     * Retrieve a matching extension method from this namespace or its parents.
+     * @param receiverType the type of the receiver object
+     * @param name the method name
+     * @param sig the method signature
+     * @return the most specific BshMethod configured as an extension, or null if not found
+     */
+    public BshMethod getExtensionMethod(Class<?> receiverType, String name, Class<?>[] sig) {
+        List<BshMethod> candidates = new ArrayList<>();
+        NameSpace currentNS = this;
+        
+        while (currentNS != null) {
+            if (currentNS.methods.containsKey(name)) {
+                for (BshMethod m : currentNS.methods.get(name)) {
+                    if (m.isExtensionMethod() && m.getReceiverType() != null) {
+                        // Check if the actual receiver type is assignable to the extension's declared type
+                        if (Types.isJavaBoxTypesAssignable(m.getReceiverType(), receiverType)) {
+                            candidates.add(m);
+                        }
+                    }
+                }
+            }
+            currentNS = currentNS.getParent();
+        }
+        
+        if (!candidates.isEmpty()) {
+            return Reflect.findMostSpecificBshMethod(sig, candidates);
+        }
+        return null;
+    }
 
     /** Import a class name. Subsequent imports override earlier ones
      * @param name the name */

@@ -748,15 +748,19 @@ void MethodDeclaration() #MethodDeclaration :
 }
 {
     mods = Modifiers( Modifiers.METHOD, false ) { if (null != mods) jjtThis.modifiers = mods; }
-(
-    LOOKAHEAD( <IDENTIFIER> "(" )
-    t = <IDENTIFIER> { jjtThis.name = t.image; }
-|
-    ReturnType()
-    t = <IDENTIFIER> { jjtThis.name = t.image; }
-)
-    FormalParameters()
-    [ "throws" count=NameList() { jjtThis.numThrows=count; } ]
+    
+    /* 
+       Ensure correct Java Switch logic generation, avoiding previous }{ generation errors.
+       Based on lookahead, choose to read [ReturnType + Name] or just [Name].
+    */
+    (
+      LOOKAHEAD( ReturnType() ExtensionName() FormalParameters() )
+      ReturnType() ExtensionName()
+    |
+      ExtensionName()
+    )
+
+    FormalParameters()[ "throws" count=NameList() { jjtThis.numThrows = count; } ]
     ( Block() | MethodDeclTerminator() )
 }
 
@@ -877,6 +881,30 @@ void AmbiguousName() #AmbiguousName :
     s = new StringBuilder(t.image);
   }
   ( LOOKAHEAD(2) "." t = <IDENTIFIER> { s.append("."+t.image); } )* {
+    jjtThis.text = s.toString();
+  }
+}
+
+void ExtensionName() #AmbiguousName :
+{
+    Token t;
+    StringBuilder s;
+}
+{
+  ( t = <IDENTIFIER>
+    | t = "boolean" | t = "char" | t = "byte" | t = "short"
+    | t = "int"    | t = "long" | t = "float" | t = "double"
+  ) {
+    s = new StringBuilder(t.image);
+  }
+  ( LOOKAHEAD(2) "[" "]" { s.append("[]"); } )* 
+  
+  ( LOOKAHEAD(2) "." t = <IDENTIFIER> { 
+      s.append("." + t.image); 
+    } 
+    ( LOOKAHEAD(2) "[" "]" { s.append("[]"); } )*
+  )* 
+  {
     jjtThis.text = s.toString();
   }
 }
@@ -1400,12 +1428,12 @@ void BlockStatement() :
   ClassDeclaration()
 |
   LOOKAHEAD ( Modifiers( Modifiers.METHOD, true )
-        ReturnType() <IDENTIFIER> "("
+        ReturnType() ExtensionName() "("
   )
     MethodDeclaration()
 |
   LOOKAHEAD ( Modifiers( Modifiers.METHOD, true )
-        <IDENTIFIER> FormalParameters() [ "throws" NameList() ] "{"
+        ExtensionName() FormalParameters() [ "throws" NameList() ] "{"
   )
     MethodDeclaration()
 |
@@ -1414,10 +1442,8 @@ void BlockStatement() :
 |
   Statement()
 |
-  // Allow BeanShell imports in any block
   ImportDeclaration()
 |
-  // Allow BeanShell package declarations in any block
   PackageDeclaration()
 }
 

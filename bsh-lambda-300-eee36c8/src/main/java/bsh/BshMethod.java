@@ -86,9 +86,11 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
     private transient MethodCallback methodCallback;
     protected boolean isVarArgs;
     boolean isScriptedObject = false;
+    private boolean isExtensionMethod = false;
+    private Class<?> receiverType = null;
 
     // End method components
-
+    
     BshMethod(
         BSHMethodDeclaration method,
         NameSpace declaringNameSpace, Modifiers modifiers, boolean isScriptedObject )
@@ -97,6 +99,9 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
             method.paramsNode.paramTypes, method.paramsNode.getParamModifiers(),
             method.blockNode, declaringNameSpace, modifiers, method.isVarArgs );
         this.isScriptedObject = isScriptedObject;
+        // Safely inherit extension attributes from AST declaration
+        this.isExtensionMethod = method.isExtension(); 
+        this.receiverType = method.getReceiverType();  
     }
 
     BshMethod(
@@ -213,6 +218,14 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
             return creturnType;
         }
         return this.javaMethod.getReturnType();
+    }
+    
+    public boolean isExtensionMethod() {
+        return this.isExtensionMethod;
+    }
+
+    public Class<?> getReceiverType() {
+        return this.receiverType;
     }
 
     public Modifiers getModifiers() {
@@ -386,48 +399,95 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
         }
         return methodCallback.invoke( argValues );
     }
+    
+    /**
+        Invoke the bsh method with the specified args, interpreter ref,
+        and callstack. Includes extension receiver support.
+        @param overrideNameSpace When true the method is executed in the namespace on the top of the stack.
+        @param extensionReceiver When not null, this object is treated as the 'this' context for an extension function.
+    */
+    public Object invoke(
+        Object[] argValues, Interpreter interpreter, CallStack callstack,
+            Node callerInfo, boolean overrideNameSpace, Object extensionReceiver )
+        throws EvalError
+    {
+        Interpreter.debug("Bsh method invoke: ", this.name, " overrideNameSpace: ", overrideNameSpace);
+        if ( argValues != null )
+            for (int i=0; i<argValues.length; i++)
+                if ( argValues[i] == null )
+                    throw new Error("HERE!");
 
-    private Object invokeImpl(
+        if ( methodCallback != null )
+            return invokeMethodCallback( argValues, callerInfo, callstack );
+
+        if ( javaMethod != null )
+        {
+            try {
+                if (Reflect.isStatic(javaMethod))
+                    Interpreter.mainSecurityGuard.canInvokeStaticMethod(javaMethod.getDeclaringClass(), javaMethod.getName(), argValues);
+                else
+                    Interpreter.mainSecurityGuard.canInvokeMethod(javaObject, javaMethod.getName(), argValues);
+
+                return javaMethod.invoke(javaObject, argValues);
+            } catch ( ReflectError e ) {
+                throw new EvalError( "Error invoking Java method: "+e, callerInfo, callstack );
+            } catch ( InvocationTargetException e2 ) {
+                throw new TargetError( "Exception invoking imported object method.", e2, callerInfo, callstack, true/*isNative*/ );
+            } catch (UtilEvalError e3) {
+                throw e3.toEvalError(callerInfo, callstack);
+            }
+        }
+
+        if ( modifiers != null && modifiers.hasModifier("synchronized") )
+        {
+            Object lock;
+            if ( declaringNameSpace.isClass )
+            {
+                try {
+                    lock = declaringNameSpace.getClassInstance();
+                } catch ( UtilEvalError e ) {
+                    throw new InterpreterError( "Can't get class instance for synchronized method.");
+                }
+            } else
+                lock = declaringNameSpace.getThis(interpreter);
+
+            synchronized( lock )
+            {
+                return invokeImpl( argValues, interpreter, callstack, callerInfo, overrideNameSpace, extensionReceiver );
+            }
+        } else
+            return invokeImpl( argValues, interpreter, callstack, callerInfo, overrideNameSpace, extensionReceiver );
+    }
+    
+    /**
+        Compatibility wrapper for original invokeImpl.
+    */
+    Object invokeImpl(
         Object[] argValues, Interpreter interpreter, CallStack callstack,
             Node callerInfo, boolean overrideNameSpace )
         throws EvalError
     {
+        return invokeImpl(argValues, interpreter, callstack, callerInfo, overrideNameSpace, null);
+    }
+
+    private Object invokeImpl(
+        Object[] argValues, Interpreter interpreter, CallStack callstack,
+            Node callerInfo, boolean overrideNameSpace, Object extensionReceiver )
+        throws EvalError
+    {
         if (hasModifier("abstract"))
-            throw new EvalError(
-                    "Cannot invoke abstract method "
-                    + name, callerInfo, callstack );
+            throw new EvalError( "Cannot invoke abstract method " + name, callerInfo, callstack );
 
         Class<?> returnType = getReturnType();
-        Class<?> [] paramTypes = getParameterTypes();
+        Class<?>[] paramTypes = getParameterTypes();
 
-        if ( callstack == null )
-            callstack = new CallStack( declaringNameSpace );
+        if ( callstack == null ) callstack = new CallStack( declaringNameSpace );
+        if ( argValues == null ) argValues = Reflect.ZERO_ARGS;
 
-        if ( argValues == null )
-            argValues = Reflect.ZERO_ARGS;
-
-        // Cardinality (number of args) mismatch
         if ( !isVarArgs() && argValues.length != getParameterCount() ) {
-        /*
-            // look for help string
-            try {
-                // should check for null namespace here
-                String help =
-                    (String)declaringNameSpace.get(
-                    "bsh.help."+name, interpreter );
-
-                interpreter.println(help);
-                return Primitive.VOID;
-            } catch ( Exception e ) {
-                throw eval error
-            }
-        */
-            throw new EvalError(
-                "Wrong number of arguments for local method: "
-                + name, callerInfo, callstack );
+            throw new EvalError( "Wrong number of arguments for local method: " + name, callerInfo, callstack );
         }
 
-        // Make the local namespace for the method invocation
         NameSpace localNameSpace;
         if ( overrideNameSpace )
             localNameSpace = callstack.top();
@@ -435,6 +495,20 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
             localNameSpace = new NameSpace( declaringNameSpace, name );
             localNameSpace.isMethod = true;
         }
+
+        // --- Extension function injection logic ---
+        if ( isExtensionMethod && extensionReceiver != null ) {
+            Object rawReceiver = Primitive.unwrap(extensionReceiver);
+            // Implicitly import the receiver's object context
+            localNameSpace.importObject(rawReceiver);
+            try {
+                // Must be named exactly this way for interception in Name.java
+                localNameSpace.setLocalVariable("__bsh_extension_receiver", extensionReceiver, false);
+                // Also set "this" as a standard scripting fallback
+                localNameSpace.setLocalVariable("this", extensionReceiver, false);
+            } catch (UtilEvalError e) { }
+        }
+
         localNameSpace.setNode( callerInfo );
 
         /*

@@ -474,6 +474,13 @@ class Name implements java.io.Serializable
     {
         if ( varName.equals("this") )
         {
+            Variable extVar = thisNameSpace.getVariableImpl("__bsh_extension_receiver", true);
+            if ( extVar != null ) {
+                Object value = extVar.getValue();
+                if ( value != Primitive.VOID && value != Primitive.NULL ) {
+                    return value; 
+                }
+            }
             /*
                 Somewhat of a hack.  If the special fields are visible (we're
                 operating relative to a 'this' type already) dissallow further
