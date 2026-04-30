@@ -621,7 +621,7 @@ public class Interpreter
         Interpreter.debug("Sourcing file: ", file);
         Reader sourceIn = new BufferedReader( new FileReader(file) );
         try {
-           return eval( sourceIn, namespace, file.getPath() );
+           return eval( sourceIn, namespace, file.getName() );
         } finally {
             sourceIn.close();
         }
@@ -807,7 +807,7 @@ public class Interpreter
     */
     public Object eval( String statements ) throws EvalError {
         Interpreter.debug("eval(String): ", statements);
-        return eval(statements, globalNameSpace, "Memory");
+        return eval(statements, globalNameSpace, "eval string");
     }
 
     /**
