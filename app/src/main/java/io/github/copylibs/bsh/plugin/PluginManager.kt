@@ -32,6 +32,11 @@ object PluginManager {
             }
         )
         plugin.setMethod(
+            BshMethod("loadJava", arrayOf(String::class.java)) { args ->
+                plugin.source(args[0].toString())
+            }
+        )
+        plugin.setMethod(
             BshMethod("loadDex", arrayOf(String::class.java)) { args ->
                 plugin.loadDex(args[0].toString())
             }
