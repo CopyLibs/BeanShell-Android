@@ -504,8 +504,6 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
             try {
                 // Must be named exactly this way for interception in Name.java
                 localNameSpace.setLocalVariable("__bsh_extension_receiver", extensionReceiver, false);
-                // Also set "this" as a standard scripting fallback
-                localNameSpace.setLocalVariable("this", extensionReceiver, false);
             } catch (UtilEvalError e) { }
         }
 

@@ -122,7 +122,7 @@ public final class Reflect {
                 if (object == Primitive.VOID) throw new EvalError("Attempt to invoke method: "
                     + methodName + "() on undefined", callerInfo, callstack, re);
                     
-                NameSpace ns = interpreter.getNameSpace();
+                NameSpace ns = callstack.top();
                 Class<?>[] argTypes = Types.getTypes(args);
                 BshMethod extensionMethod = ns.getExtensionMethod(object.getClass(), methodName, argTypes);
                 if (extensionMethod != null) {
