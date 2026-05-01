@@ -340,11 +340,22 @@ abstract class ExecutingInvocable extends Invocable {
                     && getVarArgsComponentType().isAssignableFrom(lastParam.getClass().getComponentType())) {
                     isFixedArity = true;
                     parameters.add(lastParam);
+                } else if (getParameterCount() == params.length
+                    && lastParam != null
+                    && lastParam.getClass().isArray()
+                    && Object[].class.isAssignableFrom(lastParam.getClass())) {
+                    Object[] source = (Object[]) lastParam;
+                    Object varargs = Array.newInstance(getVarArgsComponentType(), source.length);
+                    for (int i = 0; i < source.length; i++)
+                        Array.set(varargs, i, super.coerceToType(
+                            source[i], getVarArgsComponentType()));
+                    parameters.add(varargs);
                 } else {
                     int length = params.length - getLastParameterIndex();
                     Object varargs = Array.newInstance(getVarArgsComponentType(), length);
                     for (int i = 0; i < length; i++)
-                        Array.set(varargs, i, super.coerceToType(params[getLastParameterIndex() + i], getVarArgsComponentType()));
+                        Array.set(varargs, i, super.coerceToType(
+                            params[getLastParameterIndex() + i], getVarArgsComponentType()));
                     parameters.add(varargs);
                 }
             } else {
