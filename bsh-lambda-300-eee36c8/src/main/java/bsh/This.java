@@ -74,7 +74,9 @@ public final class This implements java.io.Serializable, Runnable
         /** The bsh static namespace variable that holds the constructor methods */
         BSHCONSTRUCTORS { public String toString() { return "_bshConstructors"; } },
         /** The bsh static namespace variable that holds the class modifiers */
-        BSHCLASSMODIFIERS { public String toString() { return "_bshClassModifiers"; } }
+        BSHCLASSMODIFIERS { public String toString() { return "_bshClassModifiers"; } },
+        /** The bsh namespace variable that holds the receiver for extension method calls */
+        BSHEXTENSIONMETHODRECEIVER { public String toString() { return "_bshExtensionMethodReceiver"; } },
     }
 
 

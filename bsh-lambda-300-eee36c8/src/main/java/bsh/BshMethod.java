@@ -26,6 +26,8 @@
 
 package bsh;
 
+import static bsh.This.Keys.BSHEXTENSIONMETHODRECEIVER;
+
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -85,7 +87,10 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
     // Callback Method, for a BshObject that delegates to a host callback
     private transient MethodCallback methodCallback;
     protected boolean isVarArgs;
-    boolean isScriptedObject = false;
+    protected boolean isScriptedObject = false;
+    // Extension Method
+    protected boolean isExtension = false;
+    protected Class<?> receiverType = null;
 
     // End method components
 
@@ -97,6 +102,8 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
             method.paramsNode.paramTypes, method.paramsNode.getParamModifiers(),
             method.blockNode, declaringNameSpace, modifiers, method.isVarArgs );
         this.isScriptedObject = isScriptedObject;
+        this.isExtension = method.isExtension;
+        this.receiverType = method.receiverType;
     }
 
     BshMethod(
@@ -293,7 +300,7 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
     */
     Object invoke(
         Object[] argValues, Interpreter interpreter, CallStack callstack,
-            Node callerInfo, boolean overrideNameSpace )
+            Node callerInfo, boolean overrideNameSpace, Object extensionReceiver )
         throws EvalError
     {
         Interpreter.debug("Bsh method invoke: ", this.name, " overrideNameSpace: ", overrideNameSpace);
@@ -349,11 +356,19 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
             {
                 return invokeImpl(
                     argValues, interpreter, callstack,
-                    callerInfo, overrideNameSpace );
+                    callerInfo, overrideNameSpace, extensionReceiver );
             }
         } else
             return invokeImpl( argValues, interpreter, callstack, callerInfo,
-                overrideNameSpace );
+                overrideNameSpace, extensionReceiver );
+    }
+
+    Object invoke(
+        Object[] argValues, Interpreter interpreter, CallStack callstack,
+            Node callerInfo, boolean overrideNameSpace )
+        throws EvalError
+    {
+        return invoke(argValues, interpreter, callstack, callerInfo, overrideNameSpace, null);
     }
 
     private Object invokeMethodCallback(
@@ -389,7 +404,7 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
 
     private Object invokeImpl(
         Object[] argValues, Interpreter interpreter, CallStack callstack,
-            Node callerInfo, boolean overrideNameSpace )
+            Node callerInfo, boolean overrideNameSpace, Object extensionReceiver )
         throws EvalError
     {
         if (hasModifier("abstract"))
@@ -435,6 +450,15 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
             localNameSpace = new NameSpace( declaringNameSpace, name );
             localNameSpace.isMethod = true;
         }
+
+        if ( isExtension && extensionReceiver != null ) {
+            Object rawReceiver = Primitive.unwrap(extensionReceiver);
+            localNameSpace.importObject(rawReceiver);
+            try {
+                localNameSpace.setLocalVariable(""+BSHEXTENSIONMETHODRECEIVER, extensionReceiver, false/*strict*/);
+            } catch (UtilEvalError e) { }
+        }
+
         localNameSpace.setNode( callerInfo );
 
         /*
@@ -596,6 +620,14 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
         }
 
         return ret;
+    }
+
+    private Object invokeImpl(
+        Object[] argValues, Interpreter interpreter, CallStack callstack,
+            Node callerInfo, boolean overrideNameSpace )
+        throws EvalError
+    {
+        return invokeImpl(argValues, interpreter,callstack, callerInfo, overrideNameSpace, null );
     }
 
     public boolean hasModifier( String name ) {

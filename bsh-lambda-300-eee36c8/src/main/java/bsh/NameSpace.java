@@ -813,6 +813,34 @@ public class NameSpace
         return method;
     }
 
+    /** Get the extension method matching the specified receiver type and
+     * signature declared in this name space or a parent.
+     * @param receiverType the receiver type
+     * @param name the name
+     * @param sig the sig
+     * @return the BshMethod or null if not found */
+    public BshMethod getExtensionMethod(final Class<?> receiverType,
+            final String name, final Class<?>[] sig) {
+        List<BshMethod> matches = new ArrayList<>();
+
+        NameSpace currentNS = this;
+        while (currentNS != null) {
+            List<BshMethod> methods = currentNS.methods.get(name);
+            if (methods != null) {
+                for (BshMethod method : methods) {
+                    if (!method.isExtension || method.receiverType == null) continue;
+                    if (!Types.isJavaBoxTypesAssignable(method.receiverType, receiverType)) continue;
+                    matches.add(method);
+                }
+            }
+            currentNS = currentNS.getParent();
+        }
+
+        if (!matches.isEmpty())
+            return Reflect.findMostSpecificBshMethod(sig, matches);
+        return null;
+    }
+
     /** Import a class name. Subsequent imports override earlier ones
      * @param name the name */
     public void importClass(final String name) {
