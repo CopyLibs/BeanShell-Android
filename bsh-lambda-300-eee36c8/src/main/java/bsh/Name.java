@@ -474,12 +474,22 @@ class Name implements java.io.Serializable
     {
         if ( varName.equals("this") )
         {
-            Variable extVar = thisNameSpace.getVariableImpl("__bsh_extension_receiver", true);
-            if ( extVar != null ) {
-                Object value = extVar.getValue();
-                if ( value != Primitive.VOID && value != Primitive.NULL ) {
-                    return value; 
+            NameSpace ns = thisNameSpace;
+            while (ns != null) {
+                
+                Variable extVar = ns.getVariableImpl("__bsh_extension_receiver", false);
+                if (extVar != null) {
+                    Object value = extVar.getValue();
+                    if (value != Primitive.VOID && value != Primitive.NULL) {
+                        return value; 
+                    }
                 }
+                
+                if (ns.isClass) {
+                    break;
+                }
+       
+                ns = ns.getParent();
             }
             /*
                 Somewhat of a hack.  If the special fields are visible (we're
