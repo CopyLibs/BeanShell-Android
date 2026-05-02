@@ -5,6 +5,7 @@ import com.vanniktech.maven.publish.SourcesJar
 plugins {
     id("build-logic.android.library")
     id("build-logic.bsh.codegen")
+    id("build-logic.bsh.checkstyle")
     id("com.vanniktech.maven.publish") version "0.36.0"
     id("signing")
 }
