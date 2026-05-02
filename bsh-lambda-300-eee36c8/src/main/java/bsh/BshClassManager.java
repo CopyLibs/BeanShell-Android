@@ -41,6 +41,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import bsh.loader.BshLoaderManager;
+import bsh.loader.BshPluginLoader;
 import bsh.util.ValueReferenceMap;
 
 import static bsh.Reflect.isPublic;
@@ -91,6 +92,12 @@ public class BshClassManager {
     static final ValueReferenceMap<Class<?>, MemberCache> memberCache
         = new ValueReferenceMap<>(key -> new MemberCache(key),
                              ValueReferenceMap.Type.Soft);
+                             
+    protected BshPluginLoader pluginLoader;
+
+    public BshPluginLoader getPluginLoader() {
+        return this.pluginLoader;
+    }
 
     /** Class member cached value instance **/
     static final class MemberCache {

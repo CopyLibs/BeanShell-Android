@@ -47,6 +47,7 @@ import bsh.UtilEvalError;
 import bsh.classpath.BshClassPath.ClassSource;
 import bsh.classpath.BshClassPath.GeneratedClassSource;
 import bsh.classpath.BshClassPath.JarClassSource;
+import bsh.loader.BshPluginLoader;
 
 /**
     <pre>
@@ -360,6 +361,9 @@ public class ClassManagerImpl extends BshClassManager
         baseClassPath = new BshClassPath("baseClassPath");
         baseLoader = null;
         loaderMap.clear();
+        this.pluginLoader = new BshPluginLoader(
+            externalClassLoader != null ? externalClassLoader : this.getClass().getClassLoader()
+        );
         classLoaderChanged(); // calls clearCaches() for us.
     }
 
