@@ -121,6 +121,15 @@ public final class Reflect {
             } catch (ReflectError re) { // Void has overstayed its welcome round about here
                 if (object == Primitive.VOID) throw new EvalError("Attempt to invoke method: "
                     + methodName + "() on undefined", callerInfo, callstack, re);
+
+                NameSpace ns = callstack.top();
+                Class<?>[] argTypes = Types.getTypes(args);
+                BshMethod extensionMethod = ns.getExtensionMethod(type, methodName, argTypes);
+                if (extensionMethod != null) {
+                    return extensionMethod.invoke(
+                        args, interpreter, callstack, callerInfo, false, object);
+                }
+
                 // Handle primitive method not found. Autoboxing or magic math method lookup.
                 // Errors gets rolled up, and not found is deferred back to exposed type.
                 if (isPrimitive && !interpreter.getStrictJava()) try { // mitigate recursion

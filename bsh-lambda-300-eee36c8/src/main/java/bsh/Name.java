@@ -25,6 +25,8 @@
  *****************************************************************************/
 package bsh;
 
+import static bsh.This.Keys.BSHEXTENSIONMETHODRECEIVER;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -474,6 +476,16 @@ class Name implements java.io.Serializable
     {
         if ( varName.equals("this") )
         {
+            NameSpace ns = thisNameSpace;
+            while (ns != null) {
+                Object receiver = ns.getVariable(BSHEXTENSIONMETHODRECEIVER.toString(), false);
+                if ( receiver != Primitive.VOID && receiver != Primitive.NULL )
+                    return receiver;
+                if ( ns.isClass )
+                    break;
+                ns = ns.getParent();
+            }
+
             /*
                 Somewhat of a hack.  If the special fields are visible (we're
                 operating relative to a 'this' type already) dissallow further

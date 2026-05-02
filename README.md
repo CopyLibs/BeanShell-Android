@@ -135,6 +135,12 @@ switch (num) {
     default: out2 = "other";
 }
 print(out2) // "small"
+
+// 扩展方法
+void String.log() {
+    print(this)
+}
+"BeanShell".log() // BeanShell
 ```
 
 ## 致谢
