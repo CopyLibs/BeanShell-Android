@@ -175,7 +175,7 @@ public final class KtStringTemplate {
         if (pieces.isEmpty()) {
             return "\"\"";
         }
-        return joinWithPlus(pieces);
+        return "(" + joinWithPlus(pieces) + ")";
     }
 
     private static String joinWithPlus(List<String> pieces) {
