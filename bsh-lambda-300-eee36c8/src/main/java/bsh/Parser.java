@@ -215,6 +215,7 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
             case STRING_LITERAL:
             case LONG_STRING_LITERAL:
             case IDENTIFIER:
+            case WHEN:
             case LPAREN:
             case LBRACE:
             case LBRACKET:
@@ -5520,6 +5521,29 @@ if (jjtc000) {
     finally { jj_save(37, xla); }
   }
 
+  private boolean jj_3_33()
+ {
+    if (jj_scan_token(FOR)) return true;
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(COLON)) return true;
+    if (jj_3R_53()) return true;
+    if (jj_scan_token(RPAREN)) return true;
+    if (jj_3R_59()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_115()
+ {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_33()) {
+    jj_scanpos = xsp;
+    if (jj_3R_142()) return true;
+    }
+    return false;
+  }
+
   private boolean jj_3R_171()
  {
     Token xsp;
@@ -8180,29 +8204,6 @@ if (jjtc000) {
   private boolean jj_3R_253()
  {
     if (jj_3R_260()) return true;
-    return false;
-  }
-
-  private boolean jj_3_33()
- {
-    if (jj_scan_token(FOR)) return true;
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    if (jj_scan_token(COLON)) return true;
-    if (jj_3R_53()) return true;
-    if (jj_scan_token(RPAREN)) return true;
-    if (jj_3R_59()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_115()
- {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_33()) {
-    jj_scanpos = xsp;
-    if (jj_3R_142()) return true;
-    }
     return false;
   }
 

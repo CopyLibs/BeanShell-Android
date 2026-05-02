@@ -293,6 +293,7 @@ public class Parser
             case STRING_LITERAL:
             case LONG_STRING_LITERAL:
             case IDENTIFIER:
+            case WHEN:
             case LPAREN:
             case LBRACE:
             case LBRACKET:
