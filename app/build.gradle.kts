@@ -34,10 +34,6 @@ kotlin {
 
 dependencies {
     implementation(libs.material)
-    implementation(libs.appcompat)
-    implementation(libs.core.ktx)
-    implementation(libs.navigation.fragment.ktx)
-    implementation(libs.navigation.ui.ktx)
     implementation(libs.editor)
     implementation(libs.language.java)
     implementation(project(":bsh-lambda-300-eee36c8"))
