@@ -34,7 +34,6 @@ kotlin {
 
 dependencies {
     implementation(libs.material)
-    implementation(libs.editor)
-    implementation(libs.language.java)
+    implementation(libs.sweeteditor)
     implementation(project(":bsh-lambda-300-eee36c8"))
 }

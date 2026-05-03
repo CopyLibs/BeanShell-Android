@@ -3,11 +3,15 @@ package io.github.copylibs.bsh.ui.activity
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.MenuItem
+import com.qiplat.sweeteditor.EditorTheme
+import com.qiplat.sweeteditor.LanguageConfiguration
+import com.qiplat.sweeteditor.core.Document
+import com.qiplat.sweeteditor.core.foundation.CurrentLineRenderMode
+import com.qiplat.sweeteditor.core.foundation.FoldArrowMode
 import io.github.copylibs.bsh.databinding.ActivityMainBinding
 import io.github.copylibs.bsh.plugin.PluginManager
 import io.github.copylibs.bsh.plugin.log.PluginLogger
 import io.github.copylibs.bsh.ui.base.ActivityBase
-import io.github.rosemoe.sora.langs.java.JavaLanguage
 
 class MainActivity : ActivityBase<ActivityMainBinding>(
     ActivityMainBinding::inflate
@@ -23,7 +27,7 @@ class MainActivity : ActivityBase<ActivityMainBinding>(
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 setOnMenuItemClickListener {
                     val context = this@MainActivity
-                    val code = binding.codeEditor.text.toString()
+                    val code = binding.codeEditor.document?.text.toString()
                     runCatching {
                         PluginManager.getPlugin(context).eval(code)
                     }.onFailure {
@@ -49,8 +53,25 @@ class MainActivity : ActivityBase<ActivityMainBinding>(
             }
         }
         binding.codeEditor.apply {
-            typefaceText = Typeface.createFromAsset(context.assets, "font/mono.ttf")
-            setEditorLanguage(JavaLanguage())
+            applyTheme(EditorTheme.light())
+            setLanguageConfiguration(
+                LanguageConfiguration.Builder("bsh")
+                    .addAutoClosingPair("\"", "\"")
+                    .addAutoClosingPair("(", ")")
+                    .addAutoClosingPair("{", "}")
+                    .addAutoClosingPair("[", "]")
+                    .setInsertSpaces(true)
+                    .build()
+            )
+            settings.apply {
+                setEditorTextSize(28f)
+                setTypeface(Typeface.createFromAsset(context.assets, "font/mono.ttf"))
+                setFoldArrowMode(FoldArrowMode.AUTO)
+                setGutterSticky(true)
+                setCurrentLineRenderMode(CurrentLineRenderMode.BORDER)
+                setCompositionEnabled(true)
+            }
+            loadDocument(Document(""))
         }
     }
 }
