@@ -40,6 +40,7 @@ import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 
+import bsh.module.BshModule;
 import bsh.preprocess.AnnotationIgnorePreprocess;
 import bsh.preprocess.DefaultArgsDesugar;
 import bsh.preprocess.KtStringTemplate;
@@ -1004,6 +1005,22 @@ public class Interpreter
     }
 
     // end primary set and get methods
+
+    /**
+        Install an extension module into this interpreter.
+    */
+    public void installModule(BshModule module) {
+        module.install(this);
+    }
+
+    /**
+        Install multiple extension modules into this interpreter.
+    */
+    public void installModules(BshModule... modules) {
+        for (BshModule module : modules) {
+            module.install(this);
+        }
+    }
 
     /**
         Get a reference to the interpreter (global namespace), cast

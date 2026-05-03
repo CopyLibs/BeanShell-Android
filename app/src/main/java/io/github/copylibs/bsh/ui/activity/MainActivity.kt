@@ -9,7 +9,7 @@ import com.qiplat.sweeteditor.core.Document
 import com.qiplat.sweeteditor.core.foundation.CurrentLineRenderMode
 import com.qiplat.sweeteditor.core.foundation.FoldArrowMode
 import io.github.copylibs.bsh.databinding.ActivityMainBinding
-import io.github.copylibs.bsh.plugin.PluginManager
+import io.github.copylibs.bsh.plugin.Plugin
 import io.github.copylibs.bsh.plugin.log.PluginLogger
 import io.github.copylibs.bsh.ui.base.ActivityBase
 
@@ -29,7 +29,7 @@ class MainActivity : ActivityBase<ActivityMainBinding>(
                     val context = this@MainActivity
                     val code = binding.codeEditor.document?.text.toString()
                     runCatching {
-                        PluginManager.getPlugin(context).eval(code)
+                        Plugin(context).eval(code)
                     }.onFailure {
                         PluginLogger.writeLog(context, "运行异常: $it")
                         it.printStackTrace()

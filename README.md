@@ -15,10 +15,10 @@ implementation("io.github.copylibs:beanshell-android-lambda:$version")
 ### 基础方法
 
 ```kotlin
-// 导入 类
-interpreter.nameSpace.importClass(clsName)
 // 导入 包
 interpreter.nameSpace.importPackage(pkgName)
+// 导入 类
+interpreter.nameSpace.importClass(clsName)
 // 设置 变量
 interpreter.nameSpace.setVariable(varName, varValue)
 // 设置 方法
