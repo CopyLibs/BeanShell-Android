@@ -344,6 +344,7 @@ abstract class ExecutingInvocable extends Invocable {
                     && lastParam != null
                     && lastParam.getClass().isArray()
                     && Object[].class.isAssignableFrom(lastParam.getClass())) {
+                    isFixedArity = true;
                     Object[] source = (Object[]) lastParam;
                     Object varargs = Array.newInstance(getVarArgsComponentType(), source.length);
                     for (int i = 0; i < source.length; i++)
@@ -351,6 +352,7 @@ abstract class ExecutingInvocable extends Invocable {
                             source[i], getVarArgsComponentType()));
                     parameters.add(varargs);
                 } else {
+                    isFixedArity = true;
                     int length = params.length - getLastParameterIndex();
                     Object varargs = Array.newInstance(getVarArgsComponentType(), length);
                     for (int i = 0; i < length; i++)
@@ -359,6 +361,7 @@ abstract class ExecutingInvocable extends Invocable {
                     parameters.add(varargs);
                 }
             } else {
+                isFixedArity = true;
                 parameters.add(Array.newInstance(getVarArgsComponentType(), 0));
             }
         } else if (null != params && getLastParameterIndex() < params.length)
