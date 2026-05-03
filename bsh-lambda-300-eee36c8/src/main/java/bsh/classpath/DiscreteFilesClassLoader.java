@@ -29,7 +29,6 @@ import java.util.HashMap;
 
 import bsh.BshClassManager;
 import bsh.classpath.BshClassPath.ClassSource;
-import bsh.loader.BshLoaderHelper;
 
 /**
     A classloader which can load one or more classes from specified sources.
@@ -82,9 +81,7 @@ public class DiscreteFilesClassLoader extends BshClassLoader
         if ( source != null )
         {
             byte [] code = source.getCode( name );
-            Class<?> clazz = BshLoaderHelper.getClassByCode(name, code, getClassManager().getPluginLoader());
-            getClassManager().getPluginLoader().addClass(name, clazz);
-            return clazz;
+            return getClassManager().loadGeneratedClass(name, code);
         } else
             // Let superclass BshClassLoader (URLClassLoader) findClass try
             // to find the class...

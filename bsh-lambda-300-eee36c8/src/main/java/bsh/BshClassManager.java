@@ -92,12 +92,6 @@ public class BshClassManager {
     static final ValueReferenceMap<Class<?>, MemberCache> memberCache
         = new ValueReferenceMap<>(key -> new MemberCache(key),
                              ValueReferenceMap.Type.Soft);
-                             
-    protected BshPluginLoader pluginLoader;
-
-    public BshPluginLoader getPluginLoader() {
-        return this.pluginLoader;
-    }
 
     /** Class member cached value instance **/
     static final class MemberCache {
@@ -332,6 +326,8 @@ public class BshClassManager {
     protected ClassLoader externalClassLoader;
 
     protected BshLoaderManager loaderManager = new BshLoaderManager();
+
+    protected BshPluginLoader pluginLoader;
 
     /**
         Global cache for things we know are classes.
@@ -634,6 +630,11 @@ public class BshClassManager {
     */
     public Class<?> defineClass( String name, byte [] code ) {
         throw new InterpreterError("Can't create class ("+name
+            +") without class manager package.");
+    }
+
+    public Class<?> loadGeneratedClass( String name, byte [] code ) {
+        throw new InterpreterError("Can't load generated class ("+name
             +") without class manager package.");
     }
 

@@ -47,6 +47,7 @@ import bsh.UtilEvalError;
 import bsh.classpath.BshClassPath.ClassSource;
 import bsh.classpath.BshClassPath.GeneratedClassSource;
 import bsh.classpath.BshClassPath.JarClassSource;
+import bsh.loader.BshLoaderHelper;
 import bsh.loader.BshPluginLoader;
 
 /**
@@ -361,9 +362,7 @@ public class ClassManagerImpl extends BshClassManager
         baseClassPath = new BshClassPath("baseClassPath");
         baseLoader = null;
         loaderMap.clear();
-        this.pluginLoader = new BshPluginLoader(
-            externalClassLoader != null ? externalClassLoader : this.getClass().getClassLoader()
-        );
+        initPluginLoader();
         classLoaderChanged(); // calls clearCaches() for us.
     }
 
@@ -392,6 +391,12 @@ public class ClassManagerImpl extends BshClassManager
         bcp.addComponent( baseClassPath );
         bcp.addComponent( BshClassPath.getUserClassPath() );
         setClassPath( bcp.getPathComponents() );
+    }
+
+    private void initPluginLoader() {
+        pluginLoader = new BshPluginLoader(
+            externalClassLoader != null ? externalClassLoader : getClass().getClassLoader()
+        );
     }
 
     /**
@@ -597,6 +602,14 @@ public class ClassManagerImpl extends BshClassManager
             throw new bsh.InterpreterError("defineClass: "+e, e);
         }
         return classForName( name );
+    }
+
+    @Override
+    public Class<?> loadGeneratedClass( String name, byte [] code )
+    {
+        Class<?> clazz = BshLoaderHelper.getClassByCode(name, code, pluginLoader);
+        pluginLoader.putClass(name, clazz);
+        return clazz;
     }
 
     /**
