@@ -41,6 +41,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import bsh.loader.BshLoaderManager;
+import bsh.loader.BshPluginLoader;
 import bsh.util.ValueReferenceMap;
 
 import static bsh.Reflect.isPublic;
@@ -325,6 +326,8 @@ public class BshClassManager {
     protected ClassLoader externalClassLoader;
 
     protected BshLoaderManager loaderManager = new BshLoaderManager();
+
+    protected BshPluginLoader pluginLoader;
 
     /**
         Global cache for things we know are classes.
@@ -627,6 +630,11 @@ public class BshClassManager {
     */
     public Class<?> defineClass( String name, byte [] code ) {
         throw new InterpreterError("Can't create class ("+name
+            +") without class manager package.");
+    }
+
+    public Class<?> loadGeneratedClass( String name, byte [] code ) {
+        throw new InterpreterError("Can't load generated class ("+name
             +") without class manager package.");
     }
 
