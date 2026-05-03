@@ -4,10 +4,6 @@ kotlin = "2.3.20"
 
 [libraries]
 material = { group = "com.google.android.material", name = "material", version = "1.13.0" }
-appcompat = { group = "androidx.appcompat", name = "appcompat", version = "1.7.1" }
-core-ktx = { group = "androidx.core", name = "core-ktx", version = "1.18.0" }
-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version = "2.9.7" }
-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version = "2.9.7" }
 editor = { module = "io.github.rosemoe:editor", version = "0.24.5" }
 language-java = { module = "io.github.rosemoe:language-java", version = "0.24.5" }
 dalvik-dx = { module = "com.jakewharton.android.repackaged:dalvik-dx", version = "16.0.1" }

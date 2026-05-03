@@ -2,33 +2,26 @@ package io.github.copylibs.bsh.plugin
 
 import android.content.Context
 import bsh.BshMethod
-import io.github.copylibs.bsh.plugin.method.TestClass1
-import io.github.copylibs.bsh.plugin.method.TestClass2
+import io.github.copylibs.bsh.plugin.method.LogClass
 
 object PluginManager {
-    fun getPlugin(context: Context): Plugin {
+    fun getPlugin(ctx: Context): Plugin {
         return Plugin().apply {
-            registerVariable(this, context)
-            registerMethod(this, context)
+            registerVariable(this, ctx)
+            registerMethod(this, ctx)
         }
     }
 
-    private fun registerVariable(plugin: Plugin, context: Context) {
-        plugin.setVariable("context", context)
+    private fun registerVariable(plugin: Plugin, ctx: Context) {
+        plugin.setVariable("ctx", ctx)
         plugin.setVariable("tag", "BeanShell")
     }
 
-    private fun registerMethod(plugin: Plugin, context: Context) {
-        val testClass1 = TestClass1(context)
-        val testClass2 = TestClass2
+    private fun registerMethod(plugin: Plugin, ctx: Context) {
+        val logInstance = LogClass(ctx)
         plugin.setMethod(
             BshMethod("log", arrayOf(Any::class.java)) { args ->
-                testClass1.log(args[0])
-            }
-        )
-        plugin.setMethod(
-            BshMethod("print", arrayOf(Any::class.java)) { args ->
-                testClass2.print(args[0])
+                logInstance.log(args[0])
             }
         )
         plugin.setMethod(

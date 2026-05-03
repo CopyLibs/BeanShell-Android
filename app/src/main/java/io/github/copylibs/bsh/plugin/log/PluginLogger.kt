@@ -20,15 +20,6 @@ object PluginLogger {
         logFile.appendText("$formatMsg\n")
     }
 
-    fun readLog(ctx: Context): String {
-        val logFile = getLogFile(ctx)
-        return if (logFile.exists()) {
-            logFile.readText()
-        } else {
-            "日志文件不存在"
-        }
-    }
-
     fun clearLog(ctx: Context) {
         val logFile = getLogFile(ctx)
         logFile.writeText("")
