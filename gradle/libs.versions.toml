@@ -4,8 +4,7 @@ kotlin = "2.3.20"
 
 [libraries]
 material = { group = "com.google.android.material", name = "material", version = "1.13.0" }
-editor = { module = "io.github.rosemoe:editor", version = "0.24.5" }
-language-java = { module = "io.github.rosemoe:language-java", version = "0.24.5" }
+sweeteditor = { module = "com.qiplat:sweeteditor", version = "1.0.6" }
 dalvik-dx = { module = "com.jakewharton.android.repackaged:dalvik-dx", version = "16.0.1" }
 android-gradle = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }

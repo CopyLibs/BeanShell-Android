@@ -28,13 +28,11 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <io.github.rosemoe.sora.widget.CodeEditor
+        <com.qiplat.sweeteditor.SweetEditor
             android:id="@+id/codeEditor"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:lnPanelPosition="center"
-            app:lnPanelPositionMode="follow"
-            app:textSize="14sp" />
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
     </LinearLayout>
 
