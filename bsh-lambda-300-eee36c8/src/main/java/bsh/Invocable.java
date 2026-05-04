@@ -180,7 +180,7 @@ public abstract class Invocable implements Member {
     protected Object coerceToType(Object param, Class<?> type)
             throws Throwable {
         Class<?> pClass = Types.getType(param);
-        if (null == pClass || !type.isAssignableFrom(pClass))
+        if (null == pClass || !Types.isClassAssignable(type, pClass))
             param = Types.castObject(param, type, Types.CAST);
         return Primitive.unwrap(param);
     }
@@ -337,14 +337,13 @@ abstract class ExecutingInvocable extends Invocable {
                 if (getParameterCount() == params.length
                     && lastParam != null
                     && lastParam.getClass().isArray()
-                    && getVarArgsComponentType().isAssignableFrom(lastParam.getClass().getComponentType())) {
+                    && Types.isClassAssignable(getVarArgsComponentType(), lastParam.getClass().getComponentType())) {
                     isFixedArity = true;
                     parameters.add(lastParam);
                 } else if (getParameterCount() == params.length
                     && lastParam != null
                     && lastParam.getClass().isArray()
                     && Object[].class.isAssignableFrom(lastParam.getClass())) {
-                    isFixedArity = true;
                     Object[] source = (Object[]) lastParam;
                     Object varargs = Array.newInstance(getVarArgsComponentType(), source.length);
                     for (int i = 0; i < source.length; i++)
@@ -352,7 +351,6 @@ abstract class ExecutingInvocable extends Invocable {
                             source[i], getVarArgsComponentType()));
                     parameters.add(varargs);
                 } else {
-                    isFixedArity = true;
                     int length = params.length - getLastParameterIndex();
                     Object varargs = Array.newInstance(getVarArgsComponentType(), length);
                     for (int i = 0; i < length; i++)
@@ -361,7 +359,6 @@ abstract class ExecutingInvocable extends Invocable {
                     parameters.add(varargs);
                 }
             } else {
-                isFixedArity = true;
                 parameters.add(Array.newInstance(getVarArgsComponentType(), 0));
             }
         } else if (null != params && getLastParameterIndex() < params.length)
