@@ -229,8 +229,8 @@ class BSHBinaryExpression extends SimpleNode implements ParserConstants {
      * @param type2 second type to compare
      * @return types are similar */
     private boolean isSimilarTypes(Class<?> type1, Class<?> type2) {
-        return null == type2 || type1.isAssignableFrom(type2)
-                    || type2.isAssignableFrom(type1);
+        return null == type2 || Types.isClassAssignable(type1, type2)
+                    || Types.isClassAssignable(type2, type1);
     }
 
     /** Object is a non-null and non-void Primitive type.

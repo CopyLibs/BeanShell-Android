@@ -70,6 +70,10 @@ class BSHAllocationExpression extends SimpleNode
                 return objectArrayAllocation(name, (BSHArrayDimensions)args,
                     callstack, interpreter );
         }
+        else if ( type instanceof BSHFunctionType ) {
+            Class<?> funcClass = ((BSHFunctionType)type).getType(callstack, interpreter);
+            return arrayAllocation( (BSHArrayDimensions)args, funcClass, callstack, interpreter );
+        }
         else
             return primitiveArrayAllocation((BSHPrimitiveType)type,
                 (BSHArrayDimensions)args, callstack, interpreter );

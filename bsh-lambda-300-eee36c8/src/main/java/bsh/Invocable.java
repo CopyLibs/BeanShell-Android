@@ -180,7 +180,7 @@ public abstract class Invocable implements Member {
     protected Object coerceToType(Object param, Class<?> type)
             throws Throwable {
         Class<?> pClass = Types.getType(param);
-        if (null == pClass || !type.isAssignableFrom(pClass))
+        if (null == pClass || !Types.isClassAssignable(type, pClass))
             param = Types.castObject(param, type, Types.CAST);
         return Primitive.unwrap(param);
     }
@@ -337,7 +337,7 @@ abstract class ExecutingInvocable extends Invocable {
                 if (getParameterCount() == params.length
                     && lastParam != null
                     && lastParam.getClass().isArray()
-                    && getVarArgsComponentType().isAssignableFrom(lastParam.getClass().getComponentType())) {
+                    && Types.isClassAssignable(getVarArgsComponentType(), lastParam.getClass().getComponentType())) {
                     isFixedArity = true;
                     parameters.add(lastParam);
                 } else if (getParameterCount() == params.length

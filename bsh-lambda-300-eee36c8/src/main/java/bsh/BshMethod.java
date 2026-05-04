@@ -475,7 +475,7 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
             if ((getParameterCount() == argValues.length) &&
                 (argValues[lastParamIndex] == null ||
                  (argValues[lastParamIndex].getClass().isArray() &&
-                  lastP.getComponentType().isAssignableFrom(argValues[lastParamIndex].getClass().getComponentType())))) {
+                  Types.isClassAssignable(lastP.getComponentType(), argValues[lastParamIndex].getClass().getComponentType())))) {
                 /*
                  * This is the case that the final argument is
                  * a null or it contains an array of the component
