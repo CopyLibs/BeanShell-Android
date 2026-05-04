@@ -15,13 +15,19 @@ object PluginLogger {
 
     fun writeLog(ctx: Context, msg: String) {
         val logFile = getLogFile(ctx)
-        val timestamp = SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.getDefault()).format(Date())
+        val timestamp = SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(Date())
         val formatMsg = "[$timestamp] $msg"
-        logFile.appendText("$formatMsg\n")
+        logFile.appendText("$formatMsg\n", Charsets.UTF_8)
+    }
+
+    fun readLog(ctx: Context): String {
+        val logFile = getLogFile(ctx)
+        if (!logFile.exists()) return ""
+        return logFile.readText(Charsets.UTF_8)
     }
 
     fun clearLog(ctx: Context) {
         val logFile = getLogFile(ctx)
-        logFile.writeText("")
+        logFile.writeText("", Charsets.UTF_8)
     }
 }
