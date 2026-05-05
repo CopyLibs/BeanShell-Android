@@ -95,18 +95,6 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
     // End method components
 
     BshMethod(
-        BSHMethodDeclaration method,
-        NameSpace declaringNameSpace, Modifiers modifiers, boolean isScriptedObject )
-    {
-        this( method.name, method.returnType, method.paramsNode.getParamNames(),
-            method.paramsNode.paramTypes, method.paramsNode.getParamModifiers(),
-            method.blockNode, declaringNameSpace, modifiers, method.isVarArgs );
-        this.isScriptedObject = isScriptedObject;
-        this.isExtension = method.isExtension;
-        this.receiverType = method.receiverType;
-    }
-
-    BshMethod(
         String name, Class<?> returnType, String [] paramNames,
         Class<?> [] paramTypes, Modifiers [] paramModifiers, BSHBlock methodBody,
         NameSpace declaringNameSpace, Modifiers modifiers, boolean isVarArgs
@@ -126,7 +114,33 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
         this.isVarArgs = isVarArgs;
     }
 
-    public BshMethod(Method method, Object object )
+    BshMethod(
+        BSHMethodDeclaration method,
+        NameSpace declaringNameSpace, Modifiers modifiers, boolean isScriptedObject )
+    {
+        this( method.name, method.returnType, method.paramsNode.getParamNames(),
+            method.paramsNode.paramTypes, method.paramsNode.getParamModifiers(),
+            method.blockNode, declaringNameSpace, modifiers, method.isVarArgs );
+        this.isScriptedObject = isScriptedObject;
+        this.isExtension = method.isExtension;
+        this.receiverType = method.receiverType;
+    }
+
+    /*
+        Create a BshMethod that delegates to a real Java method upon invocation.
+        This is used to represent imported object methods.
+    */
+    BshMethod( Invocable method, Object object )
+    {
+        this( method.getName(), method.getReturnType(), null/*paramNames*/,
+            method.getParameterTypes(), null/*paramModifiers*/, null/*method.block*/,
+            null/*declaringNameSpace*/, null/*modifiers*/, method.isVarArgs() );
+
+        this.javaMethod = method;
+        this.javaObject = object;
+    }
+
+    public BshMethod( Method method, Object object )
     {
         this( Invocable.get(method), object );
     }
@@ -142,20 +156,6 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
             null/*declaringNameSpace*/, null/*modifiers*/, false/*isVarArgs*/ );
 
         this.methodCallback = callback;
-    }
-
-    /*
-        Create a BshMethod that delegates to a real Java method upon invocation.
-        This is used to represent imported object methods.
-    */
-    BshMethod( Invocable method, Object object )
-    {
-        this( method.getName(), method.getReturnType(), null/*paramNames*/,
-            method.getParameterTypes(), null/*paramModifiers*/, null/*method.block*/,
-            null/*declaringNameSpace*/, null/*modifiers*/, method.isVarArgs() );
-
-        this.javaMethod = method;
-        this.javaObject = object;
     }
 
     /** Cloneable clone method implementation, delegated to parent.
