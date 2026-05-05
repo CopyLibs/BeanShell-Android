@@ -271,7 +271,7 @@ public class ClassGeneratorUtil implements Opcodes {
 
         // Generate methods
         for (DelayedEvalBshMethod method : methods) {
-
+            if (method.isExtension) continue;
             // Don't generate private methods
             if (method.hasModifier("private"))
                 continue;

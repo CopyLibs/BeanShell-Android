@@ -819,26 +819,37 @@ public class NameSpace
      * @param name the name
      * @param sig the sig
      * @return the BshMethod or null if not found */
-    public BshMethod getExtensionMethod(final Class<?> receiverType,
-            final String name, final Class<?>[] sig) {
+    public BshMethod getExtensionMethod(Class<?> receiverType, String name, Class<?>[] sig) {
         List<BshMethod> matches = new ArrayList<>();
+        for (NameSpace ns = this; ns != null; ns = ns.getParent()) {
+            // 1. Search locally declared extension methods
+            collectExtensionMatches(ns.methods.get(name), receiverType, matches);
 
-        NameSpace currentNS = this;
-        while (currentNS != null) {
-            List<BshMethod> methods = currentNS.methods.get(name);
-            if (methods != null) {
-                for (BshMethod method : methods) {
-                    if (!method.isExtension || method.receiverType == null) continue;
-                    if (!Types.isJavaBoxTypesAssignable(method.receiverType, receiverType)) continue;
-                    matches.add(method);
+            // 2. Search dispatch receivers (imported objects + class instance)
+            List<Object> targets = new ArrayList<>(ns.importedObjects);
+            if (ns.classInstance != null) targets.add(ns.classInstance);
+
+            for (Object obj : targets) {
+                if (obj == null) continue;
+                // Walk up the class hierarchy to resolve script-level inheritance
+                for (Class<?> c = obj.getClass(); c != null && Reflect.isGeneratedClass(c); c = c.getSuperclass()) {
+                    // Extract the specific 'This' context for this inheritance level
+                    This ths = Reflect.getClassInstanceThis(obj, c.getSimpleName());
+                    if (ths != null) collectExtensionMatches(ths.getNameSpace().methods.get(name), receiverType, matches);
                 }
             }
-            currentNS = currentNS.getParent();
         }
+        return matches.isEmpty() ? null : Reflect.findMostSpecificBshMethod(sig, matches);
+    }
 
-        if (!matches.isEmpty())
-            return Reflect.findMostSpecificBshMethod(sig, matches);
-        return null;
+    private void collectExtensionMatches(List<BshMethod> methods, Class<?> receiverType, List<BshMethod> matches) {
+        if (methods == null) return;
+        for (BshMethod m : methods) {
+            if (m.isExtension && m.receiverType != null &&
+                Types.isJavaBoxTypesAssignable(m.receiverType, receiverType)) {
+                matches.add(m);
+            }
+        }
     }
 
     /** Import a class name. Subsequent imports override earlier ones
