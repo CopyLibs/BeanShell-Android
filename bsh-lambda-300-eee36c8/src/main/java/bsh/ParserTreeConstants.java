@@ -17,37 +17,39 @@ public interface ParserTreeConstants
   public int JJTTYPE = 11;
   public int JJTRETURNTYPE = 12;
   public int JJTPRIMITIVETYPE = 13;
-  public int JJTAMBIGUOUSNAME = 14;
-  public int JJTASSIGNMENT = 15;
-  public int JJTTERNARYEXPRESSION = 16;
-  public int JJTBINARYEXPRESSION = 17;
-  public int JJTUNARYEXPRESSION = 18;
-  public int JJTCASTEXPRESSION = 19;
-  public int JJTPRIMARYEXPRESSION = 20;
-  public int JJTMETHODINVOCATION = 21;
-  public int JJTLAMBDAEXPRESSION = 22;
-  public int JJTWHENEXPRESSION = 23;
-  public int JJTWHENENTRY = 24;
-  public int JJTPRIMARYSUFFIX = 25;
-  public int JJTLITERAL = 26;
-  public int JJTARGUMENTS = 27;
-  public int JJTALLOCATIONEXPRESSION = 28;
-  public int JJTARRAYDIMENSIONS = 29;
-  public int JJTLABELEDSTATEMENT = 30;
-  public int JJTSWITCHSTATEMENT = 31;
-  public int JJTSWITCHLABEL = 32;
-  public int JJTIFSTATEMENT = 33;
-  public int JJTWHILESTATEMENT = 34;
-  public int JJTFORSTATEMENT = 35;
-  public int JJTENHANCEDFORSTATEMENT = 36;
-  public int JJTTYPEDVARIABLEDECLARATION = 37;
-  public int JJTSTATEMENTEXPRESSIONLIST = 38;
-  public int JJTRETURNSTATEMENT = 39;
-  public int JJTTHROWSTATEMENT = 40;
-  public int JJTTRYSTATEMENT = 41;
-  public int JJTMULTICATCH = 42;
-  public int JJTTRYWITHRESOURCES = 43;
-  public int JJTAUTOCLOSEABLE = 44;
+  public int JJTFUNCTIONTYPE = 14;
+  public int JJTRECEIVERTYPE = 15;
+  public int JJTAMBIGUOUSNAME = 16;
+  public int JJTASSIGNMENT = 17;
+  public int JJTTERNARYEXPRESSION = 18;
+  public int JJTBINARYEXPRESSION = 19;
+  public int JJTUNARYEXPRESSION = 20;
+  public int JJTCASTEXPRESSION = 21;
+  public int JJTPRIMARYEXPRESSION = 22;
+  public int JJTMETHODINVOCATION = 23;
+  public int JJTLAMBDAEXPRESSION = 24;
+  public int JJTWHENEXPRESSION = 25;
+  public int JJTWHENENTRY = 26;
+  public int JJTPRIMARYSUFFIX = 27;
+  public int JJTLITERAL = 28;
+  public int JJTARGUMENTS = 29;
+  public int JJTALLOCATIONEXPRESSION = 30;
+  public int JJTARRAYDIMENSIONS = 31;
+  public int JJTLABELEDSTATEMENT = 32;
+  public int JJTSWITCHSTATEMENT = 33;
+  public int JJTSWITCHLABEL = 34;
+  public int JJTIFSTATEMENT = 35;
+  public int JJTWHILESTATEMENT = 36;
+  public int JJTFORSTATEMENT = 37;
+  public int JJTENHANCEDFORSTATEMENT = 38;
+  public int JJTTYPEDVARIABLEDECLARATION = 39;
+  public int JJTSTATEMENTEXPRESSIONLIST = 40;
+  public int JJTRETURNSTATEMENT = 41;
+  public int JJTTHROWSTATEMENT = 42;
+  public int JJTTRYSTATEMENT = 43;
+  public int JJTMULTICATCH = 44;
+  public int JJTTRYWITHRESOURCES = 45;
+  public int JJTAUTOCLOSEABLE = 46;
 
 
   public String[] jjtNodeName = {
@@ -65,6 +67,8 @@ public interface ParserTreeConstants
     "Type",
     "ReturnType",
     "PrimitiveType",
+    "FunctionType",
+    "ReceiverType",
     "AmbiguousName",
     "Assignment",
     "TernaryExpression",
@@ -98,4 +102,4 @@ public interface ParserTreeConstants
     "AutoCloseable",
   };
 }
-/* ParserGeneratorCC - OriginalChecksum=ffec6fb3060f8e5edbf35756f68095b0 (do not edit this line) */
+/* ParserGeneratorCC - OriginalChecksum=9de3fcd1017ab37dcde130e331410666 (do not edit this line) */

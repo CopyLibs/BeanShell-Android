@@ -837,7 +837,17 @@ void Type() #Type :
         PrimaryPrefix.  ( )* is a choice point.  It took me a while to
         figure out where to put that.  This stuff is annoying.
     */
-  ( PrimitiveType() | AmbiguousName() )
+  ( 
+    PrimitiveType()
+  | 
+    /* 
+       Use LOOKAHEAD to distinguish between a parenthesized expression 
+       and a Function Type declaration starting with '(' 
+    */
+    LOOKAHEAD(3, "(") FunctionType()
+  |
+    AmbiguousName() 
+  )
     ( LOOKAHEAD(2) "[" "]" { jjtThis.addArrayDimension(); } )*
 }
 
@@ -862,6 +872,25 @@ void PrimitiveType() #PrimitiveType :
 | "long" { jjtThis.type =  Long.TYPE; }
 | "float" { jjtThis.type =  Float.TYPE; }
 | "double" { jjtThis.type =  Double.TYPE; }
+}
+
+/** 
+ * Syntax: ((ParamTypes) -> ReturnType) 
+ * or with receiver: (ReceiverType.(ParamTypes) -> ReturnType)
+ */
+void FunctionType() #FunctionType :
+{ }
+{
+  "(" 
+    /* Optional Extension Receiver: e.g., String.(int) -> void */
+    [ LOOKAHEAD(AmbiguousName() ".") AmbiguousName() #ReceiverType "." ]
+    
+    "(" [ Type() ( "," Type() )* ] ")" 
+    
+    "->" 
+    
+    ReturnType() 
+  ")"
 }
 
 void AmbiguousName() #AmbiguousName :
@@ -1324,6 +1353,9 @@ void AllocationExpression() #AllocationExpression :
 {
   "new" (
       PrimitiveType() ArrayDimensions()
+   |
+      /* Support for allocating arrays of function types */
+      LOOKAHEAD(3, "(") FunctionType() ArrayDimensions()
    |
       AmbiguousName() (
         ArrayDimensions()
