@@ -529,6 +529,52 @@ public final class Reflect {
         return match == -1 ? null : methods.get(match);
     }
 
+    public static BshMethod findMostSpecificExtensionMethod(
+            Class<?> receiverType, Class<?>[] idealMatch, List<BshMethod> methods ) {
+        Interpreter.debug("find most specific extension method for:" +
+            " receiver: "+ receiverType + " args: " + Arrays.toString(idealMatch));
+        int match = findMostSpecificExtensionMethodIndex( receiverType, idealMatch, methods );
+        return match == -1 ? null : methods.get(match);
+    }
+
+    public static int findMostSpecificExtensionMethodIndex(
+            Class<?> receiverType, Class<?>[] idealMatch, List<BshMethod> methods ) {
+        List<Integer> receiverMatches = new ArrayList<>();
+        for (int i=0; i<methods.size(); i++) {
+            BshMethod m = methods.get(i);
+            if (m.isExtension && m.receiverType != null
+                && Types.isJavaBoxTypesAssignable(m.receiverType, receiverType))
+                receiverMatches.add(i);
+        }
+        if (receiverMatches.isEmpty())
+            return -1;
+
+        List<Integer> mostSpecificReceivers = new ArrayList<>(receiverMatches);
+        for (int i=0; i<receiverMatches.size(); i++) {
+            int left = receiverMatches.get(i);
+            Class<?> leftType = methods.get(left).receiverType;
+            for (int j=0; j<receiverMatches.size(); j++) {
+                if (i == j) continue;
+                int right = receiverMatches.get(j);
+                Class<?> rightType = methods.get(right).receiverType;
+                if (leftType != rightType
+                    && leftType.isAssignableFrom(rightType)) {
+                    mostSpecificReceivers.remove(Integer.valueOf(left));
+                    break;
+                }
+            }
+        }
+        if (mostSpecificReceivers.size() == 1)
+            return mostSpecificReceivers.get(0);
+
+        List<BshMethod> candidates = new ArrayList<>();
+        for (Integer i : mostSpecificReceivers)
+            candidates.add(methods.get(i));
+        int match = findMostSpecificBshMethodIndex( idealMatch, candidates );
+        if (match >= 0)
+            return mostSpecificReceivers.get(match);
+        return mostSpecificReceivers.get(0);
+    }
 
     /**
      * Find the best match for signature idealMatch and return the position

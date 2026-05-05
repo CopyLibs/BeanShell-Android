@@ -821,24 +821,32 @@ public class NameSpace
      * @return the BshMethod or null if not found */
     public BshMethod getExtensionMethod(final Class<?> receiverType,
             final String name, final Class<?>[] sig) {
-        List<BshMethod> matches = new ArrayList<>();
+        final List<BshMethod> matches = new ArrayList<>();
 
-        NameSpace currentNS = this;
-        while (currentNS != null) {
-            List<BshMethod> methods = currentNS.methods.get(name);
-            if (methods != null) {
-                for (BshMethod method : methods) {
-                    if (!method.isExtension || method.receiverType == null) continue;
-                    if (!Types.isJavaBoxTypesAssignable(method.receiverType, receiverType)) continue;
-                    matches.add(method);
+        for (NameSpace ns = this; ns != null; ns = ns.getParent()) {
+            collectExtensionMatches(ns.methods.get(name), receiverType, matches);
+            for (Object obj : ns.importedObjects) {
+                if (obj == null) continue;
+                for (Class<?> c = obj.getClass(); c != null && Reflect.isGeneratedClass(c); c = c.getSuperclass()) {
+                    This ths = Reflect.getClassInstanceThis(obj, c.getSimpleName());
+                    if (ths == null) continue;
+                    collectExtensionMatches(ths.getNameSpace().methods.get(name), receiverType, matches);
                 }
             }
-            currentNS = currentNS.getParent();
         }
 
-        if (!matches.isEmpty())
-            return Reflect.findMostSpecificBshMethod(sig, matches);
-        return null;
+        if (matches.isEmpty())
+            return null;
+        return Reflect.findMostSpecificExtensionMethod(receiverType, sig, matches);
+    }
+
+    private void collectExtensionMatches(final List<BshMethod> methods,
+            final Class<?> receiverType, final List<BshMethod> matches) {
+        if (methods == null) return;
+        for (BshMethod method : methods)
+            if (method.isExtension && method.receiverType != null
+                && Types.isJavaBoxTypesAssignable(method.receiverType, receiverType))
+                matches.add(method);
     }
 
     /** Import a class name. Subsequent imports override earlier ones
