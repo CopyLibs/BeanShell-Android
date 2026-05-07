@@ -930,7 +930,18 @@ class Name implements java.io.Serializable
                     && !namespace.getParent().isClass
                     && !noOverride.matcher(meth.getName()).matches();
 
-            return meth.invoke( args, interpreter, callstack, callerInfo, overrideChild );
+            Object implicitReceiver = null;
+            if (meth.isExtension) {
+                try {
+                    implicitReceiver = resolveThisFieldReference(callstack, namespace, interpreter, "this", false);
+                    if (implicitReceiver instanceof This) {
+                        implicitReceiver = Primitive.unwrap(implicitReceiver);
+                    }
+                } catch (UtilEvalError e) {
+                }
+            }
+
+            return meth.invoke( args, interpreter, callstack, callerInfo, overrideChild, implicitReceiver );
         }
 
         // Look for a BeanShell command
