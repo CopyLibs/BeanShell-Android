@@ -929,18 +929,32 @@ class Name implements java.io.Serializable
                     && namespace.isChildOf(meth.declaringNameSpace)
                     && !namespace.getParent().isClass
                     && !noOverride.matcher(meth.getName()).matches();
-
+    
             Object implicitReceiver = null;
             if (meth.isExtension) {
+                Object res = null;
                 try {
-                    implicitReceiver = resolveThisFieldReference(callstack, namespace, interpreter, "this", false);
-                    if (implicitReceiver instanceof This) {
-                        implicitReceiver = Primitive.unwrap(implicitReceiver);
+                    res = resolveThisFieldReference(callstack, namespace, interpreter, "this", false);
+                    if (res instanceof This) {
+                        res = Primitive.unwrap(res);
                     }
                 } catch (UtilEvalError e) {
                 }
+    
+                if (res != null && res != Primitive.NULL && res != Primitive.VOID) {
+                    
+                    if (Types.isJavaBoxTypesAssignable(meth.receiverType, Types.getType(res))) {
+                        implicitReceiver = res;
+                    }
+                }
+    
+                if (implicitReceiver == null) {
+                    throw new EvalException("Extension method \"" + meth.getName() + "\" requires a receiver of type: "
+                        + StringUtil.typeString(meth.receiverType) + ". Actual \"this\" is: "
+                        + StringUtil.typeString(res), callerInfo, callstack);
+                }
             }
-
+    
             return meth.invoke( args, interpreter, callstack, callerInfo, overrideChild, implicitReceiver );
         }
 
