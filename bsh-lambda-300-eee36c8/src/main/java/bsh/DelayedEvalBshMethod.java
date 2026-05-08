@@ -163,21 +163,26 @@ public class DelayedEvalBshMethod extends BshMethod
         if (o.getClass() != this.getClass())
             return false;
         DelayedEvalBshMethod m = (DelayedEvalBshMethod)o;
-        if( !getName().equals(m.getName())
-                || getParameterCount() != m.getParameterCount() )
+        if( !getName().equals(m.getName()) || getParameterCount() != m.getParameterCount() )
+            return false;
+        if (isExtension != m.isExtension)
+            return false;
+        if (isExtension && !equal(receiverType, m.receiverType))
+            return false;
+        if (isVarArgs != m.isVarArgs)
             return false;
         for (int i = 0; i < this.getParamTypeDescriptors().length; i++)
-            if (!equal(this.getParamTypeDescriptors()[i],
-                    m.getParamTypeDescriptors()[i]))
+            if (!equal(this.getParamTypeDescriptors()[i], m.getParamTypeDescriptors()[i]))
                 return false;
-        if (isVarArgs != m.isVarArgs)
-           return false;
         return true;
     }
 
     @Override
     public int hashCode() {
         int h = getName().hashCode() + getClass().hashCode();
+        h = 31 * h + Boolean.hashCode(isExtension);
+        h = 31 * h + (receiverType == null ? 0 : receiverType.hashCode());
+        h = 31 * h + Boolean.hashCode(isVarArgs);
         for (final String cparamType : getParamTypeDescriptors())
             h += 3 + (cparamType == null ? 0 : cparamType.hashCode());
         return h + getParameterCount();
