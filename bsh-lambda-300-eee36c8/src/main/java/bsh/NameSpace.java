@@ -797,6 +797,12 @@ public class NameSpace
      * @see bsh.Primitive */
     public BshMethod getMethod(final String name, final Class<?>[] sig,
             final boolean declaredOnly) throws UtilEvalError {
+        return this.getMethod(name, sig, declaredOnly, true/* includeExtensions */);
+    }
+
+    public BshMethod getMethod(final String name, final Class<?>[] sig,
+            final boolean declaredOnly, final boolean includeExtensions)
+            throws UtilEvalError {
         BshMethod method = null;
         Interpreter.debug("Get method: ", name, " ", this );
         // Change import precedence if we are a class body/instance
@@ -804,13 +810,27 @@ public class NameSpace
         if (this.isClass && !this.isEnum && !declaredOnly)
             method = this.getImportedMethod(name, sig);
         if (method == null && this.methods.containsKey(name))
-            method = Reflect.findMostSpecificBshMethod(sig, methods.get(name));
+            method = this.selectMethod(sig, methods.get(name), includeExtensions);
         if (method == null && !this.isClass && !declaredOnly)
             method = this.getImportedMethod(name, sig);
         // try parent
         if (method == null && !declaredOnly && this.parent != null)
-            return this.parent.getMethod(name, sig);
+            return this.parent.getMethod(name, sig, false, includeExtensions);
         return method;
+    }
+
+    private BshMethod selectMethod(final Class<?>[] sig,
+            final List<BshMethod> methods, final boolean includeExtensions) {
+        final List<BshMethod> candidates;
+        if (includeExtensions) {
+            candidates = methods;
+        } else {
+            candidates = new ArrayList<>(methods.size());
+            for (final BshMethod method : methods)
+                if (!method.isExtension)
+                    candidates.add(method);
+        }
+        return candidates.isEmpty() ? null : Reflect.findMostSpecificBshMethod(sig, candidates);
     }
 
     /** Get the extension method matching the specified receiver type and
