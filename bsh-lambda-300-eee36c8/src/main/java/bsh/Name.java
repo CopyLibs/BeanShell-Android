@@ -913,8 +913,17 @@ class Name implements java.io.Serializable
 
         // Check for existing method
         BshMethod meth = null;
+        Object extensionReceiver = null;
         try {
-            meth = namespace.getMethod( methodName, argTypes );
+            try {
+                Object resolvedThis = resolveThisFieldReference( callstack, namespace, interpreter, "this", false );
+                extensionReceiver = resolvedThis instanceof This ? Primitive.unwrap(resolvedThis) : resolvedThis;
+            } catch ( UtilEvalError ignored ) {
+            }
+            if ( extensionReceiver != null && extensionReceiver != Primitive.NULL && extensionReceiver != Primitive.VOID )
+                meth = namespace.getExtensionMethod( Types.getType(extensionReceiver), methodName, argTypes );
+            if ( meth == null )
+                meth = namespace.getMethod( methodName, argTypes, false/*declaredOnly*/, false/*includeExtensions*/ );
         } catch ( UtilEvalError e ) {
             throw e.toEvalError(
                 "Local method invocation", callerInfo, callstack );
@@ -930,7 +939,7 @@ class Name implements java.io.Serializable
                     && !namespace.getParent().isClass
                     && !noOverride.matcher(meth.getName()).matches();
 
-            return meth.invoke( args, interpreter, callstack, callerInfo, overrideChild );
+            return meth.invoke( args, interpreter, callstack, callerInfo, overrideChild, extensionReceiver );
         }
 
         // Look for a BeanShell command

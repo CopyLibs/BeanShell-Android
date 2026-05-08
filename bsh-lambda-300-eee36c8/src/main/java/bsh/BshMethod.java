@@ -652,6 +652,10 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
         BshMethod m = (BshMethod)o;
         if( !name.equals(m.name) || getParameterCount() != m.getParameterCount() )
             return false;
+        if (isExtension != m.isExtension)
+            return false;
+        if (isExtension && !equal(receiverType, m.receiverType))
+            return false;
         for( int i = 0; i < getParameterCount(); i++ )
             if( !equal(getParameterTypes()[i], m.getParameterTypes()[i]) )
                 return false;
@@ -665,6 +669,8 @@ public class BshMethod implements Serializable, Cloneable, BshClassManager.Liste
     @Override
     public int hashCode() {
         int h = name.hashCode() + getClass().hashCode();
+        h = 31 * h + Boolean.hashCode(isExtension);
+        h = 31 * h + (receiverType == null ? 0 : receiverType.hashCode());
         for (final Class<?> cparamType : getParameterTypes())
             h += 3 + (cparamType == null ? 0 : cparamType.hashCode());
         return h + getParameterCount();
