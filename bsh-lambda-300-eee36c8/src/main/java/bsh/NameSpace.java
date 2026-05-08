@@ -797,7 +797,7 @@ public class NameSpace
      * @see bsh.Primitive */
     public BshMethod getMethod(final String name, final Class<?>[] sig,
             final boolean declaredOnly) throws UtilEvalError {
-        return this.getMethod(name, sig, declaredOnly, true/* includeExtensions */);
+        return this.getMethod(name, sig, declaredOnly, false/* includeExtensions */);
     }
 
     public BshMethod getMethod(final String name, final Class<?>[] sig,
