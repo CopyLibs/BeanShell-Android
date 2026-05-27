@@ -3,7 +3,7 @@ agp = "8.13.2"
 kotlin = "2.3.20"
 
 [libraries]
-material = { group = "com.google.android.material", name = "material", version = "1.13.0" }
+material = { group = "com.google.android.material", name = "material", version = "1.14.0" }
 sweeteditor = { module = "com.qiplat:sweeteditor", version = "1.0.6" }
 dalvik-dx = { module = "com.jakewharton.android.repackaged:dalvik-dx", version = "16.0.1" }
 android-gradle = { module = "com.android.tools.build:gradle", version.ref = "agp" }
