@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import bsh.classpath.ClassManagerImpl;
 import bsh.loader.BshLoaderManager;
 import bsh.loader.BshPluginLoader;
 import bsh.util.ValueReferenceMap;
@@ -354,21 +355,7 @@ public class BshClassManager {
     */
     public static BshClassManager createClassManager( Interpreter interpreter )
     {
-        BshClassManager manager;
-
-        // Do we have the optional package?
-        if ( Capabilities.classExists("bsh.classpath.ClassManagerImpl") )
-            try {
-                // Try to load the module
-                // don't refer to it directly here or we're dependent upon it
-                Class<?> clazz = Capabilities.getExisting("bsh.classpath.ClassManagerImpl");
-                manager = (BshClassManager) clazz.getConstructor().newInstance();
-            } catch ( IllegalArgumentException | ReflectiveOperationException | SecurityException e) {
-                throw new InterpreterError("Error loading classmanager", e);
-            }
-        else
-            manager = new BshClassManager();
-
+        BshClassManager manager = new ClassManagerImpl();
         manager.declaringInterpreter = interpreter;
         return manager;
     }
