@@ -90,6 +90,13 @@ class BSHType extends SimpleNode implements BshClassManager.Listener {
         Node node = getTypeNode();
         if ( node instanceof BSHPrimitiveType )
             descriptor = getTypeDescriptor( ((BSHPrimitiveType)node).type );
+        else if ( node instanceof BSHFunctionType ) {
+            Class<?> cls = null;
+            try {
+                cls = ((BSHFunctionType)node).getType(callstack, interpreter);
+            } catch (EvalError e) { /* ignore */ }
+            descriptor = (cls == null) ? "Ljava/lang/Object;" : getTypeDescriptor(cls);
+        }
         else
         {
             String clasName = ((BSHAmbiguousName)node).text;
@@ -130,6 +137,11 @@ class BSHType extends SimpleNode implements BshClassManager.Listener {
         // return cached type if available
         if ( type != null )
             return type;
+        
+        if ( jjtGetNumChildren() > 0 && jjtGetChild(0) instanceof BSHFunctionType ) {
+            this.type = ((BSHFunctionType) jjtGetChild(0)).getType(callstack, interpreter);
+            return this.type;
+        }
 
         //  first node will either be PrimitiveType or AmbiguousName
         Node node = getTypeNode();

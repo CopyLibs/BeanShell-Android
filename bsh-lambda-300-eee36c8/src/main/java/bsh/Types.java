@@ -381,7 +381,7 @@ class Types {
         // a quick fix to auto wide for magic math methods
         else if ((lhsType == BigInteger.class||lhsType == BigDecimal.class) && Types.isNumeric(rhsType))
             return true;
-        else if ( lhsType.isAssignableFrom(rhsType) )
+        else if ( isClassAssignable(lhsType, rhsType) )
             return true;
 
         return false;
@@ -422,7 +422,83 @@ class Types {
 
         return isJavaBaseAssignable(lhsType, rhsType);
     }
+    
+    /**
+     * Structural subtyping for function types:
+     * 1. Parameters are contravariant (Target -> Source).
+     * 2. Return type is covariant (Source -> Target).
+     */
+    public static boolean isFunctionTypeAssignable(Class<?> from, Class<?> to) {
+        Method fromMethod = null;
+        Method toMethod = null;
 
+        for (Method m : from.getDeclaredMethods()) {
+            if (m.getName().equals("invoke")) {
+                fromMethod = m;
+                break;
+            }
+        }
+        for (Method m : to.getDeclaredMethods()) {
+            if (m.getName().equals("invoke")) {
+                toMethod = m;
+                break;
+            }
+        }
+
+        if (fromMethod == null || toMethod == null) {
+            return false;
+        }
+
+        Class<?>[] fromParams = fromMethod.getParameterTypes();
+        Class<?>[] toParams = toMethod.getParameterTypes();
+
+        if (fromParams.length != toParams.length) {
+            return false;
+        }
+
+        for (int i = 0; i < fromParams.length; i++) {
+            if (!Types.isAssignable(toParams[i], fromParams[i], Types.BSH_ASSIGNABLE)) {
+                return false;
+            }
+        }
+
+        Class<?> fromReturn = fromMethod.getReturnType();
+        Class<?> toReturn = toMethod.getReturnType();
+
+        if (toReturn != void.class) {
+            if (!Types.isAssignable(fromReturn, toReturn, Types.BSH_ASSIGNABLE)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // [IMPORTANT] Use this method instead of native Class.isAssignableFrom()
+    public static boolean isClassAssignable(Class<?> to, Class<?> from) {
+        if (to == null || from == null) {
+            return false;
+        }
+    
+        if (SyntheticInterfaceFactory.BshLambdaMarker.class.isAssignableFrom(to)) {
+            Class<?> actualFrom = from;
+            if (Proxy.isProxyClass(from)) {
+                for (Class<?> iface : from.getInterfaces()) {
+                    if (SyntheticInterfaceFactory.BshLambdaMarker.class.isAssignableFrom(iface)) {
+                        actualFrom = iface;
+                        break;
+                    }
+                }
+            }
+    
+            if (SyntheticInterfaceFactory.BshLambdaMarker.class.isAssignableFrom(actualFrom)) {
+                return isFunctionTypeAssignable(actualFrom, to);
+            }
+        }
+    
+        return to.isAssignableFrom(from);
+    }
+    
     /**
      Test if a type can be converted to another type via BeanShell
      extended syntax rules (a superset of Java conversion rules).
@@ -469,7 +545,7 @@ class Types {
     public static Class<?> getCommonType(Class<?> common, Class<?> compare) {
         if ( null == common )
             return compare;
-        if ( null == compare || common.isAssignableFrom(compare) )
+        if ( isClassAssignable(common, compare) )
             return common;
 
         // pick the largest number type based on NUMBER_ORDER definitions
@@ -483,7 +559,7 @@ class Types {
         // find a common super class
         Class<?> supr = common;
         while ( null != (supr = supr.getSuperclass()) && Object.class != supr )
-            if ( supr.isAssignableFrom(compare) )
+            if ( isClassAssignable(common, compare) )
                 return supr;
 
         // common type can only be Object
@@ -651,7 +727,7 @@ class Types {
             }
 
             // Test if a directly assignable reference type and avoid widening conversions
-            if ( fromType != null && !fromType.isPrimitive() && toType.isAssignableFrom( fromType ) )
+            if ( fromType != null && !fromType.isPrimitive() && isClassAssignable( toType, fromType ) )
                 return checkOnly ? VALID_CAST : fromValue;
 
             // Primitive to arbitrary object type.
@@ -669,7 +745,7 @@ class Types {
         // We do this last to allow various errors above to be caught.
         // e.g cast Primitive.Void to Object would pass this
         // returns class instance This for generated super types
-        if ( toType.isAssignableFrom( fromType ) )
+        if ( isClassAssignable( toType, fromType ) )
             return checkOnly ? VALID_CAST
                 : Reflect.isGeneratedClass(toType) && !Proxy.isProxyClass(fromType)
                 ? Reflect.getClassInstanceThis(fromValue, toType.getSimpleName())

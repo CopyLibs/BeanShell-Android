@@ -28,6 +28,7 @@ package bsh;
 import static bsh.This.Keys.BSHEXTENSIONMETHODRECEIVER;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
@@ -941,9 +942,36 @@ class Name implements java.io.Serializable
 
             return meth.invoke( args, interpreter, callstack, callerInfo, overrideChild, extensionReceiver );
         }
+        
+        try {
+            Object varObj = namespace.getVariable(methodName);
+            if ( varObj != null && varObj != Primitive.VOID ) {
+                if ( isCallableFunction(varObj) ) {
+                    return Reflect.invokeObjectMethod(
+                        varObj, "invoke", args, interpreter, callstack, callerInfo );
+                }
+            }
+        } catch ( UtilEvalError e ) { /* fallback to command */ }
 
         // Look for a BeanShell command
         return namespace.invokeCommand(methodName, args, interpreter, callstack, callerInfo);
+    }
+    
+    /**
+     * Check if the object is a proxy of our generated functional interfaces.
+     * Use the marker interface for decoupling from generated names.
+     */
+    private boolean isCallableFunction(Object obj) {
+        if (obj == null) return false;
+        Class<?> cls = obj.getClass();
+        if (Proxy.isProxyClass(cls)) {
+            for (Class<?> iface : cls.getInterfaces()) {
+                if (SyntheticInterfaceFactory.BshLambdaMarker.class.isAssignableFrom(iface)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // Static methods that operate on compound ('.' separated) names

@@ -1,5 +1,7 @@
 package bsh;
 
+import static bsh.This.Keys.BSHEXTENSIONMETHODRECEIVER;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -114,6 +116,9 @@ public abstract class BshLambda {
                 return entry.getKey().isAssignable(method, round);
         return false;
     }
+    
+    /** Set whether this lambda has a receiver context */
+    protected void setHasReceiver(boolean b) { /* Default no-op */ }
 
     /**
      * Convert this lambda to a specific functional interface.
@@ -123,6 +128,15 @@ public abstract class BshLambda {
     protected <T> T convertTo(Class<T> functionalInterface) throws UtilEvalError {
         if (!BshLambda.isAssignable(this.dummyType, functionalInterface, Types.BSH_ASSIGNABLE))
             throw new UtilEvalError("This BshLambda can't be converted to " + functionalInterface.getName());
+            
+        /**
+         * If it's a receiver-type interface, enable receiver mode in the lambda implementation.
+         * Checked using the marker interface.
+         */
+        if (SyntheticInterfaceFactory.BshReceiverLambdaMarker.class.isAssignableFrom(functionalInterface)) {
+            this.setHasReceiver(true);
+        }
+        
         try {
             return (T) Proxy.newProxyInstance(
                     functionalInterface.getClassLoader(),
@@ -173,6 +187,7 @@ public abstract class BshLambda {
         private final Class<?>[] paramsTypes;
         private final String[] paramsNames;
         private final Node bodyNode;
+        private boolean hasReceiver = false;
 
         public BshLambdaFromLambdaExpression(Node expressionNode, NameSpace declaringNameSpace, Modifiers[] paramsModifiers, Class<?>[] paramsTypes, String[] paramsNames, Node bodyNode) {
             super(expressionNode);
@@ -185,6 +200,8 @@ public abstract class BshLambda {
             if (paramsModifiers.length != paramsTypes.length || paramsTypes.length != paramsNames.length)
                 throw new IllegalArgumentException("The length of 'paramsModifiers', 'paramsTypes' and 'paramsNames' can't be different!");
         }
+        
+        public void setHasReceiver(boolean b) { this.hasReceiver = b; }
 
         protected final Object invokeImpl(Object[] args) throws UtilEvalError, EvalError, TargetError {
             if (args.length != this.paramsTypes.length) throw new UtilEvalError("Wrong number of arguments!");
@@ -207,6 +224,19 @@ public abstract class BshLambda {
         /** Initialize a name space for eval the lambda expression's body */
         private NameSpace initNameSpace(Object[] args) throws UtilEvalError {
             NameSpace nameSpace = new NameSpace(this.declaringNameSpace, "LambdaExpression");
+            
+            if (this.hasReceiver && args.length > 0) {
+                Object receiver = args[0];
+                // Inject the receiver for "this" interception in Name.java
+                nameSpace.setLocalVariable(BSHEXTENSIONMETHODRECEIVER.toString(), receiver, false);
+                
+                // Import the receiver's members for direct access
+                Object rawReceiver = Primitive.unwrap(receiver);
+                if (rawReceiver != null) {
+                    nameSpace.importObject(rawReceiver);
+                }
+            }
+            
             for (int i = 0; i < paramsNames.length; i++) {
                 Class<?> paramType = this.paramsTypes[i];
                 if (paramType != null)
@@ -218,11 +248,10 @@ public abstract class BshLambda {
         }
 
         protected boolean isAssignable(Method to, int round) {
-            Type[] toParamsTypes = to.getGenericParameterTypes();
+            Class<?>[] toParamsTypes = to.getParameterTypes();
             if (this.paramsTypes.length != toParamsTypes.length) return false;
-
-            // TODO: validate the return type of 'this.bodyNode' ???
-            return Types.isSignatureAssignable(this.paramsTypes, toParamsTypes, round);
+    
+            return Types.isSignatureAssignable(toParamsTypes, this.paramsTypes, round);
         }
 
     }
