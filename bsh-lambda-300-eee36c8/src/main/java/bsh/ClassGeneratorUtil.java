@@ -92,6 +92,9 @@ public class ClassGeneratorUtil implements Opcodes {
             ACC_PUBLIC | ACC_PRIVATE | ACC_PROTECTED;
 
     private static final String OBJECT = "Ljava/lang/Object;";
+    private static final String GENERATED_CLASS_DESC = Type.getDescriptor(GeneratedClass.class);
+    private static final String PRIMITIVE_NAME = Type.getInternalName(Primitive.class);
+    private static final String PRIMITIVE_DESC = Type.getDescriptor(Primitive.class);
 
     private final String className;
     private final String classDescript;
@@ -379,7 +382,7 @@ public class ClassGeneratorUtil implements Opcodes {
         cv.visitVarInsn(ALOAD, 0);
         cv.visitLdcInsn(className);
         generateParameterReifierCode(new String[0], false/*isStatic*/, cv);
-        cv.visitMethodInsn(INVOKESTATIC, "bsh/This", "initInstance", "(Lbsh/GeneratedClass;Ljava/lang/String;[Ljava/lang/Object;)V", false);
+        cv.visitMethodInsn(INVOKESTATIC, "bsh/This", "initInstance", "(" + GENERATED_CLASS_DESC + "Ljava/lang/String;[Ljava/lang/Object;)V", false);
         cv.visitInsn(RETURN);
         cv.visitMaxs(0, 0);
     }
@@ -488,7 +491,7 @@ public class ClassGeneratorUtil implements Opcodes {
         cv.visitVarInsn(ALOAD, argsVar);
 
         // invoke the initInstance() method
-        cv.visitMethodInsn(INVOKESTATIC, "bsh/This", "initInstance", "(Lbsh/GeneratedClass;Ljava/lang/String;[Ljava/lang/Object;)V", false);
+        cv.visitMethodInsn(INVOKESTATIC, "bsh/This", "initInstance", "(" + GENERATED_CLASS_DESC + "Ljava/lang/String;[Ljava/lang/Object;)V", false);
 
         cv.visitInsn(RETURN);
 
@@ -856,7 +859,7 @@ public class ClassGeneratorUtil implements Opcodes {
                 else
                     opcode = ILOAD;
 
-                String type = "bsh/Primitive";
+                String type = PRIMITIVE_NAME;
                 cv.visitTypeInsn(NEW, type);
                 cv.visitInsn(DUP);
                 cv.visitVarInsn(opcode, localVarIndex);
@@ -867,7 +870,7 @@ public class ClassGeneratorUtil implements Opcodes {
                 cv.visitVarInsn(ALOAD, localVarIndex);
                 Label isnull = new Label();
                 cv.visitJumpInsn(IFNONNULL, isnull);
-                cv.visitFieldInsn(GETSTATIC, "bsh/Primitive", "NULL", "Lbsh/Primitive;");
+                cv.visitFieldInsn(GETSTATIC, PRIMITIVE_NAME, "NULL", PRIMITIVE_DESC);
                 cv.visitInsn(AASTORE);
                 // else store parameter as Object.
                 Label notnull = new Label();
