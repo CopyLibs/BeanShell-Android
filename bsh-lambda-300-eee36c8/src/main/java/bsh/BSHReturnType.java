@@ -30,6 +30,8 @@ package bsh;
 
 class BSHReturnType extends SimpleNode
 {
+    private static final long serialVersionUID = 1L;
+
     public boolean isVoid;
 
     BSHReturnType(int id) { super(id); }

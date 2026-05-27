@@ -28,6 +28,8 @@
 package bsh;
 
 class BSHFormalParameters extends SimpleNode implements BshClassManager.Listener {
+    private static final long serialVersionUID = 1L;
+
     private String [] paramNames;
     private Modifiers [] paramModifiers;
     private boolean listener;

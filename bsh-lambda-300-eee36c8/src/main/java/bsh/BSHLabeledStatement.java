@@ -16,6 +16,8 @@
 package bsh;
 
 public class BSHLabeledStatement extends bsh.SimpleNode implements ParserConstants {
+    private static final long serialVersionUID = 1L;
+
     String label;
 
     public BSHLabeledStatement(int id) { super(id); }

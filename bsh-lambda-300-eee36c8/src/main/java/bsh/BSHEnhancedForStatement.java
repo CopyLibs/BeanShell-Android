@@ -36,6 +36,7 @@ import java.util.Iterator;
  * @author Pat Niemeyer
  */
 class BSHEnhancedForStatement extends SimpleNode implements ParserConstants {
+    private static final long serialVersionUID = 1L;
 
     final int blockId;
     String varName, label;

@@ -36,6 +36,7 @@ package bsh;
     into it.
 */
 class BSHCastExpression extends SimpleNode {
+    private static final long serialVersionUID = 1L;
 
     public BSHCastExpression(int id) { super(id); }
 

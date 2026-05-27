@@ -29,6 +29,7 @@ package bsh;
 
 class BSHTypedVariableDeclaration extends SimpleNode {
     private static final long serialVersionUID = 1L;
+
     public Modifiers modifiers = new Modifiers(Modifiers.FIELD);
     private BSHVariableDeclarator[] bvda;
 

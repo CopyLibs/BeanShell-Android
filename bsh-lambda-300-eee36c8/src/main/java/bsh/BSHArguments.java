@@ -30,6 +30,8 @@ package bsh;
 
 class BSHArguments extends SimpleNode
 {
+    private static final long serialVersionUID = 1L;
+
     BSHArguments(int id) { super(id); }
 
     /**

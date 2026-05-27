@@ -34,6 +34,8 @@ package bsh;
 */
 class BSHVariableDeclarator extends SimpleNode
 {
+    private static final long serialVersionUID = 1L;
+
     // The token.image text of the name... never changes.
     public String name;
     public int dimensions = 0;

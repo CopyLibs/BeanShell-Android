@@ -35,6 +35,7 @@ import bsh.Types.MapEntry;
 
 class BSHArrayInitializer extends SimpleNode {
     private static final long serialVersionUID = 1L;
+
     boolean isMapInArray = false;
     Deque<BSHPrimaryExpression> expressionQueue = new ArrayDeque<>();
     BSHArrayInitializer(int id) { super(id); }

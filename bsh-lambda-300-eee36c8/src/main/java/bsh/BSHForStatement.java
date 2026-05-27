@@ -33,6 +33,8 @@ package bsh;
 */
 class BSHForStatement extends SimpleNode implements ParserConstants
 {
+    private static final long serialVersionUID = 1L;
+
     final int blockId;
     public boolean hasForInit;
     public boolean hasExpression;

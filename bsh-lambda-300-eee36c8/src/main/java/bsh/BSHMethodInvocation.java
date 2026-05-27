@@ -31,6 +31,8 @@ import java.lang.reflect.InvocationTargetException;
 
 class BSHMethodInvocation extends SimpleNode
 {
+    private static final long serialVersionUID = 1L;
+
     BSHMethodInvocation (int id) { super(id); }
 
     BSHAmbiguousName getNameNode() {

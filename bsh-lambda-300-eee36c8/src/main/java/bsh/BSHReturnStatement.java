@@ -30,6 +30,8 @@ package bsh;
 
 class BSHReturnStatement extends SimpleNode implements ParserConstants
 {
+    private static final long serialVersionUID = 1L;
+
     public int kind;
     public String label;
 

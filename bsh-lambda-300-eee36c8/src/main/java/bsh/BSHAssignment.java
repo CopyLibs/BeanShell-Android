@@ -30,6 +30,7 @@ package bsh;
 
 class BSHAssignment extends SimpleNode implements ParserConstants {
     private static final long serialVersionUID = 1L;
+
     public Integer operator;
 
     BSHAssignment(int id) { super(id); }

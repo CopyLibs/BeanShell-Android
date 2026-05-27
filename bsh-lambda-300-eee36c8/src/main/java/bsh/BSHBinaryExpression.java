@@ -33,6 +33,8 @@ package bsh;
     @see Primitive.binaryOperation
 */
 class BSHBinaryExpression extends SimpleNode implements ParserConstants {
+    private static final long serialVersionUID = 1L;
+
     public int kind;
 
     BSHBinaryExpression(int id) { super(id); }

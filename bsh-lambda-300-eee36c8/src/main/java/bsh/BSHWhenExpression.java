@@ -27,6 +27,7 @@ package bsh;
 
 class BSHWhenExpression extends SimpleNode implements ParserConstants
 {
+    private static final long serialVersionUID = 1L;
 
     BSHWhenExpression(int id) { super(id); }
 

@@ -31,6 +31,7 @@ package bsh;
 class BSHPrimaryExpression extends SimpleNode
 {
     private static final long serialVersionUID = 1L;
+
     private Object cached = null;
     boolean isArrayExpression = false;
     boolean isMapExpression = false;

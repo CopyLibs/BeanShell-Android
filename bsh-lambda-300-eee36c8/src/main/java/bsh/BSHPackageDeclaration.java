@@ -30,6 +30,7 @@ package bsh;
 
 public class BSHPackageDeclaration extends SimpleNode
 {
+    private static final long serialVersionUID = 1L;
 
   public BSHPackageDeclaration(int id) {
     super(id);

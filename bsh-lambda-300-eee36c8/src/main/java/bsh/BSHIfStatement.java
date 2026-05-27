@@ -29,6 +29,8 @@
 package bsh;
 
 class BSHIfStatement extends SimpleNode {
+    private static final long serialVersionUID = 1L;
+
     boolean isClosed;
 
     BSHIfStatement(int id) { super(id); }

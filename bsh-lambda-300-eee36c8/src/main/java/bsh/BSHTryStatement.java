@@ -33,6 +33,8 @@ import java.util.List;
 
 class BSHTryStatement extends SimpleNode
 {
+    private static final long serialVersionUID = 1L;
+
     final int blockId;
     BSHTryWithResources tryWithResources = null;
 
