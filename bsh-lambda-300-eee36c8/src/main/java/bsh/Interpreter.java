@@ -32,19 +32,28 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.crypto.SecretKey;
 
 import bsh.module.BshModule;
 import bsh.preprocess.AnnotationIgnorePreprocess;
 import bsh.preprocess.DefaultArgsDesugar;
 import bsh.preprocess.KtStringTemplate;
 import bsh.security.MainSecurityGuard;
+import bsh.snapshot.BshSnapshot;
+import bsh.snapshot.BshSnapshotHelper;
 
 /**
     The BeanShell script interpreter.
@@ -829,6 +838,166 @@ public class Interpreter
                 sourceName );
     }
 
+    public BshSnapshot compileSnapshot( Reader in, NameSpace nameSpace, String sourceFileInfo )
+        throws EvalError
+    {
+        String source = readSource(in, sourceFileInfo);
+        String statements = preprocessScript(source);
+
+        Interpreter localInterpreter = new Interpreter(
+            new StringReader(terminatedScript(statements)),
+            getOut(), getErr(), false, nameSpace, this, sourceFileInfo);
+
+        List<Node> nodes = new ArrayList<>();
+        boolean eof = false;
+        while( !eof )
+        {
+            try
+            {
+                eof = localInterpreter.readLine();
+                if (localInterpreter.get_jjtree().nodeArity() > 0)
+                {
+                    Node node = localInterpreter.get_jjtree().rootNode();
+                    node.setSourceFile(sourceFileInfo);
+
+                    stripSnapshotRuntimeState(node);
+                    nodes.add(node);
+                }
+            } catch (ParseException e) {
+                e.setErrorSourceFile(sourceFileInfo);
+                throw e;
+            } catch (InterpreterError e) {
+                throw new EvalError(
+                    "Sourced file: "+sourceFileInfo+" internal Error: "
+                    + e.getMessage(), null, null, e);
+            } catch (TokenMgrException e) {
+                throw new EvalError(
+                    "Sourced file: "+sourceFileInfo+" Token Parsing Error: "
+                    + e.getMessage(), null, null, e);
+            } catch (Exception e) {
+                throw new EvalError(
+                    "Sourced file: "+sourceFileInfo+" unknown error: "
+                    + e.getMessage(), null, null, e);
+            } finally {
+                localInterpreter.get_jjtree().reset();
+            }
+        }
+
+        return new BshSnapshot(nodes.toArray(new Node[0]));
+    }
+
+    public BshSnapshot compileSnapshot( String statements, String sourceName )
+        throws EvalError
+    {
+        return compileSnapshot(new StringReader(terminatedScript(statements)), globalNameSpace, sourceName);
+    }
+
+    public BshSnapshot compileSnapshot( String statements ) throws EvalError {
+        return compileSnapshot(statements, "snapshot string");
+    }
+
+    public void compileSnapshot( String inputPath, String outputPath, SecretKey key )
+        throws EvalError, IOException
+    {
+        Reader sourceIn = new BufferedReader(new FileReader(inputPath));
+        try {
+            OutputStream out = new FileOutputStream(outputPath);
+            try {
+                BshSnapshotHelper.writeEncrypted( compileSnapshot(sourceIn, globalNameSpace, inputPath), out, key );
+            } finally {
+                out.close();
+            }
+        } finally {
+            sourceIn.close();
+        }
+    }
+
+    public Object evalSnapshot( BshSnapshot snapshot, NameSpace nameSpace, String sourceFileInfo )
+        throws EvalError
+    {
+        Object retVal = null;
+        Interpreter localInterpreter = new Interpreter(
+            new StringReader(""),
+            getOut(), getErr(), false, nameSpace, this, sourceFileInfo);
+        CallStack callstack = new CallStack(nameSpace);
+
+        for (Node node : snapshot.getNodes()) {
+            try {
+                node.setSourceFile(sourceFileInfo);
+                retVal = node.eval(callstack, localInterpreter);
+
+                if ( callstack.depth() > 1 )
+                    throw new InterpreterError(
+                        "Callstack growing: "+callstack);
+
+                if ( retVal instanceof ReturnControl ) {
+                    retVal = ((ReturnControl) retVal).value;
+                    break;
+                }
+            } catch (InterpreterError e) {
+                throw new EvalError(
+                    "Snapshot: "+sourceFileInfo+" internal Error: "
+                    + e.getMessage(), node, callstack, e);
+            } catch (TargetError e) {
+                if ( e.getNode()==null )
+                    e.setNode( node );
+                throw e.reThrow("Snapshot: "+sourceFileInfo);
+            } catch (EvalError e) {
+                if ( e.getNode()==null )
+                    e.setNode( node );
+                throw e.reThrow("Snapshot: "+sourceFileInfo);
+            } catch (Exception e) {
+                throw new EvalError(
+                    "Snapshot: "+sourceFileInfo+" unknown error: "
+                    + e.getMessage(), node, callstack, e);
+            } finally {
+                localInterpreter.get_jjtree().reset();
+
+                if ( callstack.depth() > 1 ) {
+                    callstack.clear();
+                    callstack.push( nameSpace );
+                }
+            }
+        }
+
+        return Primitive.unwrap(retVal);
+    }
+
+    public Object evalSnapshot( BshSnapshot snapshot )
+        throws EvalError
+    {
+        return evalSnapshot( snapshot, globalNameSpace, "snapshot" );
+    }
+
+    public Object evalSnapshot( InputStream in, SecretKey key, String sourceName )
+        throws EvalError, IOException
+    {
+        return evalSnapshot( BshSnapshotHelper.readEncrypted(in, key), globalNameSpace, sourceName );
+    }
+
+    public Object evalSnapshot( InputStream in, SecretKey key )
+        throws EvalError, IOException
+    {
+        return evalSnapshot( in, key, "snapshot stream" );
+    }
+
+    public Object evalSnapshot( File file, SecretKey key )
+        throws EvalError, IOException
+    {
+        InputStream snapshotIn = new FileInputStream(file);
+        try {
+            return evalSnapshot( snapshotIn, key, file.getName() );
+        } finally {
+            snapshotIn.close();
+        }
+    }
+
+    public Object evalSnapshot( String filename, SecretKey key )
+        throws EvalError, IOException
+    {
+        return evalSnapshot( pathToFile(filename), key );
+    }
+
     private String readSource(Reader in, String sourceFileInfo) throws EvalError {
         try {
             StringBuilder sb = new StringBuilder(1024);
@@ -850,6 +1019,24 @@ public class Interpreter
         rewritten = DefaultArgsDesugar.rewrite(rewritten);
         rewritten = KtStringTemplate.rewrite(rewritten);
         return rewritten;
+    }
+
+    private void stripSnapshotRuntimeState( Node node ) {
+        if ( node == null )
+            return;
+        List<Node> pending = new ArrayList<>();
+        pending.add(node);
+        while ( !pending.isEmpty() ) {
+            Node current = pending.remove(pending.size() - 1);
+            if ( !(current instanceof SimpleNode simpleNode) )
+                continue;
+            simpleNode.firstToken = null;
+            simpleNode.lastToken = null;
+            simpleNode.parser = null;
+            for ( Node child : simpleNode.jjtGetChildren() )
+                if ( child != null )
+                    pending.add(child);
+        }
     }
 
     /** Produce source file info from the supplied statements.
