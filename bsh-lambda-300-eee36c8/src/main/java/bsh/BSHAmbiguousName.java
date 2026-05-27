@@ -29,6 +29,8 @@ package bsh;
 
 class BSHAmbiguousName extends SimpleNode
 {
+    private static final long serialVersionUID = 1L;
+
     public String text;
 
     BSHAmbiguousName(int id) { super(id); }

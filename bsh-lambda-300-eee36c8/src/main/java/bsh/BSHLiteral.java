@@ -30,6 +30,8 @@ package bsh;
 
 public final class BSHLiteral extends SimpleNode
 {
+    private static final long serialVersionUID = 1L;
+
     public static volatile boolean internStrings = true;
 
     public Object value;

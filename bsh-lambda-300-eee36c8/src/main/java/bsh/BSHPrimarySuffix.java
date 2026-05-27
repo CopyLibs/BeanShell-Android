@@ -31,6 +31,8 @@ import java.util.Map.Entry;
 
 class BSHPrimarySuffix extends SimpleNode
 {
+    private static final long serialVersionUID = 1L;
+
     public static final int
         CLASS = 6,
         INDEX = 1,

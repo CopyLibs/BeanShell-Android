@@ -31,6 +31,8 @@ import java.lang.reflect.Array;
 
 class BSHMethodDeclaration extends SimpleNode
 {
+    private static final long serialVersionUID = 1L;
+
     public String name;
 
     // Begin Child node structure evaluated by insureNodesParsed

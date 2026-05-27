@@ -32,6 +32,7 @@ import java.lang.reflect.Array;
 
 class BSHType extends SimpleNode implements BshClassManager.Listener {
     private static final long serialVersionUID = 1L;
+
     /**
         baseType is used during evaluation of full type and retained for the
         case where we are an array type.

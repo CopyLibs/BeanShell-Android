@@ -27,6 +27,8 @@ package bsh;
 
 class BSHWhenEntry extends SimpleNode
 {
+    private static final long serialVersionUID = 1L;
+
     boolean isElse;
     int numConditions;
 

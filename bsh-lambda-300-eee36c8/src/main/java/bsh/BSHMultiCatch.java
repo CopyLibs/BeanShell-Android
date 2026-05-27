@@ -17,6 +17,7 @@ package bsh;
 
 public class BSHMultiCatch extends SimpleNode {
     private static final long serialVersionUID = 1L;
+
     public static final Class<?> UNTYPED = null;
     public String name;
     public boolean isFinal = false;

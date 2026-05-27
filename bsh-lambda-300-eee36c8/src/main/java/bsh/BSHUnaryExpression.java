@@ -30,6 +30,8 @@ package bsh;
 
 class BSHUnaryExpression extends SimpleNode implements ParserConstants
 {
+    private static final long serialVersionUID = 1L;
+
     public int kind;
     public boolean postfix = false;
 

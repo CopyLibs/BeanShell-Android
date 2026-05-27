@@ -17,6 +17,7 @@ package bsh;
 
 public class BSHEnumConstant extends SimpleNode {
     private static final long serialVersionUID = 1L;
+
     Modifiers mods = new Modifiers(Modifiers.FIELD);
     {
         mods.setConstant();

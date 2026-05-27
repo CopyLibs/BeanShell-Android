@@ -35,6 +35,8 @@ import java.lang.reflect.Array;
 */
 class BSHFormalParameter extends SimpleNode
 {
+    private static final long serialVersionUID = 1L;
+
     public static final Class UNTYPED = null;
     public String name;
     // unsafe caching of type here

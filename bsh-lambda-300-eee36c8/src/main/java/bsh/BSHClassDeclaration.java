@@ -37,6 +37,8 @@ import static bsh.ClassGenerator.Type;
 */
 class BSHClassDeclaration extends SimpleNode
 {
+    private static final long serialVersionUID = 1L;
+
     /**
         The class instance initializer method name.
         A BshMethod by this name is installed by the class delcaration into

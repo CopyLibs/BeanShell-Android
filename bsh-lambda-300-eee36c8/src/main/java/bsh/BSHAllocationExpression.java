@@ -39,6 +39,8 @@ import bsh.security.SecurityError;
 */
 class BSHAllocationExpression extends SimpleNode
 {
+    private static final long serialVersionUID = 1L;
+
     BSHAllocationExpression(int id) { super(id); }
     private static int innerClassCount = 0;
 

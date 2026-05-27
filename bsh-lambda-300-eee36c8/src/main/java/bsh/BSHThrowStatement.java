@@ -30,6 +30,8 @@ package bsh;
 
 class BSHThrowStatement extends SimpleNode
 {
+    private static final long serialVersionUID = 1L;
+
     BSHThrowStatement(int id) { super(id); }
 
     public Object eval( CallStack callstack, Interpreter interpreter)

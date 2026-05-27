@@ -33,6 +33,8 @@ import java.util.List;
 
 /** A node reprresenting a code block */
 class BSHBlock extends SimpleNode {
+    private static final long serialVersionUID = 1L;
+
     /** Unique block id for this instance */
     final int blockId;
 

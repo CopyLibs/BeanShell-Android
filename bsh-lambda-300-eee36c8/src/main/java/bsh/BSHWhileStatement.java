@@ -29,6 +29,7 @@ package bsh;
  * This class handles both {@code while} statements and {@code do..while} statements.
  */
 class BSHWhileStatement extends SimpleNode implements ParserConstants {
+    private static final long serialVersionUID = 1L;
 
     /**
      * Set by Parser, default {@code false}

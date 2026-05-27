@@ -35,6 +35,7 @@ package bsh;
 class BSHArrayDimensions extends SimpleNode
 {
     private static final long serialVersionUID = 1L;
+
     public Class<?> baseType;
     public int numDefinedDims;
     public int numUndefinedDims;
