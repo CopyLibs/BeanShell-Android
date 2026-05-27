@@ -71,12 +71,11 @@ class MainActivity : ActivityBase<ActivityMainBinding>(
                     .build()
             )
             settings.apply {
-                setEditorTextSize(28f)
-                setTypeface(Typeface.createFromAsset(context.assets, "font/mono.ttf"))
-                setFoldArrowMode(FoldArrowMode.AUTO)
-                setGutterSticky(true)
-                setCurrentLineRenderMode(CurrentLineRenderMode.BORDER)
-                setCompositionEnabled(true)
+                editorTextSize = 28f
+                typeface = Typeface.createFromAsset(context.assets, "font/mono.ttf")
+                foldArrowMode = FoldArrowMode.AUTO
+                isGutterSticky = true
+                currentLineRenderMode = CurrentLineRenderMode.BORDER
             }
             loadDocument(Document(""))
         }
