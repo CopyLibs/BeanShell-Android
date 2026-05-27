@@ -50,7 +50,7 @@ class SimpleNode implements Node, Serializable {
     private static final long serialVersionUID = 1L;
 
     /** The first and last tokens */
-    Token firstToken, lastToken;
+    transient Token firstToken, lastToken;
 
     /** the source of the text from which this was parsed */
     private String sourceFile;
@@ -58,7 +58,7 @@ class SimpleNode implements Node, Serializable {
     protected Node parent;
     protected Node[] children;
     protected int id;
-    protected Parser parser;
+    protected transient Parser parser;
     private int cursor = 0, lastRet = -1;
 
     /** Default constructor supplying the node with its type id.
@@ -219,33 +219,38 @@ class SimpleNode implements Node, Serializable {
 
     /** {@inheritDoc} */
     @Override
-    public int getLineNumber() { return firstToken.beginLine; }
+    public int getLineNumber() {
+        if ( firstToken != null )
+            return firstToken.beginLine;
+        return -1;
+    }
 
     /** {@inheritDoc} */
     @Override
     public String getText()
     {
-        StringBuilder text = new StringBuilder();
         Token t = firstToken;
-        while ( t!=null ) {
-            text.append(t.image);
-            if ( t==lastToken ||
-                t.image.equals("{") || t.image.equals(";") )
-                break;
-            Token next=t.next;
-            if ( next==null )
-                break;
-            if ( next.beginLine > t.endLine ||
-                next.beginColumn > t.endColumn + 1 )
-                text.append(" ");
-            t=next;
+        if ( t!=null ) {
+            StringBuilder text = new StringBuilder();
+            while ( t!=null ) {
+                text.append(t.image);
+                if ( t==lastToken ||
+                    t.image.equals("{") || t.image.equals(";") )
+                    break;
+                Token next=t.next;
+                if ( next==null )
+                    break;
+                if ( next.beginLine > t.endLine ||
+                    next.beginColumn > t.endColumn + 1 )
+                    text.append(" ");
+                t=next;
+            }
+            return text.toString();
         }
-
-        return text.toString();
+        return toString();
     }
 
     /** {@inheritDoc} */
     @Override
     public int getId() { return this.id; }
 }
-
