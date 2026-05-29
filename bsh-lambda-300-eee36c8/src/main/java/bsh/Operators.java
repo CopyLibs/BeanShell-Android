@@ -577,11 +577,16 @@ class Operators implements ParserConstants {
         } else if ( rhs instanceof BigDecimal ) {
             lhs = Primitive.castNumber(BigDecimal.class, lnum);
         } else if ( Types.isFloatingpoint(lhs) || Types.isFloatingpoint(rhs)) {
-            if ( !(lhs instanceof Float && rhs instanceof Float) ) {
+            if ( lhs instanceof Double || rhs instanceof Double ) {
                 if ( !(lhs instanceof Double) )
                     lhs = Double.valueOf(lnum.doubleValue());
                 if ( !(rhs instanceof Double) )
                     rhs = Double.valueOf(rnum.doubleValue());
+            } else {
+                if ( !(lhs instanceof Float) )
+                    lhs = Float.valueOf(lnum.floatValue());
+                if ( !(rhs instanceof Float) )
+                    rhs = Float.valueOf(rnum.floatValue());
             }
         } else if ( lhs instanceof BigInteger ) {
             if ( !(rhs instanceof BigInteger) )
