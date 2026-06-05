@@ -4,6 +4,7 @@ import android.content.Context
 import bsh.BshMethod
 import bsh.Interpreter
 import bsh.loader.BshLoaderHelper
+import bsh.loader.ApkPluginLoader
 import io.github.copylibs.bsh.plugin.module.log.LogModule
 
 class Plugin(val ctx: Context) {
@@ -48,6 +49,13 @@ class Plugin(val ctx: Context) {
                 BshMethod("loadAar", arrayOf(String::class.java)) { args ->
                     val aarPath = args[0] as String
                     val clsLoader = BshLoaderHelper.getLoaderByAar(aarPath, Plugin::class.java.classLoader)
+                    interpreter.addClassLoader(clsLoader)
+                }
+            )
+            setMethod(
+                BshMethod("loadApk", arrayOf(String::class.java)) { args ->
+                    val apkPath = args[0] as String
+                    val clsLoader = ApkPluginLoader.loadApk(apkPath, ctx)
                     interpreter.addClassLoader(clsLoader)
                 }
             )
