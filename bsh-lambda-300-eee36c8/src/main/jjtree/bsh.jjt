@@ -396,7 +396,6 @@ SKIP : /* WHITE SPACE and TYPE PARAMATERS */
     " " | "\t" | "\r" | "\f"
     | "\n"
     | < NONPRINTABLE: (["\u0000"-"\u0020", "\u0080"-"\u00ff"])+ >
-    | < TYPE_PARAMATERS: "<" ( (~[">",";","|","&","\n","\r","="])* ("& "|">,")? )* ([">"])+ >
 }
 
 SPECIAL_TOKEN : /* COMMENTS */
