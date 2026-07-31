@@ -22,7 +22,8 @@ public final class GenericsPreprocessor {
     private static final char MASK_CHAR = '\0';
     private static final Set<String> MODIFIERS = new HashSet<>(Arrays.asList("public", "protected", "private", "static", "final", "abstract", "synchronized", "native", "strictfp", "default", "class", "interface", "enum"));
 
-    private GenericsPreprocessor() {}
+    private GenericsPreprocessor() {
+    }
 
     public static String rewrite(String source) {
         if (source == null || source.indexOf('<') < 0 || source.indexOf('>') < 0) {
@@ -387,10 +388,10 @@ public final class GenericsPreprocessor {
                         }
                     }
                     boolean isControlKeyword = (wordLen == 2 && hasSequenceAt(masked, identifierStartIndex + 1, "if"))
-                        || (wordLen == 3 && hasSequenceAt(masked, identifierStartIndex + 1, "for"))
-                        || (wordLen == 5 && (hasSequenceAt(masked, identifierStartIndex + 1, "while") || hasSequenceAt(masked, identifierStartIndex + 1, "catch")))
-                        || (wordLen == 6 && hasSequenceAt(masked, identifierStartIndex + 1, "switch"))
-                        || (wordLen == 12 && hasSequenceAt(masked, identifierStartIndex + 1, "synchronized"));
+                            || (wordLen == 3 && hasSequenceAt(masked, identifierStartIndex + 1, "for"))
+                            || (wordLen == 5 && (hasSequenceAt(masked, identifierStartIndex + 1, "while") || hasSequenceAt(masked, identifierStartIndex + 1, "catch")))
+                            || (wordLen == 6 && hasSequenceAt(masked, identifierStartIndex + 1, "switch"))
+                            || (wordLen == 12 && hasSequenceAt(masked, identifierStartIndex + 1, "synchronized"));
                     return !isControlKeyword;
                 }
                 return false;
@@ -488,43 +489,48 @@ public final class GenericsPreprocessor {
         boolean matchesUsage = USAGE_CONTENT_PATTERN.matcher(cleanContent).matches();
         boolean matchesDef = DEF_CONTENT_PATTERN.matcher(cleanContent).matches();
         if (!matchesUsage && !matchesDef) return false;
-        
-        if (previousWord.isEmpty() || (!Character.isJavaIdentifierStart(previousWord.charAt(0)) && !".".equals(previousWord) && !"::".equals(previousWord))) {
-            return false;
+
+        boolean hasQualifiedPrefix = !previousWord.isEmpty()
+                && (Character.isJavaIdentifierStart(previousWord.charAt(0))
+                || ".".equals(previousWord)
+                || "::".equals(previousWord));
+        if (!hasQualifiedPrefix) {
+            String trimmed = nextText.trim();
+            return checkUnqualifiedMethodCallWithTypeArguments(trimmed, masked, openIndex);
         }
-        
+
         if ("::".equals(previousWord)) {
             String trimmed = nextText.trim();
             return !trimmed.isEmpty() && Character.isJavaIdentifierStart(trimmed.charAt(0));
         }
-        
+
         if (MODIFIERS.contains(previousWord)) return true;
-        
+
         if (".".equals(previousWord)) {
             return checkMethodCallAfterDot(nextText);
         }
-        
+
         int prevWordLength = previousWord.length();
-        if ("new".equals(previousWord) 
-                || isThrowsOrImplementsContext(masked, openIndex) 
-                || hasKeywordBeforePackage(masked, openIndex - prevWordLength, "new") 
+        if ("new".equals(previousWord)
+                || isThrowsOrImplementsContext(masked, openIndex)
+                || hasKeywordBeforePackage(masked, openIndex - prevWordLength, "new")
                 || hasKeywordBeforePackage(masked, openIndex - prevWordLength, "instanceof")) {
             return true;
         }
-        
+
         if (isMethodCallContext(masked, openIndex)) {
             if (hasKeywordBeforePackage(masked, openIndex - prevWordLength, "new")) return true;
             String trimmedSuffix = nextText.trim();
             return trimmedSuffix.startsWith(".") || trimmedSuffix.startsWith("::");
         }
-        
+
         String trimmedSuffix = nextText.trim();
         if (trimmedSuffix.startsWith(".") || trimmedSuffix.startsWith("::")) return true;
-        
+
         if (!trimmedSuffix.isEmpty() && trimmedSuffix.charAt(0) == ')') {
             if (checkParenthesesPredecessor(masked, openIndex)) return true;
         }
-        
+
         if (!trimmedSuffix.isEmpty() && trimmedSuffix.charAt(0) == '[') {
             return checkArrayBracketsSuffix(trimmedSuffix, isOutermost);
         }
@@ -532,13 +538,25 @@ public final class GenericsPreprocessor {
         if (!trimmedSuffix.isEmpty() && Character.isJavaIdentifierStart(trimmedSuffix.charAt(0))) {
             return checkIdentifierSuffix(trimmedSuffix);
         }
-        
+
         if (!trimmedSuffix.isEmpty()) {
             char first = trimmedSuffix.charAt(0);
             if (first == ',' || first == '&') return true;
             if (first == '>' && !isOutermost) return true;
         }
         return false;
+    }
+
+    private static boolean checkUnqualifiedMethodCallWithTypeArguments(String trimmedSuffix, char[] masked, int openIndex) {
+        if (!checkIdentifierSuffix(trimmedSuffix)) return false;
+        int previous = skipWhitespaceBackward(masked, openIndex - 1);
+        if (previous < 0) return true;
+        char previousChar = masked[previous];
+        if (previousChar == '(' || previousChar == '{' || previousChar == '}' || previousChar == ';'
+                || previousChar == ',' || previousChar == '=' || previousChar == '?' || previousChar == ':') {
+            return true;
+        }
+        return previousChar == '>' && previous > 0 && masked[previous - 1] == '-';
     }
 
     private static boolean checkMethodCallAfterDot(String nextText) {
@@ -557,7 +575,10 @@ public final class GenericsPreprocessor {
         int i = openIndex - 1;
         while (i >= 0) {
             i = skipWhitespaceBackward(masked, i);
-            if (i >= 0 && masked[i] == '.') { i--; continue; }
+            if (i >= 0 && masked[i] == '.') {
+                i--;
+                continue;
+            }
             if (i >= 0 && isIdentifierPart(masked[i])) {
                 while (i >= 0 && isIdentifierPart(masked[i])) i--;
                 continue;
@@ -702,12 +723,15 @@ public final class GenericsPreprocessor {
         }
         return i;
     }
-    
+
     private static int findNormalStringEnd(String text, int start) {
         int len = text.length();
         for (int i = start; i < len; i++) {
             char ch = text.charAt(i);
-            if (ch == '\\') { i++; continue; }
+            if (ch == '\\') {
+                i++;
+                continue;
+            }
             if (ch == '"') return i;
         }
         return -1;
@@ -717,7 +741,10 @@ public final class GenericsPreprocessor {
         int len = text.length();
         for (int i = start; i < len; i++) {
             char ch = text.charAt(i);
-            if (ch == '\\') { i++; continue; }
+            if (ch == '\\') {
+                i++;
+                continue;
+            }
             if (ch == '\'') return i;
             if (ch == '\n' || ch == '\r') return -1;
         }
