@@ -50,7 +50,7 @@ import javax.crypto.SecretKey;
 import bsh.module.BshModule;
 import bsh.preprocess.AnnotationIgnorePreprocess;
 import bsh.preprocess.DefaultArgsDesugar;
-import bsh.preprocess.GenericsPreprocessor;
+import bsh.preprocess.GenericPreprocessor;
 import bsh.preprocess.KtStringTemplate;
 import bsh.security.MainSecurityGuard;
 import bsh.snapshot.BshSnapshot;
@@ -1019,7 +1019,7 @@ public class Interpreter
         rewritten = AnnotationIgnorePreprocess.rewrite(rewritten);
         rewritten = DefaultArgsDesugar.rewrite(rewritten);
         rewritten = KtStringTemplate.rewrite(rewritten);
-        rewritten = GenericsPreprocessor.rewrite(rewritten);
+        rewritten = GenericPreprocessor.rewrite(rewritten);
         return rewritten;
     }
 

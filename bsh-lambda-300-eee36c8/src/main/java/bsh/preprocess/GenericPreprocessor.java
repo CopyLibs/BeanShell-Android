@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public final class GenericsPreprocessor {
+public final class GenericPreprocessor {
     private static final String IDENT = "[a-zA-Z_$][a-zA-Z0-9_$]*";
     private static final String START_BOUND = "(?<![a-zA-Z0-9_$])";
     private static final String END_BOUND = "(?![a-zA-Z0-9_$])";
@@ -22,7 +22,7 @@ public final class GenericsPreprocessor {
     private static final char MASK_CHAR = '\0';
     private static final Set<String> MODIFIERS = new HashSet<>(Arrays.asList("public", "protected", "private", "static", "final", "abstract", "synchronized", "native", "strictfp", "default", "class", "interface", "enum"));
 
-    private GenericsPreprocessor() {
+    private GenericPreprocessor() {
     }
 
     public static String rewrite(String source) {
@@ -662,16 +662,30 @@ public final class GenericsPreprocessor {
     }
 
     private static String getNextText(char[] masked, int start) {
-        int i = skipWhitespaceForward(masked, start);
+        int index = skipWhitespaceForward(masked, start);
         int len = masked.length;
-        if (i >= len) return "";
-        int end = Math.min(i + 128, len);
-        StringBuilder sb = new StringBuilder(Math.min(128, len - i));
-        for (int j = i; j < end; j++) {
-            char c = masked[j];
-            if (c != MASK_CHAR) sb.append(c);
+        if (index >= len) return "";
+        StringBuilder suffix = new StringBuilder();
+        int parenthesesDepth = 0;
+        int bracketDepth = 0;
+        for (int i = index; i < len; i++) {
+            char current = masked[i];
+            if (current == MASK_CHAR) continue;
+            suffix.append(current);
+            if (current == '(') {
+                parenthesesDepth++;
+            } else if (current == ')') {
+                if (parenthesesDepth > 0) parenthesesDepth--;
+            } else if (current == '[') {
+                bracketDepth++;
+            } else if (current == ']') {
+                if (bracketDepth > 0) bracketDepth--;
+            } else if (parenthesesDepth == 0 && bracketDepth == 0
+                    && (current == ';' || current == '{' || current == '}')) {
+                break;
+            }
         }
-        return sb.toString();
+        return suffix.toString();
     }
 
     private static char[] maskSource(String source) {
