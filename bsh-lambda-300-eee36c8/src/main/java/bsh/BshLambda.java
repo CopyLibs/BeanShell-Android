@@ -1,6 +1,9 @@
 package bsh;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -124,25 +127,46 @@ public abstract class BshLambda {
         if (!BshLambda.isAssignable(this.dummyType, functionalInterface, Types.BSH_ASSIGNABLE))
             throw new UtilEvalError("This BshLambda can't be converted to " + functionalInterface.getName());
         try {
+            InvocationHandler handler = (proxy, method, args) -> {
+                if (method.getDeclaringClass() == Object.class) {
+                    switch (method.getName()) {
+                        case "toString":
+                            return "BshLambdaProxy[" + this + "]";
+                        case "equals":
+                            return args != null && args.length == 1 && proxy == args[0];
+                        case "hashCode":
+                            return System.identityHashCode(proxy);
+                    }
+                }
+                if (method.isDefault())
+                    return invokeDefaultMethod(proxy, method, args != null ? args : Reflect.ZERO_ARGS);
+                return invoke(args != null ? args : Reflect.ZERO_ARGS, method.getExceptionTypes(), method.getReturnType());
+            };
             return (T) Proxy.newProxyInstance(
                     functionalInterface.getClassLoader(),
                     new Class<?>[] { functionalInterface },
-                    (proxy, method, args) -> {
-                        if (method.getDeclaringClass() == Object.class) {
-                            switch (method.getName()) {
-                                case "toString":
-                                    return "BshLambdaProxy[" + this + "]";
-                                case "equals":
-                                    return args != null && args.length == 1 && proxy == args[0];
-                                case "hashCode":
-                                    return System.identityHashCode(proxy);
-                            }
-                        }
-                        return this.invoke(args != null ? args : Reflect.ZERO_ARGS,
-                                method.getExceptionTypes(), method.getReturnType());
-                    });
+                    handler);
         } catch (Throwable e) {
             throw new UtilEvalError("Can't create a instance for the generate class for the BshLambda: " + e.getMessage(), e);
+        }
+    }
+
+    /** Invoke a functional interface default method on its proxy instance. */
+    private static Object invokeDefaultMethod(Object proxy, Method method, Object[] args) throws Throwable {
+        Class<?> declaringClass = method.getDeclaringClass();
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        try {
+            return lookup.findSpecial(declaringClass, method.getName(),
+                    MethodType.methodType(method.getReturnType(), method.getParameterTypes()), declaringClass)
+                    .bindTo(proxy)
+                    .invokeWithArguments(args);
+        } catch (IllegalAccessException e) {
+            Constructor<MethodHandles.Lookup> constructor = MethodHandles.Lookup.class.getDeclaredConstructor(Class.class, int.class);
+            constructor.setAccessible(true);
+            return constructor.newInstance(declaringClass, MethodHandles.Lookup.PRIVATE)
+                    .unreflectSpecial(method, declaringClass)
+                    .bindTo(proxy)
+                    .invokeWithArguments(args);
         }
     }
 
