@@ -93,10 +93,10 @@ public class ApkPluginLoader {
             }
 
             DexClassLoader classLoader = new DexClassLoader(
-            targetApk.getAbsolutePath(),
-            optDir.getAbsolutePath(),
-            libDir.getAbsolutePath(),
-            ctx.getClassLoader()
+                    targetApk.getAbsolutePath(),
+                    optDir.getAbsolutePath(),
+                    libDir.getAbsolutePath(),
+                    ctx.getClassLoader()
             );
 
             AssetManager assetManager = createAssetManager(targetApk.getAbsolutePath());
@@ -117,7 +117,7 @@ public class ApkPluginLoader {
 
     private static void copyFile(File src, File dest) throws IOException {
         try (InputStream in = new FileInputStream(src);
-                OutputStream out = new FileOutputStream(dest)) {
+             OutputStream out = new FileOutputStream(dest)) {
             byte[] buf = new byte[8192];
             int len;
             while ((len = in.read(buf)) > 0) out.write(buf, 0, len);
@@ -153,7 +153,7 @@ public class ApkPluginLoader {
                 if (entry.getName().startsWith(prefix) && entry.getName().endsWith(".so")) {
                     File outFile = new File(libDir, new File(entry.getName()).getName());
                     try (InputStream is = zipFile.getInputStream(entry);
-                            FileOutputStream fos = new FileOutputStream(outFile)) {
+                         FileOutputStream fos = new FileOutputStream(outFile)) {
                         byte[] buffer = new byte[8192];
                         int len;
                         while ((len = is.read(buffer)) != -1) fos.write(buffer, 0, len);
