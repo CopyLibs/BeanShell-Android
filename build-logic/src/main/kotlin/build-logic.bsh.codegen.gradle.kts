@@ -59,7 +59,7 @@ val javaccGen by tasks.registering(JavaExec::class) {
 }
 
 dependencies {
-    add("pgccTool", "com.helger:parser-generator-cc:2.0.1")
+    add("pgccTool", "com.helger:parser-generator-cc:2.0.3")
 }
 
 plugins.withId("com.android.library") {
