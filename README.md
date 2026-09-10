@@ -34,3 +34,4 @@ implementation("io.github.copylibs:beanshell-android-lambda:$version")
 - [opeongo@PR #741](https://github.com/beanshell/beanshell/pull/741) - 变量查找混淆 问题
 - [opeongo@PR #756](https://github.com/beanshell/beanshell/pull/756) - 多行注释处理 问题
 - [opeongo@PR #768](https://github.com/beanshell/beanshell/pull/768) - 浮点数值扩大 问题
+- [wilx@PR #789](https://github.com/beanshell/beanshell/pull/789) - 缓存机制修复 问题
