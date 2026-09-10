@@ -402,7 +402,7 @@ class Operators implements ParserConstants {
                 "Unimplemented binary integer operator");
     }
 
-    // returns Object covering both Float and Boolean return types
+    // Java arithmetic returns Float; the power extension uses Double/BigDecimal.
     static Object floatBinaryOperation(float lhs, float rhs, int kind)
             throws UtilEvalError
     {
@@ -410,18 +410,12 @@ class Operators implements ParserConstants {
         {
             // arithmetic
             case PLUS:
-                if ( lhs > 0d && (Float.MAX_VALUE - lhs) < rhs )
-                    break;
                 return lhs + rhs;
 
             case MINUS:
-                if ( lhs < 0d && (-Float.MAX_VALUE - lhs) > -rhs )
-                    break;
                 return lhs - rhs;
 
             case STAR:
-                if ( lhs != 0 && Float.MAX_VALUE / lhs < rhs )
-                    break;
                 return lhs * rhs;
 
             case SLASH:
@@ -433,10 +427,7 @@ class Operators implements ParserConstants {
 
             case POWER:
             case POWERX:
-                double check = Math.pow(lhs, rhs);
-                if ( Double.isInfinite(check) )
-                    break;
-                return check;
+                return doubleBinaryOperation(lhs, rhs, kind);
 
             // can't shift floating-point values
             case LSHIFT:
@@ -445,14 +436,11 @@ class Operators implements ParserConstants {
             case RSIGNEDSHIFTX:
             case RUNSIGNEDSHIFT:
             case RUNSIGNEDSHIFTX:
-                throw new UtilEvalError("Can't shift floatingpoint values");
+                throw new UtilEvalError("Can't shift float values");
 
         }
-        if ( OVERFLOW_OPS.contains(kind) )
-            return bigDecimalBinaryOperation(BigDecimal.valueOf(lhs), BigDecimal.valueOf(rhs), kind);
-
         throw new InterpreterError(
-                "Unimplemented binary double operator");
+                "Unimplemented binary float operator");
     }
 
     // returns Object covering both Double and Boolean return types
@@ -576,18 +564,20 @@ class Operators implements ParserConstants {
                 rhs = Primitive.castNumber(BigDecimal.class, rnum);
         } else if ( rhs instanceof BigDecimal ) {
             lhs = Primitive.castNumber(BigDecimal.class, lnum);
-        } else if ( Types.isFloatingpoint(lhs) || Types.isFloatingpoint(rhs)) {
-            if ( lhs instanceof Double || rhs instanceof Double ) {
-                if ( !(lhs instanceof Double) )
-                    lhs = Double.valueOf(lnum.doubleValue());
-                if ( !(rhs instanceof Double) )
-                    rhs = Double.valueOf(rnum.doubleValue());
-            } else {
-                if ( !(lhs instanceof Float) )
-                    lhs = Float.valueOf(lnum.floatValue());
-                if ( !(rhs instanceof Float) )
-                    rhs = Float.valueOf(rnum.floatValue());
-            }
+        } else if ( (lhs instanceof Float || rhs instanceof Float)
+                && !(lhs instanceof Double || rhs instanceof Double
+                    || lhs instanceof BigInteger || rhs instanceof BigInteger) ) {
+            // Float with Java integral types uses float arithmetic. Preserve
+            // the existing double promotion for the BigInteger extension.
+            if ( !(lhs instanceof Float) )
+                lhs = Float.valueOf(lnum.floatValue());
+            if ( !(rhs instanceof Float) )
+                rhs = Float.valueOf(rnum.floatValue());
+        } else if ( Types.isFloatingpoint(lhs) || Types.isFloatingpoint(rhs) ) {
+            if ( !(lhs instanceof Double) )
+                lhs = Double.valueOf(lnum.doubleValue());
+            if ( !(rhs instanceof Double) )
+                rhs = Double.valueOf(rnum.doubleValue());
         } else if ( lhs instanceof BigInteger ) {
             if ( !(rhs instanceof BigInteger) )
                 rhs = Primitive.castNumber(BigInteger.class, rnum);
