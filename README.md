@@ -21,17 +21,18 @@ implementation("io.github.copylibs:beanshell-android-lambda:$version")
 
 ## 文档
 
-示例请查看[使用指南](docs/GUIDE.md)。
+示例 请查看 [使用指南](docs/GUIDE.md)
 
 ## 致谢
 
-- [beanshell@beanshell](https://github.com/beanshell/beanshell) - 原始仓库
+- [beanshell@beanshell](https://github.com/beanshell/beanshell) - 上游仓库
 - [Hicores@BeanShell](https://github.com/Hicores/BeanShell) - Android 支持
 - [Net-0@PR #766](https://github.com/beanshell/beanshell/pull/766) - Lambda 支持
 - [Net-0@PR #772](https://github.com/beanshell/beanshell/pull/772) - SecurityGuard 支持
-- [opeongo@PR #729](https://github.com/beanshell/beanshell/pull/729) - 数字转换异常 问题
-- [opeongo@PR #732](https://github.com/beanshell/beanshell/pull/732) - 方法查找回归 问题
-- [opeongo@PR #741](https://github.com/beanshell/beanshell/pull/741) - 变量查找混淆 问题
-- [opeongo@PR #756](https://github.com/beanshell/beanshell/pull/756) - 多行注释处理 问题
-- [opeongo@PR #768](https://github.com/beanshell/beanshell/pull/768) - 浮点数值扩大 问题
-- [wilx@PR #789](https://github.com/beanshell/beanshell/pull/789) - 缓存机制修复 问题
+- [opeongo@PR #729](https://github.com/beanshell/beanshell/pull/729) - 数字转换 问题
+- [opeongo@PR #732](https://github.com/beanshell/beanshell/pull/732) - 方法查找 问题
+- [opeongo@PR #741](https://github.com/beanshell/beanshell/pull/741) - 变量查找 问题
+- [opeongo@PR #756](https://github.com/beanshell/beanshell/pull/756) - 多行注释 问题
+- [opeongo@PR #768](https://github.com/beanshell/beanshell/pull/768) - 浮点拓宽 问题
+- [wilx@PR #789](https://github.com/beanshell/beanshell/pull/789) - 缓存机制 问题
+- [wilx@PR #793](https://github.com/beanshell/beanshell/pull/793) - 数组维度 问题
