@@ -36,3 +36,4 @@ implementation("io.github.copylibs:beanshell-android-lambda:$version")
 - [opeongo@PR #768](https://github.com/beanshell/beanshell/pull/768) - 浮点拓宽 问题
 - [wilx@PR #789](https://github.com/beanshell/beanshell/pull/789) - 缓存机制 问题
 - [wilx@PR #793](https://github.com/beanshell/beanshell/pull/793) - 数组维度 问题
+- [wilx@PR #798](https://github.com/beanshell/beanshell/pull/798) - 方法别名 问题

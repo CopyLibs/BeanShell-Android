@@ -446,7 +446,7 @@ public final class Reflect {
             throw new InterpreterError("null class");
 
         Invocable method = BshClassManager.memberCache
-                .get(clas).findMethod(name, types);
+                .get(clas).findMethodOrProperty(name, types);
         Interpreter.debug("resolved java method: ", method, " on class: ", clas);
         checkFoundStaticMethod( method, staticOnly, clas );
         return method;
@@ -830,9 +830,7 @@ public final class Reflect {
             Class<?> clas, String propName ) {
         if ( Types.isPropertyType(clas) )
             return true;
-        return BshClassManager.memberCache
-                .get(clas).hasMember(propName)
-            && null != BshClassManager.memberCache
+        return null != BshClassManager.memberCache
                 .get(clas).findGetter(propName);
     }
 
@@ -840,9 +838,7 @@ public final class Reflect {
             Class<?> clas, String propName ) {
         if ( Types.isPropertyType(clas) )
             return true;
-        return BshClassManager.memberCache
-                .get(clas).hasMember(propName)
-            && null != BshClassManager.memberCache
+        return null != BshClassManager.memberCache
                 .get(clas).findSetter(propName);
     }
 
