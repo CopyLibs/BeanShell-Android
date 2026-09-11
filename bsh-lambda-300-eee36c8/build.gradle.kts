@@ -12,7 +12,7 @@ plugins {
 
 val publishGroupId = "io.github.copylibs"
 val publishArtifactId = "beanshell-android-lambda"
-val publishVersion = "3.0.0.beta12"
+val publishVersion = "3.0.0.beta13"
 
 android {
     namespace = "bsh.lambda_300_eee36c8"
